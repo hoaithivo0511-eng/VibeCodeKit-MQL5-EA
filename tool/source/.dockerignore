@@ -1,0 +1,40 @@
+# Keep the Dockerfile.devin build context tight. Mirrored from .gitignore
+# (the parts that matter for layer-cache friendliness).
+
+# Python build / install artefacts
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+**/*.egg-info/
+build/
+dist/
+
+# Test / tool caches
+.pytest_cache/
+**/.pytest_cache/
+.ruff_cache/
+**/.ruff_cache/
+.coverage
+htmlcov/
+
+# MetaEditor / Wine artefacts checked into a working tree by accident
+*.ex5
+**/*.ex5
+
+# IDE
+.idea/
+.vscode/
+
+# Local Devin / setup scratch
+.mql5-env
+plan-*.md
+audit-*.md
+notes-*.md
+
+# Keep .git/ so tests that probe `git rev-parse` (e.g. mql5-ship dry-run)
+# work inside the container. The repo is small enough that this barely
+# affects the build context size.

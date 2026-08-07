@@ -1,0 +1,37 @@
+# Ownership map for the Triangle of Power.
+# First matching rule wins. Owners: chu-nha (Homeowner / intent + approval),
+# chu-thau (Contractor / blueprint + scaffolding + docs),
+# tho-thi-cong (Builder / EA source -- requires Homeowner approval to touch).
+version: 1
+default_owner: chu-thau
+rules:
+  # Homeowner artefacts: intent and approval. No approval gate to edit.
+  - path: "**/owner-interview.json"
+    owner: chu-nha
+    requires_approval: false
+  - path: "**/owner-approval.json"
+    owner: chu-nha
+    requires_approval: false
+  # Contractor artefacts: blueprints, scaffolding scripts, docs.
+  - path: "**/blueprint*.md"
+    owner: chu-thau
+    requires_approval: false
+  - path: "**/step-*-blueprint.md"
+    owner: chu-thau
+    requires_approval: false
+  - path: "scripts/**"
+    owner: chu-thau
+    requires_approval: false
+  - path: "docs/**"
+    owner: chu-thau
+    requires_approval: false
+  # Builder artefacts: EA source. Cannot be touched until the blueprint is approved.
+  - path: "**/*.mq5"
+    owner: tho-thi-cong
+    requires_approval: true
+  - path: "**/*.mqh"
+    owner: tho-thi-cong
+    requires_approval: true
+  - path: "**/*.set"
+    owner: tho-thi-cong
+    requires_approval: true
