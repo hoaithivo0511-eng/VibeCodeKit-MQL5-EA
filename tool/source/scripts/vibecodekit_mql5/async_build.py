@@ -1,14 +1,13 @@
-"""mql5-wizard — render the wizard-composable scaffold.
+"""mql5-async-build — render an HFT async-OrderSend scaffold.
 
 A thin wrapper around the core :mod:`vibecodekit_mql5.build` that targets
-the ``wizard-composable/netting`` scaffold.  The wizard-composable archetype
-is the MQL5 Wizard-style CExpert + signal + trailing + money-mgmt stack
-(see ``docs/references/60-wizard-cexpert.md``).
+the ``hft-async/netting`` scaffold and enforces AP-18 (every OrderSendAsync
+must be paired with OnTradeTransaction()) via a pre-render lint.
 
 Usage::
 
-    python -m vibecodekit_mql5.wizard --name MyWizardEA \\
-        --symbol EURUSD --tf H1 --output ./out
+    python -m vibecodekit_mql5.async_build --name MyHftEA \\
+        --symbol EURUSD --tf M1 --output ./out
 """
 
 from __future__ import annotations
@@ -19,27 +18,29 @@ import sys
 try:
     from . import build as build_mod  # type: ignore
 except ImportError:
+    # Allow running as a script from ``scripts/`` with PYTHONPATH=scripts/.
     import vibecodekit_mql5.build as build_mod  # type: ignore
 
 
-WIZARD_STACK = "wizard-composable"
-WIZARD_VARIANT = "netting"
+HFT_STACK = "hft-async"
+HFT_STACK_VARIANT = "netting"
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="mql5-wizard")
+    parser = argparse.ArgumentParser(prog="mql5-async-build")
     parser.add_argument("--name", required=True, help="EA name")
     parser.add_argument("--symbol", required=True, help="Trading symbol")
-    parser.add_argument("--tf", default="H1", help="Timeframe (default H1)")
+    parser.add_argument("--tf", default="M1", help="Timeframe (default M1)")
     parser.add_argument("--output", default=".", help="Output directory")
     args = parser.parse_args(argv)
 
+    # Reuse the core build_mod with our locked preset/stack.
     inner_argv = [
-        WIZARD_STACK,
+        HFT_STACK,
         "--name", args.name,
         "--symbol", args.symbol,
         "--tf", args.tf,
-        "--stack", WIZARD_VARIANT,
+        "--stack", HFT_STACK_VARIANT,
         "--out", args.output,
     ]
     return build_mod.main(inner_argv)

@@ -18,7 +18,7 @@ TEMPLATE = template_path("step-5-tip.md.tmpl")
 
 def render() -> str:
     if not TEMPLATE.exists():
-        return f"# TIP\\n\\n(template not installed: {TEMPLATE})\\n"
+        return f"# TIP\n\n(template not installed: {TEMPLATE})\n"
     return TEMPLATE.read_text(encoding="utf-8")
 
 

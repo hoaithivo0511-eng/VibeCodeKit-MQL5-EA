@@ -18,7 +18,7 @@ TEMPLATE = template_path("step-4-blueprint.md.tmpl")
 
 def render() -> str:
     if not TEMPLATE.exists():
-        return f"# BLUEPRINT\\n\\n(template not installed: {TEMPLATE})\\n"
+        return f"# BLUEPRINT\n\n(template not installed: {TEMPLATE})\n"
     return TEMPLATE.read_text(encoding="utf-8")
 
 

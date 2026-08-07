@@ -31,4 +31,4 @@ def warn_deprecated(
 ) -> None:
     """Emit a one-line deprecation JSON to stderr (non-fatal)."""
     out = stream if stream is not None else sys.stderr
-    out.write(json.dumps(deprecation_payload(old, replacement, removed_in=removed_in)) + "\\n")
+    out.write(json.dumps(deprecation_payload(old, replacement, removed_in=removed_in)) + "\n")

@@ -18,7 +18,7 @@ TEMPLATE = template_path("step-3-vision.md.tmpl")
 
 def render() -> str:
     if not TEMPLATE.exists():
-        return f"# VISION\\n\\n(template not installed: {TEMPLATE})\\n"
+        return f"# VISION\n\n(template not installed: {TEMPLATE})\n"
     return TEMPLATE.read_text(encoding="utf-8")
 
 

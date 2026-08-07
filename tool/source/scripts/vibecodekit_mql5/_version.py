@@ -19,7 +19,7 @@ def _from_pyproject() -> str | None:
         pp = parent / "pyproject.toml"
         if pp.exists():
             m = re.search(
-                r'^version\\s*=\\s*"([^"]+)"', pp.read_text(encoding="utf-8"), re.M
+                r'^version\s*=\s*"([^"]+)"', pp.read_text(encoding="utf-8"), re.M
             )
             if m:
                 return m.group(1)

@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     data = {"kit": "vibecodekit-mql5-ea", "version": _version.get_version()}
     if args.as_json:
-        sys.stdout.write(json.dumps(data) + "\\n")
+        sys.stdout.write(json.dumps(data) + "\n")
     else:
         print(f"{data['kit']} {data['version']}")
     return 0
