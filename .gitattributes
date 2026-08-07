@@ -1,0 +1,6 @@
+# Giu nguyen byte cho moi tep: khong chuyen doi CRLF/LF khi commit hoac checkout.
+# Bao dam noi dung trong kho khop tuyet doi voi goi ZIP goc.
+* -text
+
+*.zip binary
+*.whl binary
