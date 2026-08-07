@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "tool_version": "3.3.0rc4",
+  "verdict": "semantic-isolated and runtime-safety hardened; native evidence pending",
+  "tests": {
+    "source_regression": "126/126 PASS",
+    "source_selftest": "13/13 PASS",
+    "wheel_regression": "126/126 PASS",
+    "wheel_selftest": "13/13 PASS",
+    "source_archive_regression": "126/126 PASS",
+    "source_archive_selftest": "13/13 PASS",
+    "generic_acceptance": "4/4 PASS"
+  },
+  "coverage": {
+    "overall_percent": 18.228896944588296,
+    "advanced_codegen_percent": 95.42857142857143,
+    "build_planner_percent": 91.66666666666667,
+    "feature_registry_percent": 94.5945945945946,
+    "ea_ir_percent": 93.93939393939394,
+    "safe_paths_percent": 94.73684210526316
+  },
+  "semantic_isolation": {
+    "production_vendor_literals_found": false,
+    "fixed_command_prices_found": false,
+    "command_protocol": "data-driven",
+    "feature_variants_required": true
+  },
+  "ccbsn_fixture": {
+    "role": "golden acceptance fixture only",
+    "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b",
+    "planned_capabilities": 69,
+    "blockers": 0,
+    "warnings": 0,
+    "source_files": 12,
+    "physical_lines": 821,
+    "source_bytes": 81868,
+    "static_verified": true,
+    "compile_verified": false,
+    "tester_verified": false,
+    "release_eligible": false
+  },
+  "remaining_open": [
+    "MetaEditor compile evidence unavailable in current environment",
+    "MT5 Strategy Tester evidence unavailable in current environment",
+    "22 maintainability warnings remain in generated complex fixture",
+    "overall legacy package statement coverage remains 18.23%"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "archive_name": "VibecodeKit-MQL5-v330rc4-runtime-safety-fix-bundle.zip",
+  "archive_size": 2521806,
+  "archive_sha256": "33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c",
+  "zip_entries": 259,
+  "zip_file_entries": 186,
+  "zip_directory_entries": 73,
+  "unsafe_paths": [],
+  "symlinks": [],
+  "repo_payload_files_including_zip": 187,
+  "repo_payload_bytes_including_zip": 7062979,
+  "extracted_files_verified": 186,
+  "empty_files_verified": 2,
+  "missing_extracted_files": [],
+  "mismatched_extracted_files": [],
+  "verification_passed": true,
+  "github_size_limit_check": "passed",
+  "largest_payload_file_bytes": 2521806
+}

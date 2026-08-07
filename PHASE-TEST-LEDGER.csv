@@ -1,0 +1,9 @@
+﻿phase,scope,result_summary,evidence,status
+Phase 1,Semantic isolation / generic commands,Vendor literals removed; commands and variants data-driven,targeted + full regression,PASS
+Phase 2,Central exposure admission,All exposure engines use one permission/idempotency gate,targeted + full regression,PASS
+Phase 3,Intent ledger / event reducer / time policy,"Unknown outcome, event dedupe, history and clock contracts",targeted + full regression,PASS
+Phase 4,Cross-feature invariants,"Ownership, collisions, concurrency and precedence",8 invariant tests,PASS
+Phase 5,Cross-project isolation,Trend/breakout/mean-reversion/recovery archetypes,4/4 wheel acceptance,PASS
+Phase 6,Runtime-safety hardening,"64-bit IDs, history queue, zone migration, cash-flow accounting",full regression,PASS
+Phase 7,Distribution verification,Wheel/source archive clean installs and hygiene,126/126 + 13/13 each,PASS
+Phase 8,CCBSN golden rebuild,Rebuilt from clean wheel with operator profile,69 capabilities; static PASS,PASS
