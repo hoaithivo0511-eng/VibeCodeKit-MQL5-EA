@@ -51,13 +51,13 @@ jobs:
           python -m pip install tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
       - name: Copy regression tests outside source checkout
         run: |
-          rm -rf /tmp/vkmql-wheel-tests
-          mkdir -p /tmp/vkmql-wheel-tests
-          cp -R tool/source/tests/. /tmp/vkmql-wheel-tests/
+          rm -rf /tmp/vkmql-wheel-suite
+          mkdir -p /tmp/vkmql-wheel-suite
+          cp -R tool/source/tests /tmp/vkmql-wheel-suite/tests
       - name: Run installed wheel regression
         run: |
-          cd /tmp/vkmql-wheel-tests
-          python -m pytest -q
+          cd /tmp/vkmql-wheel-suite
+          python -m pytest -q tests
       - name: Run installed wheel selftest
         run: |
           cd /tmp
