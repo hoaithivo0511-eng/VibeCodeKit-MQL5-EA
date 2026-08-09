@@ -220,12 +220,12 @@ def _remote_command_handler(ir: EAIR) -> str:
         "bool ContinueRemoteCommand(){int state=CommandLedger.State();if(state==VCK_CMD_IDLE)return false;"
         "ulong ticket=CommandLedger.Ticket();int command_index=CommandLedger.CommandIndex();"
         "if(state==VCK_CMD_APPLIED){CommandLedger.FinalizeApplied();return true;}"
-        "if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistState();Log.Event(\"REMOTE_COMMAND_BLOCKED\",\"manual reconciliation required\",(double)ticket);return true;}"
+        "if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_BLOCKED\",\"manual reconciliation required\",(double)ticket);return true;}"
         "if(state==VCK_CMD_CLAIMED){if(!RemoteOrderOwned(ticket)){CommandLedger.Block();return true;}"
         "if(!Trade.DeleteOrder(ticket))return true;if(!CommandLedger.MarkDeleted(ticket,command_index))return true;state=VCK_CMD_DELETED;}"
         "if(state==VCK_CMD_DELETED){if(!CommandLedger.BeginApply(ticket,command_index))return true;ApplyRemoteCommandOnce(command_index);state=VCK_CMD_APPLYING;}"
-        "if(state==VCK_CMD_APPLYING){if(RemoteCommandEffectSatisfied(command_index)){PersistState();CommandLedger.MarkApplied(ticket,command_index);}"
-        "else{g_ea_enabled=false;PersistState();Log.Event(\"REMOTE_COMMAND_INCOMPLETE\",\"effect not satisfied; no replay\",(double)ticket);}return true;}return true;}"
+        "if(state==VCK_CMD_APPLYING){if(RemoteCommandEffectSatisfied(command_index)){PersistStateCritical();CommandLedger.MarkApplied(ticket,command_index);}"
+        "else{g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_INCOMPLETE\",\"effect not satisfied; no replay\",(double)ticket);}return true;}return true;}"
         "bool ProcessRemoteCommands(){if(!VCK_USE_REMOTE)return false;if(CommandLedger.State()!=VCK_CMD_IDLE)return ContinueRemoteCommand();"
         "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);if(!RemoteOrderOwned(ticket))continue;int command_index=MatchRemoteCommand();"
         "if(command_index<0)continue;if(!CommandLedger.Claim(ticket,command_index))return true;return ContinueRemoteCommand();}return false;}"
@@ -487,57 +487,73 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
 
 TRADE_INTENT_LEDGER = r'''// digits-tested: 5,4,3,2
 #pragma once
+enum VCKTradeIntentState { VCK_INTENT_NONE=0,VCK_INTENT_PREPARED,VCK_INTENT_SUBMITTED,VCK_INTENT_ACKNOWLEDGED,VCK_INTENT_PARTIAL,VCK_INTENT_COMPLETED,VCK_INTENT_UNKNOWN };
 class CTradeIntentLedger
   {
 private:
-   string m_prefix,m_symbol; long m_magic; int m_counter,m_timeout,m_lookback;
+   string m_prefix,m_symbol;long m_magic;int m_counter,m_timeout,m_lookback;
    string Key(const int source,const int direction,const string suffix){return m_prefix+(string)source+"_"+(string)direction+"_"+suffix;}
-   long MakeId(const int source,const int direction){m_counter=(m_counter+1)%1000;return (long)TimeCurrent()*10000+(long)(source+10)*100+(direction>0?50:0)+m_counter;}
-   string Prefix(const long id){return "I"+(string)id+"|";}
-   bool CommentHas(const string comment,const long id){return StringFind(comment,Prefix(id))==0;}
-   bool FindLive(const long id)
+   long MakeId(const int source,const int direction){m_counter=(m_counter+1)%1000;return(long)TimeCurrent()*10000+(long)(source+10)*100+(direction>0?50:0)+m_counter;}
+   string DiagnosticPrefix(const long id){return"I"+(string)id+"|";}
+   void SaveUlong(const int source,const int direction,const string suffix,const ulong value){GlobalVariableSet(Key(source,direction,suffix+"_hi"),(double)(value>>32));GlobalVariableSet(Key(source,direction,suffix+"_lo"),(double)(value&0xFFFFFFFF));}
+   ulong LoadUlong(const int source,const int direction,const string suffix){ulong hi=GlobalVariableCheck(Key(source,direction,suffix+"_hi"))?(ulong)GlobalVariableGet(Key(source,direction,suffix+"_hi")):0,lo=GlobalVariableCheck(Key(source,direction,suffix+"_lo"))?(ulong)GlobalVariableGet(Key(source,direction,suffix+"_lo")):0;return(hi<<32)|lo;}
+   void SetState(const int source,const int direction,const VCKTradeIntentState state){GlobalVariableSet(Key(source,direction,"state"),(double)state);GlobalVariablesFlush();}
+   void Clear(const int source,const int direction){string fields[]={"id","created","state","request_id","volume","diag_seen","order_hi","order_lo","position_hi","position_lo","deal_hi","deal_lo"};for(int i=0;i<ArraySize(fields);i++)GlobalVariableDel(Key(source,direction,fields[i]));GlobalVariablesFlush();}
+   bool FindByRequest(const uint request_id,int &source,int &direction){if(request_id==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"request_id"))&&(uint)GlobalVariableGet(Key(source,direction,"request_id"))==request_id)return true;return false;}
+   bool FindByOrder(const ulong order,int &source,int &direction){if(order==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(LoadUlong(source,direction,"order")==order)return true;return false;}
+   bool FindByPosition(const ulong position,int &source,int &direction){if(position==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(LoadUlong(source,direction,"position")==position)return true;return false;}
+   bool LivePositionIdentity(const ulong position_id){if(position_id==0)return false;for(int i=0;i<PositionsTotal();i++){ulong ticket=PositionGetTicket(i);if(ticket>0&&PositionSelectByTicket(ticket)&&PositionGetString(POSITION_SYMBOL)==m_symbol&&(long)PositionGetInteger(POSITION_MAGIC)==m_magic&&(ulong)PositionGetInteger(POSITION_IDENTIFIER)==position_id)return true;}return false;}
+   bool HistoryDealIdentity(const ulong deal){return deal>0&&HistoryDealSelect(deal)&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic;}
+   bool HistoryDealForOrder(const ulong order){if(order==0)return false;for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(deal>0&&(ulong)HistoryDealGetInteger(deal,DEAL_ORDER)==order&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic)return true;}return false;}
+   bool DefinitelyRejected(const uint retcode){return retcode==TRADE_RETCODE_REJECT||retcode==TRADE_RETCODE_INVALID||retcode==TRADE_RETCODE_INVALID_VOLUME||retcode==TRADE_RETCODE_INVALID_PRICE||retcode==TRADE_RETCODE_INVALID_STOPS||retcode==TRADE_RETCODE_TRADE_DISABLED||retcode==TRADE_RETCODE_MARKET_CLOSED||retcode==TRADE_RETCODE_NO_MONEY||retcode==TRADE_RETCODE_INVALID_FILL||retcode==TRADE_RETCODE_INVALID_ORDER;}
+   bool ReconcileSlot(const int source,const int direction)
      {
-      for(int i=0;i<PositionsTotal();i++){ulong t=PositionGetTicket(i);if(t>0&&PositionSelectByTicket(t)&&PositionGetString(POSITION_SYMBOL)==m_symbol&&(long)PositionGetInteger(POSITION_MAGIC)==m_magic&&CommentHas(PositionGetString(POSITION_COMMENT),id))return true;}
-      for(int i=0;i<OrdersTotal();i++){ulong t=OrderGetTicket(i);if(t>0&&OrderSelect(t)&&OrderGetString(ORDER_SYMBOL)==m_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==m_magic&&CommentHas(OrderGetString(ORDER_COMMENT),id))return true;}
+      ulong deal=LoadUlong(source,direction,"deal"),position=LoadUlong(source,direction,"position"),order=LoadUlong(source,direction,"order");
+      if(order>0&&OrderSelect(order)&&OrderGetString(ORDER_SYMBOL)==m_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==m_magic){ENUM_ORDER_STATE live_state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,live_state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);return true;}
+      if(!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return false;
+      if(order>0&&HistoryOrderSelect(order))
+        {
+         ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(order,ORDER_STATE);
+         if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(order)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);return true;}
+         if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){Clear(source,direction);return true;}
+         if(state==ORDER_STATE_PARTIAL){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
+        }
+      if(HistoryDealForOrder(order)||HistoryDealIdentity(deal)||LivePositionIdentity(position)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
       return false;
      }
-   bool FindHistory(const long id)
-     {
-      datetime from=TimeCurrent()-m_lookback;if(!HistorySelect(from,TimeCurrent()))return false;
-      for(int i=0;i<HistoryOrdersTotal();i++){ulong t=HistoryOrderGetTicket(i);if(t>0&&(long)HistoryOrderGetInteger(t,ORDER_MAGIC)==m_magic&&CommentHas(HistoryOrderGetString(t,ORDER_COMMENT),id))return true;}
-      for(int i=0;i<HistoryDealsTotal();i++){ulong t=HistoryDealGetTicket(i);if(t>0&&(long)HistoryDealGetInteger(t,DEAL_MAGIC)==m_magic&&CommentHas(HistoryDealGetString(t,DEAL_COMMENT),id))return true;}
-      return false;
-     }
-   void Clear(const int source,const int direction){GlobalVariableDel(Key(source,direction,"id"));GlobalVariableDel(Key(source,direction,"sent"));GlobalVariableDel(Key(source,direction,"state"));}
 public:
-   void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_"+(string)magic+"_"+symbol+"_";m_counter=0;}
+   void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_V2_"+(string)magic+"_"+symbol+"_";m_counter=0;}
    bool Prepare(const int source,const int direction,const string base_comment,string &wire_comment)
      {
-      string id_key=Key(source,direction,"id"),sent_key=Key(source,direction,"sent");
-      if(GlobalVariableCheck(id_key))
-        {
-         long existing=(long)GlobalVariableGet(id_key);datetime sent=GlobalVariableCheck(sent_key)?(datetime)GlobalVariableGet(sent_key):0;
-         if(FindLive(existing)||FindHistory(existing)){Clear(source,direction);return false;}
-         // Unknown broker outcome is a safety stop, not a retry timer. The
-         // intent remains sealed until terminal truth is observed or an
-         // operator explicitly clears it after reconciliation.
-         if(VCK_BLOCK_UNKNOWN_OUTCOME)return false;
-         if(sent==0||TimeCurrent()-sent<m_timeout)return false;
-         if(!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return false;
-         Clear(source,direction);
-        }
-      long id=MakeId(source,direction);GlobalVariableSet(id_key,(double)id);GlobalVariableSet(sent_key,(double)TimeCurrent());GlobalVariableSet(Key(source,direction,"state"),1.0);
-      wire_comment=StringSubstr(Prefix(id)+base_comment,0,31);return true;
+      string id_key=Key(source,direction,"id");
+      if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key)){datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if(VCK_BLOCK_UNKNOWN_OUTCOME||created==0||TimeCurrent()-created<m_timeout||!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return false;Clear(source,direction);}}
+      long id=MakeId(source,direction);GlobalVariableSet(id_key,(double)id);GlobalVariableSet(Key(source,direction,"created"),(double)TimeCurrent());SetState(source,direction,VCK_INTENT_PREPARED);wire_comment=StringSubstr(DiagnosticPrefix(id)+base_comment,0,31);return true;
      }
-   void MarkRejected(const int source,const int direction){Clear(source,direction);}
-   void MarkAcknowledged(const int source,const int direction){GlobalVariableSet(Key(source,direction,"state"),2.0);}
-   void ObserveComment(const string comment)
+   void MarkSubmitted(const int source,const int direction,const MqlTradeResult &result,const double requested_volume)
      {
-      if(StringLen(comment)<3||StringGetCharacter(comment,0)!=73)return;
-      int sep=StringFind(comment,"|");if(sep<2)return;long id=(long)StringToInteger(StringSubstr(comment,1,sep-1));
-      for(int source=0;source<6;source++)for(int d=-1;d<=1;d+=2){string k=Key(source,d,"id");if(GlobalVariableCheck(k)&&(long)GlobalVariableGet(k)==id)Clear(source,d);}
+      GlobalVariableSet(Key(source,direction,"request_id"),(double)result.request_id);SaveUlong(source,direction,"order",result.order);SaveUlong(source,direction,"deal",result.deal);GlobalVariableSet(Key(source,direction,"volume"),requested_volume);
+      if(result.retcode==TRADE_RETCODE_DONE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else if(result.retcode==TRADE_RETCODE_DONE){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);}else SetState(source,direction,VCK_INTENT_SUBMITTED);
      }
-   void Reconcile(){for(int source=0;source<6;source++)for(int d=-1;d<=1;d+=2){string k=Key(source,d,"id");if(!GlobalVariableCheck(k))continue;long id=(long)GlobalVariableGet(k);if(FindLive(id)||FindHistory(id))Clear(source,d);}}
+   void MarkUnknown(const int source,const int direction,const MqlTradeResult &result){GlobalVariableSet(Key(source,direction,"request_id"),(double)result.request_id);SaveUlong(source,direction,"order",result.order);SaveUlong(source,direction,"deal",result.deal);SetState(source,direction,VCK_INTENT_UNKNOWN);}
+   void MarkRejected(const int source,const int direction){Clear(source,direction);}
+   void ObserveDiagnosticComment(const string comment)
+     {
+      if(StringLen(comment)<3||StringGetCharacter(comment,0)!=73)return;int sep=StringFind(comment,"|");if(sep<2)return;long id=(long)StringToInteger(StringSubstr(comment,1,sep-1));for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2){string key=Key(source,direction,"id");if(GlobalVariableCheck(key)&&(long)GlobalVariableGet(key)==id)GlobalVariableSet(Key(source,direction,"diag_seen"),(double)TimeCurrent());}
+     }
+   bool OnTransaction(const MqlTradeTransaction &trans,const MqlTradeResult &result)
+     {
+      bool request_event=trans.type==TRADE_TRANSACTION_REQUEST;
+      bool order_event=trans.type==TRADE_TRANSACTION_ORDER_ADD||trans.type==TRADE_TRANSACTION_ORDER_UPDATE||trans.type==TRADE_TRANSACTION_ORDER_DELETE||trans.type==TRADE_TRANSACTION_HISTORY_ADD||trans.type==TRADE_TRANSACTION_HISTORY_UPDATE||trans.type==TRADE_TRANSACTION_HISTORY_DELETE;
+      uint request_id=request_event?result.request_id:0;ulong order=trans.order>0?trans.order:(request_event?result.order:0),deal=trans.deal>0?trans.deal:(request_event?result.deal:0);
+      int source=0,direction=0;bool matched=FindByRequest(request_id,source,direction);if(!matched)matched=FindByOrder(order,source,direction);if(!matched)matched=FindByPosition(trans.position,source,direction);if(!matched)return false;
+      if(order>0)SaveUlong(source,direction,"order",order);if(trans.position>0)SaveUlong(source,direction,"position",trans.position);if(deal>0)SaveUlong(source,direction,"deal",deal);
+      if(request_event&&DefinitelyRejected(result.retcode)){MarkRejected(source,direction);return true;}
+      if((request_event&&result.retcode==TRADE_RETCODE_DONE_PARTIAL)||(order_event&&trans.order_state==ORDER_STATE_PARTIAL)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
+      if((request_event&&result.retcode==TRADE_RETCODE_DONE)||(order_event&&trans.order_state==ORDER_STATE_FILLED)){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);return true;}
+      if(trans.type==TRADE_TRANSACTION_DEAL_ADD&&trans.deal>0){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
+      if(request_event&&result.retcode==TRADE_RETCODE_PLACED)SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);return true;
+     }
+   void Reconcile(){for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"id")))ReconcileSlot(source,direction);}
   };
 '''
 
@@ -616,21 +632,25 @@ TRADE_EXECUTOR = r'''// digits-tested: 5,4,3,2
 class CAsyncTradeExecutor
   {
 private:
-   CTrade m_trade; CSpreadGuard m_spread; CTradeIntentLedger m_intents; long m_magic; long m_last_bars;
-   bool GoodRetcode(){uint c=m_trade.ResultRetcode();return c==TRADE_RETCODE_DONE||c==TRADE_RETCODE_PLACED||c==TRADE_RETCODE_DONE_PARTIAL||c==TRADE_RETCODE_NO_CHANGES;}
-   bool DefinitelyRejected(){uint c=m_trade.ResultRetcode();return c==TRADE_RETCODE_REJECT||c==TRADE_RETCODE_INVALID||c==TRADE_RETCODE_INVALID_VOLUME||c==TRADE_RETCODE_INVALID_PRICE||c==TRADE_RETCODE_INVALID_STOPS||c==TRADE_RETCODE_TRADE_DISABLED||c==TRADE_RETCODE_MARKET_CLOSED||c==TRADE_RETCODE_NO_MONEY||c==TRADE_RETCODE_INVALID_FILL||c==TRADE_RETCODE_INVALID_ORDER;}
+   CTrade m_trade;CSpreadGuard m_spread;CTradeIntentLedger m_intents;long m_magic,m_last_bars;bool m_async;
+   bool OpenRetcodeAccepted(const uint code){return code==TRADE_RETCODE_DONE||code==TRADE_RETCODE_PLACED||code==TRADE_RETCODE_DONE_PARTIAL;}
+   bool ModifyRetcodeAccepted(const uint code){return code==TRADE_RETCODE_DONE||code==TRADE_RETCODE_NO_CHANGES||(m_async&&code==TRADE_RETCODE_PLACED);}
+   bool CloseRetcodeAccepted(const uint code){return code==TRADE_RETCODE_DONE||code==TRADE_RETCODE_DONE_PARTIAL||(m_async&&code==TRADE_RETCODE_PLACED);}
+   bool DeleteRetcodeAccepted(const uint code){return code==TRADE_RETCODE_DONE||(m_async&&code==TRADE_RETCODE_PLACED);}
+   bool OpenDefinitelyRejected(const uint code){return code==TRADE_RETCODE_REJECT||code==TRADE_RETCODE_INVALID||code==TRADE_RETCODE_INVALID_VOLUME||code==TRADE_RETCODE_INVALID_PRICE||code==TRADE_RETCODE_INVALID_STOPS||code==TRADE_RETCODE_TRADE_DISABLED||code==TRADE_RETCODE_MARKET_CLOSED||code==TRADE_RETCODE_NO_MONEY||code==TRADE_RETCODE_INVALID_FILL||code==TRADE_RETCODE_INVALID_ORDER;}
 public:
-   void Configure(const long magic,const string symbol,const ENUM_TIMEFRAMES tf,const double max_spread,const bool async_mode){m_magic=magic;m_last_bars=Bars(symbol,tf);m_spread.Configure(symbol,max_spread);m_trade.SetExpertMagicNumber((ulong)magic);m_trade.SetAsyncMode(async_mode);m_intents.Configure(magic,symbol,InpIntentUnknownTimeoutSeconds,InpIntentHistoryLookbackSeconds);}
+   void Configure(const long magic,const string symbol,const ENUM_TIMEFRAMES tf,const double max_spread,const bool async_mode){m_magic=magic;m_last_bars=Bars(symbol,tf);m_async=async_mode;m_spread.Configure(symbol,max_spread);m_trade.SetExpertMagicNumber((ulong)magic);m_trade.SetAsyncMode(async_mode);m_intents.Configure(magic,symbol,InpIntentUnknownTimeoutSeconds,InpIntentHistoryLookbackSeconds);}
    void Reconcile(){if(VCK_RECONCILE_BEFORE_RETRY)m_intents.Reconcile();}
-   void ObserveDeal(const ulong deal){if(deal>0&&HistoryDealSelect(deal)){string c=HistoryDealGetString(deal,DEAL_COMMENT);if(StringLen(c)>0)m_intents.ObserveComment(c);}}
-   void OnTransaction(const MqlTradeTransaction &trans,const MqlTradeRequest &request,const MqlTradeResult &result){if(trans.order>0&&OrderSelect(trans.order)){string c=OrderGetString(ORDER_COMMENT);if(StringLen(c)>0)m_intents.ObserveComment(c);}if(trans.deal>0)ObserveDeal(trans.deal);}
+   bool TransactionRetcodeAccepted(const ENUM_TRADE_REQUEST_ACTIONS action,const uint code){if(action==TRADE_ACTION_SLTP||action==TRADE_ACTION_MODIFY)return ModifyRetcodeAccepted(code);if(action==TRADE_ACTION_REMOVE)return DeleteRetcodeAccepted(code);if(action==TRADE_ACTION_CLOSE_BY)return CloseRetcodeAccepted(code);return OpenRetcodeAccepted(code);}
+   void ObserveDealDiagnostic(const ulong deal){if(deal>0&&HistoryDealSelect(deal)){string comment=HistoryDealGetString(deal,DEAL_COMMENT);if(StringLen(comment)>0)m_intents.ObserveDiagnosticComment(comment);}}
+   void OnTransaction(const MqlTradeTransaction &trans,const MqlTradeRequest &request,const MqlTradeResult &result){m_intents.OnTransaction(trans,result);if(trans.order>0&&OrderSelect(trans.order)){string comment=OrderGetString(ORDER_COMMENT);if(StringLen(comment)>0)m_intents.ObserveDiagnosticComment(comment);}if(trans.deal>0)ObserveDealDiagnostic(trans.deal);}
    double NormalizeVolume(const string symbol,const double requested,const double maximum){double step=SymbolInfoDouble(symbol,SYMBOL_VOLUME_STEP),lo=SymbolInfoDouble(symbol,SYMBOL_VOLUME_MIN),hi=SymbolInfoDouble(symbol,SYMBOL_VOLUME_MAX);if(step<=0)step=0.01;if(lo<=0)lo=step;if(hi<=0)hi=maximum;hi=MathMin(hi,maximum);if(hi<lo||requested<lo)return 0;double v=MathMin(requested,hi);return NormalizeDouble(MathFloor(v/step+1e-8)*step,8);}
    bool MarginAvailable(const ENUM_ORDER_TYPE type,const string symbol,const double volume){MqlTick t;if(!SymbolInfoTick(symbol,t))return false;double m=0,p=type==ORDER_TYPE_BUY?t.ask:t.bid;return OrderCalcMargin(type,symbol,volume,p,m)&&m<=AccountInfoDouble(ACCOUNT_MARGIN_FREE);}
-   bool Open(const int direction,const string symbol,const double requested,const double maximum,const double sl_requested,const double tp_requested,const string comment,const int source){long bars=Bars(symbol,PERIOD_CURRENT);if(bars<=0||!m_spread.Allowed())return false;m_last_bars=bars;ENUM_ORDER_TYPE type=direction>0?ORDER_TYPE_BUY:ORDER_TYPE_SELL;double v=NormalizeVolume(symbol,requested,maximum);if(v<=0||!MarginAvailable(type,symbol,v))return false;MqlTick tick;if(!SymbolInfoTick(symbol,tick))return false;double price=direction>0?tick.ask:tick.bid,point=SymbolInfoDouble(symbol,SYMBOL_POINT),sl=sl_requested,tp=tp_requested;int digits=(int)SymbolInfoInteger(symbol,SYMBOL_DIGITS),stops=(int)SymbolInfoInteger(symbol,SYMBOL_TRADE_STOPS_LEVEL);double min_dist=MathMax(0,stops)*point;if(sl>0&&MathAbs(price-sl)<min_dist)sl=NormalizeDouble(price-direction*min_dist,digits);if(tp>0&&MathAbs(tp-price)<min_dist)tp=NormalizeDouble(price+direction*min_dist,digits);string wire_comment=comment;if(VCK_RECONCILE_BEFORE_RETRY&&!m_intents.Prepare(source,direction,comment,wire_comment))return false;m_trade.SetExpertMagicNumber((ulong)m_magic);m_trade.SetTypeFillingBySymbol(symbol);bool ok=direction>0?m_trade.Buy(v,symbol,0,sl,tp,wire_comment):m_trade.Sell(v,symbol,0,sl,tp,wire_comment);if(!ok){if(DefinitelyRejected())m_intents.MarkRejected(source,direction);return false;}if(GoodRetcode()){m_intents.MarkAcknowledged(source,direction);return true;}return false;}
-   bool Modify(const ulong ticket,const double sl,const double tp){return m_trade.PositionModify(ticket,sl,tp)&&GoodRetcode();}
-   bool Close(const ulong ticket){return m_trade.PositionClose(ticket)&&GoodRetcode();}
-   bool ClosePartial(const ulong ticket,const double volume){return m_trade.PositionClosePartial(ticket,volume)&&GoodRetcode();}
-   bool DeleteOrder(const ulong ticket){return m_trade.OrderDelete(ticket)&&GoodRetcode();}
+   bool Open(const int direction,const string symbol,const double requested,const double maximum,const double sl_requested,const double tp_requested,const string comment,const int source){long bars=Bars(symbol,PERIOD_CURRENT);if(bars<=0||!m_spread.Allowed())return false;m_last_bars=bars;ENUM_ORDER_TYPE type=direction>0?ORDER_TYPE_BUY:ORDER_TYPE_SELL;double volume=NormalizeVolume(symbol,requested,maximum);if(volume<=0||!MarginAvailable(type,symbol,volume))return false;MqlTick tick;if(!SymbolInfoTick(symbol,tick))return false;double price=direction>0?tick.ask:tick.bid,point=SymbolInfoDouble(symbol,SYMBOL_POINT),sl=sl_requested,tp=tp_requested;int digits=(int)SymbolInfoInteger(symbol,SYMBOL_DIGITS),stops=(int)SymbolInfoInteger(symbol,SYMBOL_TRADE_STOPS_LEVEL);double min_dist=MathMax(0,stops)*point;if(sl>0&&MathAbs(price-sl)<min_dist)sl=NormalizeDouble(price-direction*min_dist,digits);if(tp>0&&MathAbs(tp-price)<min_dist)tp=NormalizeDouble(price+direction*min_dist,digits);bool tracked=VCK_RECONCILE_BEFORE_RETRY;string wire_comment=comment;if(tracked&&!m_intents.Prepare(source,direction,comment,wire_comment))return false;m_trade.SetExpertMagicNumber((ulong)m_magic);m_trade.SetTypeFillingBySymbol(symbol);bool submitted=direction>0?m_trade.Buy(volume,symbol,0,sl,tp,wire_comment):m_trade.Sell(volume,symbol,0,sl,tp,wire_comment);MqlTradeResult submit_result;ZeroMemory(submit_result);m_trade.Result(submit_result);if(!submitted){if(tracked){if(OpenDefinitelyRejected(submit_result.retcode))m_intents.MarkRejected(source,direction);else m_intents.MarkUnknown(source,direction,submit_result);}return false;}if(OpenRetcodeAccepted(submit_result.retcode)){if(tracked)m_intents.MarkSubmitted(source,direction,submit_result,volume);return true;}if(tracked)m_intents.MarkUnknown(source,direction,submit_result);return false;}
+   bool Modify(const ulong ticket,const double sl,const double tp){if(!m_trade.PositionModify(ticket,sl,tp))return false;return ModifyRetcodeAccepted(m_trade.ResultRetcode());}
+   bool Close(const ulong ticket){if(!m_trade.PositionClose(ticket))return false;return CloseRetcodeAccepted(m_trade.ResultRetcode());}
+   bool ClosePartial(const ulong ticket,const double volume){if(!m_trade.PositionClosePartial(ticket,volume))return false;return CloseRetcodeAccepted(m_trade.ResultRetcode());}
+   bool DeleteOrder(const ulong ticket){if(!m_trade.OrderDelete(ticket))return false;return DeleteRetcodeAccepted(m_trade.ResultRetcode());}
   };
 '''
 
@@ -805,6 +825,7 @@ CAsyncTradeExecutor Trade; CTradeEventReducer EventReducer; CRemoteCommandLedger
 VCKLifecycleState g_state=VCK_IDLE; int g_zone_phase=VCK_ZONE_IDLE; string g_symbol=""; double g_pip=0; bool g_ea_enabled=true,g_new_cycle=true,g_stop_buy=false,g_stop_sell=false,g_hedge_zone=false,g_daily_history_ready=true; datetime g_last_entry=0,g_last_balance=0,g_last_clear=0,g_last_dca_bar=0,g_cooldown_until=0; double g_lottery_factor=1,g_buy_reset_lot=0,g_sell_reset_lot=0,g_zone_low=0,g_zone_high=0,g_day_start_balance=0,g_persisted_peak=0; int g_daily_halt_day=0,g_balance_day=0,g_zone_cycle_id=0,g_history_sync_confirmations=0; ulong g_zone_anchor_position_id=0;
 const string VCKP_PREFIX="VCKP_"; bool g_close_armed=false; datetime g_close_armed_at=0;
 void PersistState(){StateStore.Save(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.SaveExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,GridRisk.Peak(),g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);}
+void PersistStateCritical(){PersistState();GlobalVariablesFlush();}
 
 double PipSize(){int d=(int)SymbolInfoInteger(g_symbol,SYMBOL_DIGITS);double p=SymbolInfoDouble(g_symbol,SYMBOL_POINT);return(d==3||d==5)?p*10:p;}
 datetime ClockNow(const VCKTimeBasis basis){if(basis==VCK_TIME_LOCAL)return TimeLocal();if(basis==VCK_TIME_UTC)return TimeGMT();if(basis==VCK_TIME_FIXED_OFFSET)return TimeGMT()+VCK_UTC_OFFSET_MINUTES*60;return TimeCurrent();}
@@ -842,10 +863,10 @@ bool CloseSide(const ENUM_POSITION_TYPE side){bool acted=false;for(int i=Positio
 
 double AdaptiveBasketPips(const VCKSideStats &s){if((g_buy_reset_lot>0||g_sell_reset_lot>0)&&InpResetBasketTPPips>0)return InpResetBasketTPPips;if(!VCK_USE_ADAPTIVE_TP||InpAdaptiveBasketTPPips<=0)return InpBasketTPPips;double bal=AccountInfoDouble(ACCOUNT_BALANCE),pct=bal>0?s.profit/bal*100:0;if((InpAdaptiveTPLossPct<0&&pct<=InpAdaptiveTPLossPct)||(InpAdaptiveTPLossMoney<0&&s.profit<=InpAdaptiveTPLossMoney))return InpAdaptiveBasketTPPips;return InpBasketTPPips;}
 bool RefreshDailySnapshot(double &trading,double &cashflow,double &baseline){bool ok=ComputeDaySnapshot(InpMagic,trading,cashflow,baseline);g_history_sync_confirmations=ok?MathMin(g_history_sync_confirmations+1,2):0;g_daily_history_ready=ok&&(!VCK_HISTORY_SYNC_REQUIRED||g_history_sync_confirmations>=2);return g_daily_history_ready||!VCK_HISTORY_SYNC_REQUIRED;}
-void UpdateTradingDay(const int key,const double baseline){if(g_balance_day!=key){g_balance_day=key;g_day_start_balance=g_daily_history_ready?baseline:AccountInfoDouble(ACCOUNT_BALANCE);if(g_daily_halt_day!=key)g_daily_halt_day=0;PersistState();return;}if(g_daily_history_ready&&baseline>0)g_day_start_balance=baseline;}
+void UpdateTradingDay(const int key,const double baseline){if(g_balance_day!=key){g_balance_day=key;g_day_start_balance=g_daily_history_ready?baseline:AccountInfoDouble(ACCOUNT_BALANCE);if(g_daily_halt_day!=key)g_daily_halt_day=0;PersistStateCritical();return;}if(g_daily_history_ready&&baseline>0)g_day_start_balance=baseline;}
 bool NewDayDelayActive(){if(g_daily_halt_day==0||InpNewDayDelayMinutes<=0)return false;return ClockNow(VCK_DAILY_TIME_BASIS)-TradingDayStart()<InpNewDayDelayMinutes*60;}
 bool DailyThresholdHit(const double total,const double balance){if(InpDailyTargetMoney>0&&total>=InpDailyTargetMoney)return true;if(InpDailyLossMoney<0&&total<=InpDailyLossMoney)return true;if(InpDailyTargetPct>0&&balance>0&&total/balance*100>=InpDailyTargetPct)return true;if(InpDailyLossPct>0&&balance>0&&total/balance*100<=-InpDailyLossPct)return true;return false;}
-bool DailyAllowed(){int key=CurrentTradingDayKey();double trading=0,cashflow=0,baseline=0;if(!RefreshDailySnapshot(trading,cashflow,baseline))return false;UpdateTradingDay(key,baseline);if(g_daily_halt_day==key||NewDayDelayActive())return false;double closed=trading+(VCK_EXCLUDE_CASHFLOWS?0:cashflow),total=closed+Book.Floating(g_symbol,InpMagic),balance=g_day_start_balance>0?g_day_start_balance:baseline;if(!DailyThresholdHit(total,balance))return true;g_daily_halt_day=key;PersistState();return false;}
+bool DailyAllowed(){int key=CurrentTradingDayKey();double trading=0,cashflow=0,baseline=0;if(!RefreshDailySnapshot(trading,cashflow,baseline))return false;UpdateTradingDay(key,baseline);if(g_daily_halt_day==key||NewDayDelayActive())return false;double closed=trading+(VCK_EXCLUDE_CASHFLOWS?0:cashflow),total=closed+Book.Floating(g_symbol,InpMagic),balance=g_day_start_balance>0?g_day_start_balance:baseline;if(!DailyThresholdHit(total,balance))return true;g_daily_halt_day=key;PersistStateCritical();return false;}
 bool ManageAccountMoneyExit(){if(!VCK_USE_ACCOUNT_MONEY_EXIT||!InpAllowAccountWideClose||!VCK_ACCOUNT_WIDE_APPROVED)return false;double profit=AccountFloating();if(!Basket.MoneyHit(profit,InpAccountTPMoney,InpAccountSLMoney))return false;Log.Event("ACCOUNT_EXIT","money threshold",profit);CloseAccountPositions();return true;}
 bool ManageManagedMoneyExit(const double managed){if(!VCK_USE_MONEY_EXIT||!Basket.MoneyHit(managed,InpBasketTargetMoney,InpBasketStopMoney))return false;Log.Event("BASKET_EXIT","managed money threshold",managed);CloseMagicPositions();return true;}
 bool ManageSideMoneyExits(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_SIDE_MONEY_EXIT)return false;bool acted=false;if(Basket.MoneyHit(buy.profit,InpBuyTPMoney,InpBuySLMoney))acted=CloseSide(POSITION_TYPE_BUY)||acted;if(Basket.MoneyHit(sell.profit,InpSellTPMoney,InpSellSLMoney))acted=CloseSide(POSITION_TYPE_SELL)||acted;return acted;}
@@ -864,9 +885,9 @@ bool ManageLotBalance(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_
 bool ManagedPositionExists(const ulong ticket){return ticket>0&&PositionSelectByTicket(ticket)&&PositionGetString(POSITION_SYMBOL)==g_symbol&&(long)PositionGetInteger(POSITION_MAGIC)==InpMagic;}
 bool ManagedPositionIdentifierExists(const ulong position_id){for(int i=0;i<PositionsTotal();i++){ulong t=PositionGetTicket(i);if(t==0||!PositionSelectByTicket(t))continue;if(PositionGetString(POSITION_SYMBOL)==g_symbol&&(long)PositionGetInteger(POSITION_MAGIC)==InpMagic&&(ulong)PositionGetInteger(POSITION_IDENTIFIER)==position_id)return true;}return false;}
 bool PositionRealizedSummary(const ulong position_id,double &realized,ENUM_DEAL_REASON &reason){realized=0;reason=DEAL_REASON_CLIENT;datetime from=TimeCurrent()-InpIntentHistoryLookbackSeconds;if(!HistorySelect(from,TimeCurrent()))return false;bool found=false;for(int i=0;i<HistoryDealsTotal();i++){ulong d=HistoryDealGetTicket(i);if(d==0||(ulong)HistoryDealGetInteger(d,DEAL_POSITION_ID)!=position_id)continue;ENUM_DEAL_ENTRY entry=(ENUM_DEAL_ENTRY)HistoryDealGetInteger(d,DEAL_ENTRY);if(entry!=DEAL_ENTRY_OUT&&entry!=DEAL_ENTRY_OUT_BY)continue;realized+=HistoryDealGetDouble(d,DEAL_PROFIT)+HistoryDealGetDouble(d,DEAL_SWAP)+HistoryDealGetDouble(d,DEAL_COMMISSION);reason=(ENUM_DEAL_REASON)HistoryDealGetInteger(d,DEAL_REASON);found=true;}return found;}
-void ResetHedgeZoneState(const string reason){if(g_hedge_zone||g_zone_phase!=VCK_ZONE_IDLE)Log.Event("HEDGE_ZONE_RESET",reason);g_hedge_zone=false;g_zone_phase=VCK_ZONE_IDLE;g_zone_low=0;g_zone_high=0;g_zone_anchor_position_id=0;PersistState();}
-void ReconcileHedgeZoneState(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_HEDGE_ZONE){if(g_hedge_zone)ResetHedgeZoneState("feature disabled");return;}int total=buy.count+sell.count;if(total==0){if(g_hedge_zone||g_zone_phase!=VCK_ZONE_IDLE)ResetHedgeZoneState("no managed positions");return;}if(!g_hedge_zone){if(g_zone_phase!=VCK_ZONE_IDLE)ResetHedgeZoneState("inactive flag mismatch");return;}if(g_zone_phase==VCK_ZONE_EXITING)return;bool invalid_bounds=g_zone_low<=0||g_zone_high<=g_zone_low;bool missing_anchor=g_zone_anchor_position_id>0&&!ManagedPositionIdentifierExists(g_zone_anchor_position_id);if(invalid_bounds||missing_anchor){g_zone_phase=VCK_ZONE_RECONCILING;double anchor=buy.count>=sell.count?buy.average_price:sell.average_price;g_zone_anchor_position_id=buy.count>=sell.count?buy.oldest_identifier:sell.oldest_identifier;g_zone_low=anchor-InpHedgeZoneDistancePips*g_pip;g_zone_high=anchor+InpHedgeZoneDistancePips*g_pip;g_zone_phase=VCK_ZONE_ACTIVE;Log.Event("HEDGE_ZONE_RECONCILE",missing_anchor?"anchor changed":"bounds rebuilt");PersistState();}}
-bool ManageHedgeZone(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_HEDGE_ZONE)return false;int total=buy.count+sell.count;if(!g_hedge_zone&&MathMax(buy.count,sell.count)>=InpHedgeZoneTriggerPositions){g_hedge_zone=true;g_zone_phase=VCK_ZONE_ACTIVE;g_zone_cycle_id++;g_state=VCK_HEDGE_ZONE_ACTIVE;double anchor=buy.count>=sell.count?buy.average_price:sell.average_price;g_zone_anchor_position_id=buy.count>=sell.count?buy.oldest_identifier:sell.oldest_identifier;g_zone_low=anchor-InpHedgeZoneDistancePips*g_pip;g_zone_high=anchor+InpHedgeZoneDistancePips*g_pip;PersistState();}if(!g_hedge_zone||g_zone_phase==VCK_ZONE_EXITING)return false;double target=(InpHedgeZoneNewTargetCount>0&&total>=InpHedgeZoneNewTargetCount)?InpHedgeZoneNewTargetMoney:InpHedgeZoneTargetMoney;double pip_value=0,tick_value=SymbolInfoDouble(g_symbol,SYMBOL_TRADE_TICK_VALUE),tick_size=SymbolInfoDouble(g_symbol,SYMBOL_TRADE_TICK_SIZE);if(tick_size>0)pip_value=tick_value*g_pip/tick_size;double pip_money=MathAbs(buy.lots-sell.lots)*InpHedgeZoneTargetPips*pip_value;if((target>0&&buy.profit+sell.profit>=target)||(target<=0&&InpHedgeZoneTargetPips>0&&buy.profit+sell.profit>=pip_money)){g_zone_phase=VCK_ZONE_EXITING;PersistState();return CloseMagicPositions();}if(!EntryDelayPassed())return false;MqlTick t;if(!SymbolInfoTick(g_symbol,t))return false;double lot=Trade.NormalizeVolume(g_symbol,MathMax(buy.lots,sell.lots)*InpHedgeZoneLotMultiplier,InpHedgeZoneMaxLot);if(lot<=0)return false;if(t.ask>=g_zone_high&&buy.lots<=sell.lots)return OpenLeg(1,lot,"VCK-HZ-BUY",VCK_SRC_HEDGE_ZONE);if(t.bid<=g_zone_low&&sell.lots<=buy.lots)return OpenLeg(-1,lot,"VCK-HZ-SELL",VCK_SRC_HEDGE_ZONE);return false;}
+void ResetHedgeZoneState(const string reason){if(g_hedge_zone||g_zone_phase!=VCK_ZONE_IDLE)Log.Event("HEDGE_ZONE_RESET",reason);g_hedge_zone=false;g_zone_phase=VCK_ZONE_IDLE;g_zone_low=0;g_zone_high=0;g_zone_anchor_position_id=0;PersistStateCritical();}
+void ReconcileHedgeZoneState(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_HEDGE_ZONE){if(g_hedge_zone)ResetHedgeZoneState("feature disabled");return;}int total=buy.count+sell.count;if(total==0){if(g_hedge_zone||g_zone_phase!=VCK_ZONE_IDLE)ResetHedgeZoneState("no managed positions");return;}if(!g_hedge_zone){if(g_zone_phase!=VCK_ZONE_IDLE)ResetHedgeZoneState("inactive flag mismatch");return;}if(g_zone_phase==VCK_ZONE_EXITING)return;bool invalid_bounds=g_zone_low<=0||g_zone_high<=g_zone_low;bool missing_anchor=g_zone_anchor_position_id>0&&!ManagedPositionIdentifierExists(g_zone_anchor_position_id);if(invalid_bounds||missing_anchor){g_zone_phase=VCK_ZONE_RECONCILING;double anchor=buy.count>=sell.count?buy.average_price:sell.average_price;g_zone_anchor_position_id=buy.count>=sell.count?buy.oldest_identifier:sell.oldest_identifier;g_zone_low=anchor-InpHedgeZoneDistancePips*g_pip;g_zone_high=anchor+InpHedgeZoneDistancePips*g_pip;g_zone_phase=VCK_ZONE_ACTIVE;Log.Event("HEDGE_ZONE_RECONCILE",missing_anchor?"anchor changed":"bounds rebuilt");PersistStateCritical();}}
+bool ManageHedgeZone(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_HEDGE_ZONE)return false;int total=buy.count+sell.count;if(!g_hedge_zone&&MathMax(buy.count,sell.count)>=InpHedgeZoneTriggerPositions){g_hedge_zone=true;g_zone_phase=VCK_ZONE_ACTIVE;g_zone_cycle_id++;g_state=VCK_HEDGE_ZONE_ACTIVE;double anchor=buy.count>=sell.count?buy.average_price:sell.average_price;g_zone_anchor_position_id=buy.count>=sell.count?buy.oldest_identifier:sell.oldest_identifier;g_zone_low=anchor-InpHedgeZoneDistancePips*g_pip;g_zone_high=anchor+InpHedgeZoneDistancePips*g_pip;PersistStateCritical();}if(!g_hedge_zone||g_zone_phase==VCK_ZONE_EXITING)return false;double target=(InpHedgeZoneNewTargetCount>0&&total>=InpHedgeZoneNewTargetCount)?InpHedgeZoneNewTargetMoney:InpHedgeZoneTargetMoney;double pip_value=0,tick_value=SymbolInfoDouble(g_symbol,SYMBOL_TRADE_TICK_VALUE),tick_size=SymbolInfoDouble(g_symbol,SYMBOL_TRADE_TICK_SIZE);if(tick_size>0)pip_value=tick_value*g_pip/tick_size;double pip_money=MathAbs(buy.lots-sell.lots)*InpHedgeZoneTargetPips*pip_value;if((target>0&&buy.profit+sell.profit>=target)||(target<=0&&InpHedgeZoneTargetPips>0&&buy.profit+sell.profit>=pip_money)){g_zone_phase=VCK_ZONE_EXITING;PersistStateCritical();return CloseMagicPositions();}if(!EntryDelayPassed())return false;MqlTick t;if(!SymbolInfoTick(g_symbol,t))return false;double lot=Trade.NormalizeVolume(g_symbol,MathMax(buy.lots,sell.lots)*InpHedgeZoneLotMultiplier,InpHedgeZoneMaxLot);if(lot<=0)return false;if(t.ask>=g_zone_high&&buy.lots<=sell.lots)return OpenLeg(1,lot,"VCK-HZ-BUY",VCK_SRC_HEDGE_ZONE);if(t.bid<=g_zone_low&&sell.lots<=buy.lots)return OpenLeg(-1,lot,"VCK-HZ-SELL",VCK_SRC_HEDGE_ZONE);return false;}
 bool DCACondition(const int direction,const VCKSideStats &side,const MqlTick &tick){if(side.count<=0||side.newest_price<=0)return false;VCKDCAMode mode=ActiveDCAMode(side.count);double distance=RequiredDistance(side.count);double current=direction>0?tick.ask:tick.bid;bool adverse=direction>0?(side.newest_price-current>=distance):(current-side.newest_price>=distance);bool favorable=direction>0?(current-side.newest_price>=distance):(side.newest_price-current>=distance);switch(mode){case VCK_DCA_STEP:case VCK_DCA_STEP_MULTIPLIER:return adverse;case VCK_DCA_STEP_TIMEFRAME:return adverse&&NewBar(g_last_dca_bar);case VCK_DCA_SIGNAL:return adverse&&Entry.Direction()==direction;case VCK_DCA_POSITIVE:return favorable;case VCK_DCA_BIDIRECTIONAL:return adverse||favorable;case VCK_DCA_SIGNAL_BIDIRECTIONAL:return(adverse||favorable)&&Entry.Direction()==direction;case VCK_DCA_CLOSED_BAR:return adverse&&NewBar(g_last_dca_bar);default:return false;}}
 bool ManageDCA(const VCKSideStats &buy,const VCKSideStats &sell){if(!VCK_USE_DCA||!EntryDelayPassed()||g_hedge_zone)return false;if(!SessionAllowed()&&!InpDCAOutsideSession)return false;MqlTick t;if(!SymbolInfoTick(g_symbol,t))return false;if(buy.count>0&&buy.count<InpMaxBuyPositions&&GridRisk.LevelAllowed(buy.count,InpMaxLevelsBuy)&&DCACondition(1,buy,t)&&(!g_stop_buy)&&((buy.count<InpTrendFilterAfterPositions)||Entry.FiltersAllow(1))&&OpenLeg(1,NextLot(1,buy.count),"VCK-DCA-BUY",VCK_SRC_DCA))return true;if(sell.count>0&&sell.count<InpMaxSellPositions&&GridRisk.LevelAllowed(sell.count,InpMaxLevelsSell)&&DCACondition(-1,sell,t)&&(!g_stop_sell)&&((sell.count<InpTrendFilterAfterPositions)||Entry.FiltersAllow(-1))&&OpenLeg(-1,NextLot(-1,sell.count),"VCK-DCA-SELL",VCK_SRC_DCA))return true;return false;}
 bool ManageInitialEntry(const VCKSideStats &buy,const VCKSideStats &sell){if(!g_new_cycle||!SessionAllowed()||!EntryDelayPassed()||buy.count+sell.count>0||TimeCurrent()<g_cooldown_until)return false;int d=Entry.Direction();if(d==0||!Entry.FiltersAllow(d)||(d>0&&g_stop_buy)||(d<0&&g_stop_sell))return false;if(OpenLeg(d,NextLot(d,0),"VCK-ENTRY",VCK_SRC_ENTRY)){g_state=VCK_ACTIVE_CYCLE;return true;}return false;}
@@ -875,12 +896,12 @@ void ManageZoneCycle(){if(!VCK_USE_ZONE_CYCLE||InpZoneCycleUpper<=InpZoneCycleLo
 __REMOTE_COMMAND_HANDLER__
 void CreateButton(const string key,const string text,const int y){string n=VCKP_PREFIX+key;if(ObjectFind(0,n)>=0)return;if(!ObjectCreate(0,n,OBJ_BUTTON,0,0,0))return;ObjectSetInteger(0,n,OBJPROP_CORNER,CORNER_LEFT_UPPER);ObjectSetInteger(0,n,OBJPROP_XDISTANCE,10);ObjectSetInteger(0,n,OBJPROP_YDISTANCE,y);ObjectSetInteger(0,n,OBJPROP_XSIZE,145);ObjectSetInteger(0,n,OBJPROP_YSIZE,22);ObjectSetString(0,n,OBJPROP_TEXT,text);}
 void CreatePanel(){if(!VCK_USE_PANEL)return;CreateButton("NEW","Toggle New Cycle",20);CreateButton("CLOSE_BUY","Close Buy",46);CreateButton("CLOSE_SELL","Close Sell",72);CreateButton("CLOSE_ALL","Close All (2-step)",98);CreateButton("STOP_BUY","Toggle Buy",124);CreateButton("STOP_SELL","Toggle Sell",150);if(VCK_USE_RESET_LOTS){CreateButton("RESET_BUY","Reset Lots Buy",176);CreateButton("RESET_SELL","Reset Lots Sell",202);}}
-void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &s){if(id!=CHARTEVENT_OBJECT_CLICK)return;if(s==VCKP_PREFIX+"NEW")g_new_cycle=!g_new_cycle;else if(s==VCKP_PREFIX+"CLOSE_BUY")CloseSide(POSITION_TYPE_BUY);else if(s==VCKP_PREFIX+"CLOSE_SELL")CloseSide(POSITION_TYPE_SELL);else if(s==VCKP_PREFIX+"STOP_BUY")g_stop_buy=!g_stop_buy;else if(s==VCKP_PREFIX+"STOP_SELL")g_stop_sell=!g_stop_sell;else if(s==VCKP_PREFIX+"RESET_BUY")g_buy_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"RESET_SELL")g_sell_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"CLOSE_ALL"){datetime n=TimeCurrent();if(!g_close_armed||n-g_close_armed_at>5){g_close_armed=true;g_close_armed_at=n;ObjectSetString(0,s,OBJPROP_TEXT,"Confirm Close All");return;}g_close_armed=false;ObjectSetString(0,s,OBJPROP_TEXT,"Close All (2-step)");CloseMagicPositions();}PersistState();}
+void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &s){if(id!=CHARTEVENT_OBJECT_CLICK)return;if(s==VCKP_PREFIX+"NEW")g_new_cycle=!g_new_cycle;else if(s==VCKP_PREFIX+"CLOSE_BUY")CloseSide(POSITION_TYPE_BUY);else if(s==VCKP_PREFIX+"CLOSE_SELL")CloseSide(POSITION_TYPE_SELL);else if(s==VCKP_PREFIX+"STOP_BUY")g_stop_buy=!g_stop_buy;else if(s==VCKP_PREFIX+"STOP_SELL")g_stop_sell=!g_stop_sell;else if(s==VCKP_PREFIX+"RESET_BUY")g_buy_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"RESET_SELL")g_sell_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"CLOSE_ALL"){datetime n=TimeCurrent();if(!g_close_armed||n-g_close_armed_at>5){g_close_armed=true;g_close_armed_at=n;ObjectSetString(0,s,OBJPROP_TEXT,"Confirm Close All");return;}g_close_armed=false;ObjectSetString(0,s,OBJPROP_TEXT,"Close All (2-step)");CloseMagicPositions();}PersistStateCritical();}
 
 __INPUT_VALIDATOR__
 
 int OnInit(){if(!ValidateOperationalInputs())return INIT_PARAMETERS_INCORRECT;g_symbol=StringLen(InpTradeSymbol)>0?InpTradeSymbol:_Symbol;if(!SymbolSelect(g_symbol,true))return INIT_FAILED;if((VCK_USE_DCA||VCK_USE_HEDGE||VCK_USE_HEDGE_ZONE||VCK_USE_REVERSE_ENTRY||VCK_USE_LOT_BALANCE)&&(ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING){Print("Composition requires MT5 hedging account");return INIT_FAILED;}g_pip=PipSize();if(g_pip<=0||!Entry.Init(g_symbol,InpSignalTimeframe))return INIT_FAILED;MathSrand((int)GetTickCount());Trade.Configure(InpMagic,g_symbol,InpSignalTimeframe,InpMaxSpreadPips,InpAsyncExecution);EventReducer.Configure(InpMagic,g_symbol);CommandLedger.Configure(InpMagic,g_symbol);StateStore.Configure(InpMagic,g_symbol);StateStore.Load(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.LoadExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,g_persisted_peak,g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);GridRisk.Init(g_persisted_peak);Log.Configure("__NAME__");MfeMae.Configure("__NAME__");Trade.Reconcile();VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);CreatePanel();Log.Event("INIT","EA initialized");return INIT_SUCCEEDED;}
-void OnDeinit(const int reason){PersistState();Log.Event("DEINIT",IntegerToString(reason));Entry.Release();ObjectsDeleteAll(0,VCKP_PREFIX);}
+void OnDeinit(const int reason){PersistStateCritical();Log.Event("DEINIT",IntegerToString(reason));Entry.Release();ObjectsDeleteAll(0,VCKP_PREFIX);}
 bool TickAdmissionGate()
   {
    if(ProcessRemoteCommands()) return false;
@@ -897,7 +918,7 @@ bool RiskMutationGate(const VCKSideStats &buy,const VCKSideStats &sell)
       Log.Event("MAX_DD_STOP","hard drawdown stop",GridRisk.DD());
       CloseMagicPositions();
       g_ea_enabled=false;
-      PersistState();
+      PersistStateCritical();
       return true;
      }
    if(!DailyAllowed())
@@ -912,7 +933,7 @@ bool RiskMutationGate(const VCKSideStats &buy,const VCKSideStats &sell)
       Log.Event("LOTTERY_RESET","loss reset",buy.profit+sell.profit);
       CloseMagicPositions();
       g_lottery_factor=1.0;
-      PersistState();
+      PersistStateCritical();
       return true;
      }
    return false;
@@ -956,15 +977,15 @@ void FinalizeCycleState(const VCKSideStats &buy,const VCKSideStats &sell)
    if(buy.count+sell.count!=0 || g_state!=VCK_CLOSING) return;
    g_state=VCK_COOLDOWN;
    g_cooldown_until=TimeCurrent()+InpMinutesDelayAfterClear*60;
-   PersistState();
+   PersistStateCritical();
   }
 
-void ApplyTradeDeal(const ulong deal)
+bool ApplyTradeDeal(const ulong deal)
   {
-   if(deal==0||!HistoryDealSelect(deal)||!EventReducer.MarkDealProcessed(deal)) return;
-   Trade.ObserveDeal(deal);
+   if(deal==0||!HistoryDealSelect(deal)||!EventReducer.MarkDealProcessed(deal)) return false;
+   Trade.ObserveDealDiagnostic(deal);
    ENUM_DEAL_ENTRY entry=(ENUM_DEAL_ENTRY)HistoryDealGetInteger(deal,DEAL_ENTRY);
-   if(entry!=DEAL_ENTRY_OUT&&entry!=DEAL_ENTRY_OUT_BY) return;
+   if(entry!=DEAL_ENTRY_OUT&&entry!=DEAL_ENTRY_OUT_BY) return false;
    ulong position_id=(ulong)HistoryDealGetInteger(deal,DEAL_POSITION_ID);
    double deal_realized=HistoryDealGetDouble(deal,DEAL_PROFIT)+HistoryDealGetDouble(deal,DEAL_SWAP)+HistoryDealGetDouble(deal,DEAL_COMMISSION);
    ENUM_DEAL_REASON reason=(ENUM_DEAL_REASON)HistoryDealGetInteger(deal,DEAL_REASON);
@@ -975,17 +996,22 @@ void ApplyTradeDeal(const ulong deal)
       if(VCK_USE_LOTTERY&&final_reason==DEAL_REASON_SL){g_lottery_factor*=InpLotterySLMultiplier;g_cooldown_until=TimeCurrent()+InpLotteryDelayMinutes*60;}
       else if(final_reason==DEAL_REASON_TP)g_lottery_factor=1.0;
       Log.Event("POSITION_CLOSED",EnumToString(final_reason),position_realized);
+      return true;
      }
    else Log.Event("DEAL_OUT_PARTIAL",EnumToString(reason),deal_realized);
+   return false;
   }
-void ProcessPendingTradeEvents()
+bool ProcessPendingTradeEvents()
   {
-   if(EventReducer.Overflowed()){g_ea_enabled=false;Log.Event("EVENT_QUEUE_OVERFLOW","manual reconciliation required");return;}
-   for(int i=0;i<EventReducer.Slots();i++){ulong deal=EventReducer.PendingDeal(i);if(deal>0)ApplyTradeDeal(deal);}
+   if(EventReducer.Overflowed()){g_ea_enabled=false;Log.Event("EVENT_QUEUE_OVERFLOW","manual reconciliation required");return true;}
+   bool critical=false;
+   for(int i=0;i<EventReducer.Slots();i++){ulong deal=EventReducer.PendingDeal(i);if(deal>0)critical=ApplyTradeDeal(deal)||critical;}
+   return critical;
   }
+void ProcessAndPersistPendingTradeEvents(){if(ProcessPendingTradeEvents())PersistStateCritical();}
 void OnTick()
   {
-   ProcessPendingTradeEvents();
+   ProcessAndPersistPendingTradeEvents();
    if(!TickAdmissionGate()) return;
    Trade.Reconcile();
    VCKSideStats buy,sell;
@@ -1001,11 +1027,12 @@ void OnTick()
 void OnTradeTransaction(const MqlTradeTransaction &trans,const MqlTradeRequest &request,const MqlTradeResult &result)
   {
    Trade.OnTransaction(trans,request,result);
-   if(trans.deal>0&&!EventReducer.EnqueueDeal(trans.deal)){g_ea_enabled=false;Log.Event("EVENT_QUEUE_OVERFLOW","deal queue full",(double)trans.deal);}
-   ProcessPendingTradeEvents();
+   bool critical=false;
+   if(trans.deal>0&&!EventReducer.EnqueueDeal(trans.deal)){g_ea_enabled=false;critical=true;Log.Event("EVENT_QUEUE_OVERFLOW","deal queue full",(double)trans.deal);}
+   critical=ProcessPendingTradeEvents()||critical;
    VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);
-   PersistState();
-   if(result.retcode!=0&&result.retcode!=TRADE_RETCODE_DONE&&result.retcode!=TRADE_RETCODE_PLACED&&result.retcode!=TRADE_RETCODE_DONE_PARTIAL)Log.Event("TRADE_RETCODE",IntegerToString((int)result.retcode),(double)request.action);
+   if(critical)PersistStateCritical();
+   if(trans.type==TRADE_TRANSACTION_REQUEST&&result.retcode!=0&&!Trade.TransactionRetcodeAccepted(request.action,result.retcode))Log.Event("TRADE_RETCODE",IntegerToString((int)result.retcode),(double)request.action);
   }
 '''
 

@@ -1,6 +1,6 @@
 0eaa26bd7dd997830dc75be37e8594a224ab79eb273b19389172de03e0390ba2  ./.gitattributes
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
-9ce8375cb11dd69a91f2b396073e756d5f8c24baa4d6c1194fc2365149b5ad57  ./.github/workflows/release-gate.yml
+a12837a49af5857078befc23b7db667fd347eb19d4a210de396f98baf91e76bb  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
 d6fa915da14f4afa65bba78b127e7db028650adbdeba5eb4092cfd4e70627bdb  ./.github/workflows/repo-manifest-refresh.yml
 fe0c9d28212f1ced93a7f23b67ccc5a6d5dfa2e7da6c748ca9d96abdc97b336f  ./.gitignore
@@ -174,16 +174,18 @@ c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd  ./demo/generic
 72df94c5930bfec29f68c1c18613e89cf497e7adde6113ee8b54c9900b269fa2  ./docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md
 63223a78187c8ac44d9b331cdd097bf6e3e97b8a09a39c258cd5fba21fcf786e  ./docs/release/v3.3.0rc4/RELEASE-PREP-SUMMARY.json
 4ceb9dc52bed4ff89b21843571d1c2ee6364688f78dbb944cbeb71d22a0ba01a  ./docs/release/v3.3.0rc4/TEST-LEDGER.csv
-5d5357ff1d135cabb6e13b593f9e51bac61a581e35a73377322721024cf0c01f  ./docs/release/v3.3.0rc5/HARDENING-PLAN.md
+6d748a9540ff41b2f377b4491c0449a2c18aa2f7f6942e6637257473da4f0f5c  ./docs/release/v3.3.0rc5/HARDENING-PLAN.md
 555546a364c492316613b33ef8e60122aa55a7e16e23c77b5460171b591dae3d  ./docs/release/v3.3.0rc5/PR-00-COMPLETION.md
 3601bd97619bf3b434cd23cb7e83e7d5ed96c23987bc9f08d156605796a8102d  ./docs/release/v3.3.0rc5/PR-01-COMPLETION.md
 c8ebabd70a304b089ba774da4773c8f64ef715a4bccb79fff0d67a92e3dd561c  ./docs/release/v3.3.0rc5/PR-02-COMPLETION.md
 ce03dfee85935151507d1e5eafb17d5f6246a5dd6dbda7ca584cf361e1418781  ./docs/release/v3.3.0rc5/PR-03-COMPLETION.md
 29af930f453f910139f9a3defd26aa7f94812f19ef4bdb7d39a1e0abfaf98bf1  ./docs/release/v3.3.0rc5/PR-04-COMPLETION.md
 fe84c85e07062db2ee713ef503a9ff56a5d1ff0d64c1ea082c1759558a6c3321  ./docs/release/v3.3.0rc5/PR-05-COMPLETION.md
-ce1326c8487e89c6e3b1e8101fb7a079216081942973de15af054f5c87823d98  ./docs/release/v3.3.0rc5/REQUIREMENTS.csv
-c99feecd5077a79bd8149472fe3e1ec1429e7fa7870a3421b0d3c6c2fc7016dc  ./docs/release/v3.3.0rc5/TEST-LEDGER.csv
+44d3d75044f501f7e92e382265dc735e2e1c20bc7abe70c884aa1f9dacdc911d  ./docs/release/v3.3.0rc5/PR-06-COMPLETION.md
+ff0aeb26e39e2b7c5ba3ae00efe91e050fa00f26daf47b89667eeaf81e1f3563  ./docs/release/v3.3.0rc5/REQUIREMENTS.csv
+ebd14d8bbdaeabbbfcb018489d11e47053deb6c585ae171104a76f3a1ad0b7d2  ./docs/release/v3.3.0rc5/TEST-LEDGER.csv
 535cbe1b219865a62143d7ad516667d396d55124ddf2725901e60941dc3256df  ./docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md
+4c0aeff4ed863252f230cfed82e135ad373e68cba419636f9746b25cce2f932a  ./docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md
 991e7c9038ea5d7587a4eed257517197301d8009f214687d2ef99e36ab38f440  ./native/NATIVE-VALIDATION-HANDOFF.md
 f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6  ./native/workers-windows/run_backtest.ps1
 4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7  ./native/workers-windows/run_compile.ps1
@@ -213,7 +215,7 @@ f273199a69a7e15413391813ecef9a228e54477beb1d2362eb9f258ecf4a33f0  ./scripts/main
 c2b5e350e0b9c8c88e635858a8039bf2ce564a14de186364885e6dabda5e7e2a  ./tool/source/.dockerignore
 1bd0381a67dc5d4b3a21403ff381c12bd87846d4539ef1099b9af59d9756989f  ./tool/source/AGENTS.md
 228173e76e1a6b8f3e84f0bd7e505e8a698c83c354a532b8d5723f9dc3837c78  ./tool/source/CHANGELOG-3.0.0rc1.md
-84a3bd87cb6ad537d9d745030418c3434a708b292caaeccb57dce9f34f38dcb5  ./tool/source/CHANGELOG.md
+c8b84388864bfdb0af63a06163e4b41ace75983dd3ee61956f14293c42a277a0  ./tool/source/CHANGELOG.md
 a1275ab68d8530ddc898dd3748ca758f159da27fce8c06e346f170aa28cda161  ./tool/source/DRAFT-NOT-VALIDATED.txt
 827782036c264090260dcc81ca32e8c733fbeaf4ac32fde1f426bd87024b92c2  ./tool/source/Include/CAsyncTradeManager.mqh
 3e7681da99c30fae0cdba64b9891098cc91950bfb2c941286af5a738e0cafd69  ./tool/source/Include/CHistorySync.mqh
@@ -400,7 +402,7 @@ cc32f8830c6dd0f4d1a14de5490cda5e4216d2dddbb32b2a2836e746c5df3aba  ./tool/source/
 d95052819c4dbbc30f9c6d88b6bec2126c2eed2dc1e132a8c2819d9ba8d2dd31  ./tool/source/scripts/vibecodekit_mql5/_resources.py
 134fdb1a535e3cbefe1fab344c4ceaa70cdf332a8b7a4a228fe2ef20a855af1a  ./tool/source/scripts/vibecodekit_mql5/_safe_archive.py
 2f0301aa2a8ade4d17964b6551d25cdbb83548b3935ea720544aea494eaab7aa  ./tool/source/scripts/vibecodekit_mql5/_version.py
-120154d84978ebd9c4885146f47d819ee7a511b10b2ea879cc642bdc8d4944f4  ./tool/source/scripts/vibecodekit_mql5/advanced_codegen.py
+5ca4eed0e04d82c5b5af847c32b244026a59d51f674d5a7055a1677e8a301e3e  ./tool/source/scripts/vibecodekit_mql5/advanced_codegen.py
 b7d985b81bd73347e367c02c6cf6758e4a487969e7e2a4269020f4d6723676b0  ./tool/source/scripts/vibecodekit_mql5/agent-contract.json
 e08ed8090a438214c49b63d9b794399aa1764cc356511d66ba41cff5ed987f1a  ./tool/source/scripts/vibecodekit_mql5/agent_cli.py
 c003c45a2d21986e9b4f6c43732500b3a7ef9c088065a2011c06426f99f3db70  ./tool/source/scripts/vibecodekit_mql5/agent_contract.py
@@ -571,7 +573,7 @@ d5c7879132782e3e9eca24b60691cbfbe70991dd36b2c7ea71a5516dfa2801a6  ./tool/source/
 4b600bb525e535cc9acbdd302fbdb06bb9ac68f688a67fdb004aea10232f5a48  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase14_ship_hardening.py
 07d5bba86048b8cecac3a3148b07b08e843ca5efc41584a526d52e49078f9089  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase15_audit_precision.py
 b608371e74cd4eba6f907e87128dfaae3b5a554cb0207f46996b1c4d7fedbe82  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase16_semantic_isolation.py
-ad6700809bf6d80c4f29a5881ad28555c88be35da4ce0c32b1cd60c0a52384f0  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase17_runtime_safety.py
+a1452895ca881a869244ae071107efbf3181e1f21bd779d8dae19296fd7d7cc1  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase17_runtime_safety.py
 fb6d43e5806fe7a593cd5d6e01ecea0dfbdfe2ebc143d1490c0205e983610227  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase18_cross_feature_invariants.py
 d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase19_cross_project_acceptance.py
 638c09260b29902138cdc33e8f19e9710f6b8a08fa6d735337b917e974ffafa1  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase1_intake_ir.py
@@ -579,6 +581,7 @@ d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80  ./tool/source/
 8edabad32c3cf376ff6cde58e1c447b9aa1581bf227e547a83ce37d825aaac5b  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase21_input_semantics.py
 f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase22_runtime_contracts.py
 2841c0804ad6a17b2cd330ac26cb2a0771f29be17074a3b3ca989bf7bca5843f  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase23_remote_command_lifecycle.py
+581a38da14b43388b290832db162a73b3ab8981a84ca64988736ce018a76a5b9  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase24_trade_lifecycle_v2.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase2_planning.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase4_auto_build_ir.py
@@ -800,7 +803,7 @@ d5c7879132782e3e9eca24b60691cbfbe70991dd36b2c7ea71a5516dfa2801a6  ./tool/source/
 4b600bb525e535cc9acbdd302fbdb06bb9ac68f688a67fdb004aea10232f5a48  ./tool/source/tests/test_phase14_ship_hardening.py
 07d5bba86048b8cecac3a3148b07b08e843ca5efc41584a526d52e49078f9089  ./tool/source/tests/test_phase15_audit_precision.py
 b608371e74cd4eba6f907e87128dfaae3b5a554cb0207f46996b1c4d7fedbe82  ./tool/source/tests/test_phase16_semantic_isolation.py
-ad6700809bf6d80c4f29a5881ad28555c88be35da4ce0c32b1cd60c0a52384f0  ./tool/source/tests/test_phase17_runtime_safety.py
+a1452895ca881a869244ae071107efbf3181e1f21bd779d8dae19296fd7d7cc1  ./tool/source/tests/test_phase17_runtime_safety.py
 fb6d43e5806fe7a593cd5d6e01ecea0dfbdfe2ebc143d1490c0205e983610227  ./tool/source/tests/test_phase18_cross_feature_invariants.py
 d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80  ./tool/source/tests/test_phase19_cross_project_acceptance.py
 638c09260b29902138cdc33e8f19e9710f6b8a08fa6d735337b917e974ffafa1  ./tool/source/tests/test_phase1_intake_ir.py
@@ -808,6 +811,7 @@ d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80  ./tool/source/
 8edabad32c3cf376ff6cde58e1c447b9aa1581bf227e547a83ce37d825aaac5b  ./tool/source/tests/test_phase21_input_semantics.py
 f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/tests/test_phase22_runtime_contracts.py
 2841c0804ad6a17b2cd330ac26cb2a0771f29be17074a3b3ca989bf7bca5843f  ./tool/source/tests/test_phase23_remote_command_lifecycle.py
+581a38da14b43388b290832db162a73b3ab8981a84ca64988736ce018a76a5b9  ./tool/source/tests/test_phase24_trade_lifecycle_v2.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/tests/test_phase2_planning.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/tests/test_phase4_auto_build_ir.py

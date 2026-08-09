@@ -64,6 +64,19 @@
 - Delete a claimed pending order before applying its effect and verify effects
   without replaying an action after an uncertain interruption.
 
+### Trade lifecycle v2
+
+- Correlate trade intents by terminal-assigned request, order, position and
+  deal identity; broker comments are retained only as diagnostic metadata.
+- Model prepared, submitted, acknowledged, partial, completed and unknown
+  outcomes separately so asynchronous submission is not mistaken for fill.
+- Interpret request results only for `TRADE_TRANSACTION_REQUEST` and reconcile
+  terminal history when transaction events arrive out of order.
+- Apply operation-specific accepted retcodes for open, modify, close and order
+  deletion paths.
+- Flush global-variable persistence at intent transitions and other critical
+  transaction boundaries instead of every trade event.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

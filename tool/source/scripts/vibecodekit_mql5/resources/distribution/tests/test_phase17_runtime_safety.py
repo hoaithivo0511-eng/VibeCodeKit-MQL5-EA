@@ -66,11 +66,15 @@ def test_trade_intent_ledger_blocks_unknown_outcome_retry(tmp_path: Path):
     out = generate(ir, build, tmp_path / "project")
     ledger = (out / "Include/RuntimeSafeEA/Core/TradeIntentLedger.mqh").read_text(encoding="utf-8")
     executor = (out / "Include/RuntimeSafeEA/Core/AsyncTradeExecutor.mqh").read_text(encoding="utf-8")
-    assert "FindLive(existing)||FindHistory(existing)" in ledger
-    assert "if(VCK_BLOCK_UNKNOWN_OUTCOME)return false" in ledger
+    assert "FindByRequest(request_id" in ledger
+    assert "FindByOrder(order" in ledger
+    assert "FindByPosition(trans.position" in ledger
+    assert "request_event=trans.type==TRADE_TRANSACTION_REQUEST" in ledger
+    assert "if(VCK_BLOCK_UNKNOWN_OUTCOME||created==0" in ledger
     assert "HistorySelect" in ledger
     assert "m_intents.Prepare" in executor
-    assert "DefinitelyRejected" in executor
+    assert "OpenDefinitelyRejected" in executor
+    assert "m_intents.MarkSubmitted" in executor
     assert "m_intents.MarkRejected" in executor
 
 

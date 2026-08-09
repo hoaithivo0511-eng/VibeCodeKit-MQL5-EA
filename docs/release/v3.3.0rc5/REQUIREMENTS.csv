@@ -14,11 +14,11 @@ REQ-011,P1,"Fail OnInit for invalid operational configuration",Runtime review,CO
 REQ-012,P1,"Require explicit ownership for pending-order commands",Security review,COMPLETED,05
 REQ-013,P1,"Prevent replayed commands from executing twice",Security review,COMPLETED,05
 REQ-014,P1,"Apply command effects only after successful claim and delete",Data integrity review,COMPLETED,05
-REQ-015,P1,"Use request ticket order and position identity for intent lifecycle",Execution review,PLANNED,06
-REQ-016,P1,"Treat broker comments as diagnostic correlation rather than authority",Execution review,PLANNED,06
-REQ-017,P1,"Use operation-specific trade retcode policies",Execution review,PLANNED,06
-REQ-018,P1,"Separate async submission acknowledgement partial fill and completion",Execution review,PLANNED,06
-REQ-019,P1,"Flush persistent state only at critical transaction boundaries",DevOps review,PLANNED,06
+REQ-015,P1,"Use request ticket order and position identity for intent lifecycle",Execution review,COMPLETED,06
+REQ-016,P1,"Treat broker comments as diagnostic correlation rather than authority",Execution review,COMPLETED,06
+REQ-017,P1,"Use operation-specific trade retcode policies",Execution review,COMPLETED,06
+REQ-018,P1,"Separate async submission acknowledgement partial fill and completion",Execution review,COMPLETED,06
+REQ-019,P1,"Flush persistent state only at critical transaction boundaries",DevOps review,COMPLETED,06
 REQ-020,P1,"Execute real lint and review stages in check-all",Audit review,PLANNED,07
 REQ-021,P1,"Treat mandatory skipped or untestable stages as release blockers",Release review,PLANNED,07
 REQ-022,P2,"Report only deep-review stages that actually executed",Audit review,PLANNED,08

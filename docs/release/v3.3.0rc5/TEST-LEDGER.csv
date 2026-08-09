@@ -40,3 +40,13 @@ T05-003,Touched runtime pipeline coverage,coverage.py,85.68% combined,pytest-cov
 T05-004,Generated EA static lint,Python 3.12,mql5-lint ok with 0 errors,generated OrionRecovery main,PASS,One unrelated UX panel warning
 T05-005,RC5 source regression after Task 05,Python 3.12,176/176 tests passed,task05-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
 T05-006,RC5 selftest after Task 05,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,28 shipped test modules detected
+T06-001,Trade lifecycle v2 focused suite,Python 3.12,6/6 tests passed,test_phase24_trade_lifecycle_v2.py,PASS,"Identity authority; diagnostic comments; state transitions; retcodes; durability"
+T06-002,Affected runtime lifecycle suite,Python 3.12,23/23 tests passed,phase17/23/24 tests,PASS,"Runtime safety; remote commands; trade intent lifecycle"
+T06-003,Advanced generator coverage,coverage.py,96.94%,pytest-cov --cov-fail-under=95,PASS,50/50 affected generator tests passed
+T06-004,Generated EA static lint,Python 3.12,mql5-lint ok with 0 errors,generated RuntimeSafeEA main,PASS,One unrelated UX panel warning
+T06-005,Wave 1 RC5 source regression,Python 3.12,182/182 tests passed,task06-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T06-006,RC5 selftest after Wave 1,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,29 shipped test modules detected
+T06-007,Touched Python lint,Ruff,No findings,ruff check generator and mirrored tests,PASS,Task 06 source and distribution tests checked
+T06-008,Native trade lifecycle evidence,MetaEditor and MT5,Not run,Release Task 10,DEFERRED,"Compile; async fills; restart and crash recovery remain release blockers"
+T06-009,Generated EA method-hiding scan,Target MQL5 build 5260,No issues,mql5-method-hiding-check,PASS,Static scan of generated RuntimeSafeEA main
+T06-010,Generated EA enterprise Trader-17 scan,Python 3.12,"6/17 PASS; 3 WARN; 8 N/A; 0 FAIL; exit 1",mql5-trader-check --mode enterprise,BLOCKED,"Operational and native evidence is incomplete; release remains ineligible"

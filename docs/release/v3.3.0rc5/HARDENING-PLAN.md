@@ -62,5 +62,7 @@ P0/P1 requirements require 100% PASS. A `SKIPPED`, `UNTESTABLE`, `MISSING` or
 ## Current gate
 
 The owner approved Wave 1 after reviewing the Wave 0 Completion Reports.
-Tasks 01 through 05 are complete. Runtime Task 06 is the remaining Wave 1
-change and must pass its completion gate before any Wave 2 audit work starts.
+Tasks 01 through 06 are complete and the Wave 1 deterministic source gate has
+passed. Work is stopped at the owner gate: Tasks 07 and 08 must not start until
+Wave 2 is explicitly approved. Native MetaEditor and MT5 evidence remain
+deferred to Task 10, so release eligibility remains false.
