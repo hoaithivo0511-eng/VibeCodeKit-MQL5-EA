@@ -1,4 +1,0 @@
-ChatGPT GitHub write smoke test.
-Date: 2026-08-09
-Status: CREATE + UPDATE verified.
-Purpose: verify connector can create/update repository files from the current chat.
