@@ -43,6 +43,16 @@
   URL/comment markers, semicolons or arithmetic defaults.
 - Bind parser behavior to exact-count regression fixtures.
 
+### Runtime input contracts
+
+- Define field-level units, ranges, sign conventions and zero behavior once and
+  reuse them for EA-IR validation, generated project contracts and MQL5 runtime
+  checks.
+- Reject invalid explicitly supplied EA-IR values before code generation.
+- Make generated EAs return `INIT_PARAMETERS_INCORRECT` with a structured
+  `VCK_CONFIG_INVALID` diagnostic when operational inputs violate the contract.
+- Emit `RUNTIME-INPUT-CONTRACTS.json` bound to the canonical EA-IR hash.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

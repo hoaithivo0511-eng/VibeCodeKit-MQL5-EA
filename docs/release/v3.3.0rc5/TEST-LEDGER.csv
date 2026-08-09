@@ -30,3 +30,7 @@ T03-001,Input semantics focused tests,Python 3.12,4/4 tests passed,test_phase21_
 T03-002,Input parser coverage,coverage.py,96.34%,pytest-cov --cov-fail-under=90,PASS,ea_docs_inputs.py target exceeded
 T03-003,RC5 source regression after Task 03,Python 3.12,163/163 tests passed,task03-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
 T03-004,RC5 selftest after Task 03,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,26 shipped test modules detected
+T04-001,Runtime contract focused suite,Python 3.12,6/6 tests passed,test_phase22_runtime_contracts.py,PASS,"Registry; ranges; signs; zero semantics; prebuild; OnInit; artifact binding"
+T04-002,Advanced generator and contract coverage,coverage.py,96.76% combined,pytest-cov --cov-fail-under=95,PASS,"advanced_codegen 95%; runtime_input_contracts 100%"
+T04-003,RC5 source regression after Task 04,Python 3.12,169/169 tests passed,task04-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T04-004,RC5 selftest after Task 04,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,27 shipped test modules detected

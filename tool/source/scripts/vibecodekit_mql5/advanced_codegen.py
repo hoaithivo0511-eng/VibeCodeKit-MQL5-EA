@@ -6,8 +6,8 @@ manuals are acceptance fixtures, never templates baked into the architecture.
 """
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 import shutil
 import tempfile
 from pathlib import Path
@@ -15,12 +15,13 @@ from typing import Any
 
 import yaml
 
+from .ai_build_contract import build_contract_dict, render_contract_md
 from .build_planner import BuildPlan
 from .ea_ir import EAIR
 from .ir_verify import build_artifact_manifest
+from .runtime_input_contracts import contract_manifest, render_mql_validator
 from .safe_paths import safe_join, validate_ea_name
 from .traceability import to_csv
-from .ai_build_contract import build_contract_dict, render_contract_md
 
 
 def _enabled(paths: set[str], path: str) -> str:
@@ -372,7 +373,7 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input double InpMinCandlePips={float(_p(ir, 'min_candle_pips', 0.0)):.2f};",
         f"input bool InpEngulfFullWick={str(bool(_p(ir, 'engulf_full_wick', True))).lower()};",
         f"input int InpUnconditionalDirection={int(_p(ir, 'unconditional_direction', 1))};",
-        f'input string InpExternalIndicator="{str(_p(ir, "external_indicator_name", ""))}";',
+        f'input string InpExternalIndicator="{_p(ir, "external_indicator_name", "")!s}";',
         f"input int InpExternalBuyBuffer={int(_p(ir, 'external_buy_buffer', 0))};",
         f"input int InpExternalSellBuffer={int(_p(ir, 'external_sell_buffer', 1))};",
         '', 'input group "Filters and zone cycle"',
@@ -797,7 +798,9 @@ void CreateButton(const string key,const string text,const int y){string n=VCKP_
 void CreatePanel(){if(!VCK_USE_PANEL)return;CreateButton("NEW","Toggle New Cycle",20);CreateButton("CLOSE_BUY","Close Buy",46);CreateButton("CLOSE_SELL","Close Sell",72);CreateButton("CLOSE_ALL","Close All (2-step)",98);CreateButton("STOP_BUY","Toggle Buy",124);CreateButton("STOP_SELL","Toggle Sell",150);if(VCK_USE_RESET_LOTS){CreateButton("RESET_BUY","Reset Lots Buy",176);CreateButton("RESET_SELL","Reset Lots Sell",202);}}
 void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &s){if(id!=CHARTEVENT_OBJECT_CLICK)return;if(s==VCKP_PREFIX+"NEW")g_new_cycle=!g_new_cycle;else if(s==VCKP_PREFIX+"CLOSE_BUY")CloseSide(POSITION_TYPE_BUY);else if(s==VCKP_PREFIX+"CLOSE_SELL")CloseSide(POSITION_TYPE_SELL);else if(s==VCKP_PREFIX+"STOP_BUY")g_stop_buy=!g_stop_buy;else if(s==VCKP_PREFIX+"STOP_SELL")g_stop_sell=!g_stop_sell;else if(s==VCKP_PREFIX+"RESET_BUY")g_buy_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"RESET_SELL")g_sell_reset_lot=InpResetLot;else if(s==VCKP_PREFIX+"CLOSE_ALL"){datetime n=TimeCurrent();if(!g_close_armed||n-g_close_armed_at>5){g_close_armed=true;g_close_armed_at=n;ObjectSetString(0,s,OBJPROP_TEXT,"Confirm Close All");return;}g_close_armed=false;ObjectSetString(0,s,OBJPROP_TEXT,"Close All (2-step)");CloseMagicPositions();}PersistState();}
 
-int OnInit(){g_symbol=StringLen(InpTradeSymbol)>0?InpTradeSymbol:_Symbol;if(!SymbolSelect(g_symbol,true))return INIT_FAILED;if((VCK_USE_DCA||VCK_USE_HEDGE||VCK_USE_HEDGE_ZONE||VCK_USE_REVERSE_ENTRY||VCK_USE_LOT_BALANCE)&&(ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING){Print("Composition requires MT5 hedging account");return INIT_FAILED;}g_pip=PipSize();if(g_pip<=0||!Entry.Init(g_symbol,InpSignalTimeframe))return INIT_FAILED;MathSrand((int)GetTickCount());Trade.Configure(InpMagic,g_symbol,InpSignalTimeframe,InpMaxSpreadPips,InpAsyncExecution);EventReducer.Configure(InpMagic,g_symbol);StateStore.Configure(InpMagic,g_symbol);StateStore.Load(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.LoadExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,g_persisted_peak,g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);GridRisk.Init(g_persisted_peak);Log.Configure("__NAME__");MfeMae.Configure("__NAME__");Trade.Reconcile();VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);CreatePanel();Log.Event("INIT","EA initialized");return INIT_SUCCEEDED;}
+__INPUT_VALIDATOR__
+
+int OnInit(){if(!ValidateOperationalInputs())return INIT_PARAMETERS_INCORRECT;g_symbol=StringLen(InpTradeSymbol)>0?InpTradeSymbol:_Symbol;if(!SymbolSelect(g_symbol,true))return INIT_FAILED;if((VCK_USE_DCA||VCK_USE_HEDGE||VCK_USE_HEDGE_ZONE||VCK_USE_REVERSE_ENTRY||VCK_USE_LOT_BALANCE)&&(ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING){Print("Composition requires MT5 hedging account");return INIT_FAILED;}g_pip=PipSize();if(g_pip<=0||!Entry.Init(g_symbol,InpSignalTimeframe))return INIT_FAILED;MathSrand((int)GetTickCount());Trade.Configure(InpMagic,g_symbol,InpSignalTimeframe,InpMaxSpreadPips,InpAsyncExecution);EventReducer.Configure(InpMagic,g_symbol);StateStore.Configure(InpMagic,g_symbol);StateStore.Load(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.LoadExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,g_persisted_peak,g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);GridRisk.Init(g_persisted_peak);Log.Configure("__NAME__");MfeMae.Configure("__NAME__");Trade.Reconcile();VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);CreatePanel();Log.Event("INIT","EA initialized");return INIT_SUCCEEDED;}
 void OnDeinit(const int reason){PersistState();Log.Event("DEINIT",IntegerToString(reason));Entry.Release();ObjectsDeleteAll(0,VCKP_PREFIX);}
 bool TickAdmissionGate()
   {
@@ -932,7 +935,8 @@ def _main(ir: EAIR) -> str:
     return (MAIN_TEMPLATE
             .replace("__NAME__", str(ir.identity["name"]))
             .replace("__HASH__", ir.sha256())
-            .replace("__REMOTE_COMMAND_HANDLER__", _remote_command_handler(ir)))
+            .replace("__REMOTE_COMMAND_HANDLER__", _remote_command_handler(ir))
+            .replace("__INPUT_VALIDATOR__", render_mql_validator()))
 
 
 def _governance_spec(ir: EAIR) -> dict[str, Any]:
@@ -1047,6 +1051,7 @@ def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -
             "AI-BUILD-CONTRACT.json": json.dumps(contract, ensure_ascii=False, indent=2)+"\n",
             "AI-BUILD-CONTRACT.md": render_contract_md(contract),
             "RISK-CONTRACT.yaml": yaml.safe_dump(_risk_contract(ir), sort_keys=False, allow_unicode=True),
+            "RUNTIME-INPUT-CONTRACTS.json": json.dumps(contract_manifest(ir), ensure_ascii=False, indent=2)+"\n",
             "BROKER-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"account_model":ir.runtime.get("account_model","hedging"),"symbols":list(ir.runtime.get("symbols") or ["_Symbol"]),"digits_tested":[5,4,3,2],"native_validation_required":True}, sort_keys=False),
             "EVIDENCE-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"required":["MetaEditor compile log","EX5 SHA-256","MT5 Strategy Tester report","stress matrix","deep review"],"authority":"windows-native"}, sort_keys=False),
             "RELEASE-TRUST.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"release_eligible":False,"reason":"native compile and MT5 tester evidence pending"}, sort_keys=False),
