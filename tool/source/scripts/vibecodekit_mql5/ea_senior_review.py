@@ -11,8 +11,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .ea_doc_analyzer import analyze_project, read_mql_files
 from .deadcode import find_dead_code
+from .ea_doc_analyzer import analyze_project, read_mql_files
 from .mq5_symbols import build_symbol_graph
 from .structure_audit import audit_structure
 
@@ -64,7 +64,103 @@ def _all_text(project: Path) -> tuple[str, dict[str, str]]:
     return "\n".join(f"\n// FILE: {k}\n{v}" for k, v in files.items()), files
 
 
-def detect_strategy(text: str) -> dict[str, Any]:
+def _strategy_from_features(
+    features: list[str], signals: list[str], detection_source: str
+) -> dict[str, Any]:
+    enabled = {feature.strip().lower() for feature in features if feature.strip()}
+    cues: list[str] = []
+    has_grid = any(feature.startswith("strategy.dca.") for feature in enabled)
+    has_hedge = any(feature.startswith("strategy.hedge.") for feature in enabled)
+    has_breakout = "strategy.entry.breakout" in enabled
+    has_mean_reversion = "strategy.entry.mean_reversion" in enabled
+    has_trend = "strategy.entry.trend_following" in enabled
+
+    if has_grid:
+        cues.extend(["grid", "dca/martingale-like sizing"])
+    if has_hedge:
+        cues.append("hedge")
+    if has_breakout:
+        cues.append("breakout")
+    if has_mean_reversion:
+        cues.append("mean-reversion")
+    if has_trend:
+        cues.append("trend-following")
+    cues.extend(signal.strip().lower() for signal in signals if signal.strip())
+    cues = list(dict.fromkeys(cues)) or ["custom/unknown"]
+
+    if has_grid and has_hedge:
+        family = "grid-hedge"
+    elif has_grid:
+        family = "grid"
+    elif has_breakout:
+        family = "breakout"
+    elif has_mean_reversion:
+        family = "mean-reversion"
+    elif has_trend:
+        family = "trend-following"
+    elif has_hedge:
+        family = "hedge"
+    else:
+        family = "custom"
+    return {
+        "family": family,
+        "signals": cues,
+        "detection_source": detection_source,
+        "explicit_features": sorted(enabled),
+    }
+
+
+def _ea_ir_strategy(project: Path) -> tuple[list[str], list[str]] | None:
+    path = project / "EA-IR.json"
+    if not path.is_file():
+        return None
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    strategy = raw.get("strategy") if isinstance(raw, dict) else None
+    if not isinstance(strategy, dict):
+        return None
+    features = strategy.get("features", [])
+    signals = strategy.get("signals", [])
+    if not isinstance(features, list) or not isinstance(signals, list):
+        return None
+    clean_features = [item for item in features if isinstance(item, str)]
+    clean_signals = [item for item in signals if isinstance(item, str)]
+    return clean_features, clean_signals
+
+
+def _generated_feature_contract(text: str) -> list[str] | None:
+    declared = re.findall(
+        r"^\s*//\s*VCK-FEATURE:([^\r\n]+)", text, flags=re.MULTILINE
+    )
+    implemented = re.findall(
+        r"^\s*//\s*VCK-IMPLEMENTED:([^\r\n]+)", text, flags=re.MULTILINE
+    )
+    enabled = re.findall(
+        r"^\s*//\s*VCK-FEATURE:([^\r\n]+)\s*\r?\n"
+        r"\s*const\s+bool\s+VCK_USE_[A-Z0-9_]+\s*=\s*true\s*;",
+        text,
+        flags=re.MULTILINE | re.IGNORECASE,
+    )
+    if not declared and not implemented:
+        return None
+    return sorted({item.strip() for item in implemented + enabled if item.strip()})
+
+
+def detect_strategy(
+    text: str,
+    *,
+    explicit_features: list[str] | None = None,
+    explicit_signals: list[str] | None = None,
+    detection_source: str = "source-heuristic",
+) -> dict[str, Any]:
+    if explicit_features is not None or explicit_signals is not None:
+        return _strategy_from_features(
+            list(explicit_features or []),
+            list(explicit_signals or []),
+            detection_source,
+        )
     lower = text.lower()
     signals = []
     if "grid" in lower:
@@ -84,7 +180,12 @@ def detect_strategy(text: str) -> dict[str, Any]:
     if not signals:
         signals.append("custom/unknown")
     family = "grid-hedge" if "grid" in signals and "hedge" in signals else ("grid" if "grid" in signals else "custom")
-    return {"family": family, "signals": signals}
+    return {
+        "family": family,
+        "signals": signals,
+        "detection_source": "source-heuristic",
+        "explicit_features": [],
+    }
 
 
 def add_issue(issues: list[dict[str, Any]], severity: str, category: str, title: str, evidence: str, recommendation: str) -> None:
@@ -118,13 +219,30 @@ def review_project(project: str | Path, profile: str = "auto") -> dict[str, Any]
     analysis = analyze_project(project)
     text, files = _all_text(project)
     lower = text.lower()
-    strategy = detect_strategy(text)
+    ir_strategy = _ea_ir_strategy(project)
+    if ir_strategy is not None and (ir_strategy[0] or ir_strategy[1]):
+        strategy = detect_strategy(
+            text,
+            explicit_features=ir_strategy[0],
+            explicit_signals=ir_strategy[1],
+            detection_source="ea-ir",
+        )
+    else:
+        generated_features = _generated_feature_contract(text)
+        if generated_features is not None:
+            strategy = detect_strategy(
+                text,
+                explicit_features=generated_features,
+                detection_source="generated-feature-contract",
+            )
+        else:
+            strategy = detect_strategy(text)
     issues: list[dict[str, Any]] = []
 
     # Execution review
     has_raw_ctrade = bool(re.search(r"\bCTrade\s+\w+\s*;", text))
     has_async = "CAsyncTradeExecutor" in text and "OnTradeTransaction" in text
-    raw_close_loop = bool(re.search(r"for\s*\([^)]*PositionsTotal\s*\([^)]*\)[\s\S]{0,1500}?\.PositionClose\s*\(", text, flags=re.I | re.M))
+    raw_close_loop = bool(re.search(r"for\s*\([^)]*PositionsTotal\s*\([^)]*\)[\s\S]{0,1500}?\.PositionClose\s*\(", text, flags=re.IGNORECASE | re.MULTILINE))
     if raw_close_loop and not has_async:
         add_issue(issues, "critical", "execution", "Raw synchronous PositionClose loop", "PositionClose appears inside a PositionsTotal loop without async executor.", "Use async basket close engine with OnTradeTransaction tracking.")
     if has_async and "OnTradeTransaction" not in text:
@@ -141,17 +259,25 @@ def review_project(project: str | Path, profile: str = "auto") -> dict[str, Any]
         add_issue(issues, "warn", "license", "Expiry/name-lock/account-lock detected", "EA contains license/expiry/account restriction logic.", "Document license terms in user manual; ensure end-user is informed.")
 
     # P1.3: Basket close/profit without magic filter
-    if re.search(r'\b(?:ProfitAll|ClosePositionAll|CloseAll)\s*\([^)]*\bSymbol\b[^)]*\)', text, re.I):
-        if not re.search(r'Magic\s*\(\s*\)\s*==|\bm_magic\b', text):
-            add_issue(issues, "error", "risk", "Basket close/profit without magic filter", "Basket operation filters by symbol but not magic; may affect other EAs.", "Add magic number filter to basket operations.")
+    if re.search(
+        r'\b(?:ProfitAll|ClosePositionAll|CloseAll)\s*\([^)]*\bSymbol\b[^)]*\)',
+        text,
+        re.IGNORECASE,
+    ) and not re.search(r'Magic\s*\(\s*\)\s*==|\bm_magic\b', text):
+        add_issue(issues, "error", "risk", "Basket close/profit without magic filter", "Basket operation filters by symbol but not magic; may affect other EAs.", "Add magic number filter to basket operations.")
 
     # P1.4: PositionGetSymbol + Magic without SelectByIndex
-    if re.search(r'PositionGetSymbol\s*\(', text) and re.search(r'm_position\.Magic\s*\(', text):
-        if not re.search(r'SelectByIndex\s*\(', text):
-            add_issue(issues, "warn", "execution", "PositionGetSymbol + Magic() without SelectByIndex", "Magic() called after PositionGetSymbol without SelectByIndex; may use stale position object.", "Call m_position.SelectByIndex(i) before accessing Magic() in loop.")
+    if (
+        re.search(r'PositionGetSymbol\s*\(', text)
+        and re.search(r'm_position\.Magic\s*\(', text)
+        and not re.search(r'SelectByIndex\s*\(', text)
+    ):
+        add_issue(issues, "warn", "execution", "PositionGetSymbol + Magic() without SelectByIndex", "Magic() called after PositionGetSymbol without SelectByIndex; may use stale position object.", "Call m_position.SelectByIndex(i) before accessing Magic() in loop.")
 
     # Risk review
-    is_grid = "grid" in strategy["signals"] or "dca" in lower or "lotmultiplier" in lower
+    is_grid = "grid" in strategy["signals"]
+    if strategy.get("detection_source") == "source-heuristic":
+        is_grid = is_grid or "dca" in lower or "lotmultiplier" in lower
     if is_grid:
         if not re.search(r"maxlevels|m_max_levels|levelallowed", lower):
             add_issue(issues, "critical", "risk", "Grid/DCA without max level evidence", "No MaxLevels/LevelAllowed pattern found.", "Add a hard max level limit per side.")
@@ -174,7 +300,6 @@ def review_project(project: str | Path, profile: str = "auto") -> dict[str, Any]
 
     # Input hygiene
     inputs = analysis.get("inputs", [])
-    input_names = [p["name"] for p in inputs]
     for p in inputs:
         name = p["name"]
         occurrences = len(re.findall(r"\b" + re.escape(name) + r"\b", text))

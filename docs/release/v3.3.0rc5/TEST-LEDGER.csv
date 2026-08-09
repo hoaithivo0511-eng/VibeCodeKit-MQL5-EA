@@ -56,3 +56,10 @@ T07-003,Generic project check-all execution,Python 3.12,"lint PASS; review PASS;
 T07-004,RC5 source regression after Task 07,Python 3.12,197/197 tests passed,task07-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
 T07-005,RC5 selftest after Task 07,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,30 shipped test modules detected
 T07-006,Touched Python lint,Ruff,No findings,ruff check check-all release policy and mirrored tests,PASS,Task 07 source and distribution tests checked
+T08-001,Review truthfulness focused suite,Python 3.12,11/11 tests passed,test_phase26_review_truthfulness.py,PASS,"Stage execution; EA-IR priority; generated flags; heuristic fallback; file isolation"
+T08-002,Deep-review analyzer coverage,coverage.py,83.26% combined,pytest-cov --cov-fail-under=80,PASS,"deep_review 84%; ea_senior_review 83%"
+T08-003,Generic strategy detection cross-project,Python 3.12,4/4 project families matched EA-IR,NorthTrend BandReturn RangePulse OrionRecovery,PASS,"trend-following; mean-reversion; breakout; hedge"
+T08-004,Fast deep-review stage ledger,Python 3.12,"Stages 0-6 EXECUTED; Stage 7 SKIPPED",programmatic generic project runs,PASS,Only seven executed categories reported
+T08-005,Wave 2 RC5 source regression,Python 3.12,208/208 tests passed,wave2-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T08-006,RC5 selftest after Wave 2,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,31 shipped test modules detected
+T08-007,Touched Python lint,Ruff,No findings,ruff check deep review senior analyzer and mirrored tests,PASS,Task 08 source and distribution tests checked

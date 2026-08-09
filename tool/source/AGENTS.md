@@ -80,8 +80,9 @@ Lệnh này tự chạy toàn bộ pipeline (Stage 0→7) rồi xuất 1 report 
 - Stage 4: dead-code / dead-logic (deadcode)
 - Stage 5: senior review — risk/execution/state/release (ea_senior_review)
 - Stage 6: modernization advisor MQL5 2024–2026 (modernize)
-- Stage 7: grounded line-by-line review (line_review; mặc định tạo paste-pack,
-  có thể nối LLM để chấm điểm có evidence-line)
+- Stage 7: chuẩn bị grounded line-review paste-pack (`line_review`). Bản thân
+  stage này không tuyên bố đã có LLM verdict; `--fast` ghi rõ `SKIPPED` và loại
+  Stage 7 khỏi danh sách category đã kiểm tra.
 
 Không được tách thành nhiều lệnh thủ công cho user; pipeline đã gói trong 1 lệnh.
 

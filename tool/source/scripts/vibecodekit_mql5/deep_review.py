@@ -14,7 +14,7 @@ Pipeline stages
     Stage 4  dead-code / dead-logic       (deadcode)          | via senior
     Stage 5  senior review + risk/release (ea_senior_review)  /  review
     Stage 6  modernization advisor        (modernize)
-    Stage 7  grounded line review         (line_review; pack unless --llm)
+    Stage 7  grounded packet preparation  (line_review; no LLM verdict claimed)
 
 Stages 3-5 are produced by :func:`ea_senior_review.review_project`, which
 already folds the structure-audit + dead-code layers into its
@@ -22,8 +22,8 @@ already folds the structure-audit + dead-code layers into its
 
 Flags
 -----
-    (default)        full pipeline, Markdown + JSON (+ DOCX if available)
-    --fast           skip the LLM line-review packet build (Stage 7)
+    (default)        Stages 0-6 + Stage-7 packet, Markdown/JSON/DOCX
+    --fast           skip the grounded line-review packet build (Stage 7)
     --json-only      do not write the DOCX report
     --no-docx        alias of --json-only for the document artifact
     --profile NAME   forward a risk profile to the senior review
@@ -41,15 +41,35 @@ from typing import Any
 from . import _agent_io
 from .ea_doc_analyzer import read_mql_files
 from .ea_senior_review import review_project
+from .line_review import run_line_review
 from .lint import lint_source
 from .modernize import analyze_modernization
-from .line_review import run_line_review
 from .scan_ea import analyze_source
 
 TOOL = "mql5-ea-deep-review"
 
 _SEV_FROM_LINT = {"ERROR": "error", "WARN": "warn", "INFO": "info"}
 _SEV_RANK = {"critical": 0, "error": 1, "warn": 2, "info": 3}
+
+_STAGE_NAMES = {
+    0: "parse and symbol graph",
+    1: "static scan and signals",
+    2: "anti-pattern lint",
+    3: "structure and complexity",
+    4: "dead-code and dead-logic",
+    5: "senior risk, execution, state and release review",
+    6: "modernization advisor",
+    7: "grounded line-review packet preparation",
+}
+
+
+def _stage(stage_id: int, status: str, detail: str) -> dict[str, Any]:
+    return {
+        "id": stage_id,
+        "name": _STAGE_NAMES[stage_id],
+        "status": status,
+        "detail": detail,
+    }
 
 
 def _resolve_files(target: Path) -> tuple[Path, dict[str, str]]:
@@ -114,17 +134,19 @@ def run_deep_review(target: str | Path, *, profile: str = "auto",
     root, files = _resolve_files(target)
     if not files:
         return {"ok": False, "error": f"no .mq5/.mqh sources under {target}"}
+    stages: list[dict[str, Any]] = []
 
     # When the target is a single file, isolate it so the senior review
     # (which recursively reads every .mq5/.mqh under its project root) scans
     # ONLY the requested EA, never sibling files in the same folder.
+    isolation = None
     if target.is_file():
-        _iso = tempfile.mkdtemp(prefix="mql5_deep_review_")
+        isolation = tempfile.TemporaryDirectory(prefix="mql5_deep_review_")
         for rel, text in files.items():
-            dst = Path(_iso) / rel
+            dst = Path(isolation.name) / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(text, encoding="utf-8")
-        senior_root = Path(_iso)
+        senior_root = Path(isolation.name)
     else:
         senior_root = root
 
@@ -133,15 +155,29 @@ def run_deep_review(target: str | Path, *, profile: str = "auto",
     for rel, text in files.items():
         rep = analyze_source(text, source=rel)
         scan[rel] = rep.__dict__ if hasattr(rep, "__dict__") else {}
+    stages.append(_stage(1, "EXECUTED", f"{len(files)} source file(s) scanned"))
 
     # Stage 3-5: senior review (includes code_quality = structure + deadcode)
-    senior = review_project(senior_root, profile=profile)
+    try:
+        senior = review_project(senior_root, profile=profile)
+    finally:
+        if isolation is not None:
+            isolation.cleanup()
     issues: list[dict[str, Any]] = list(senior.get("issues", []))
+    stages.extend(
+        [
+            _stage(3, "EXECUTED", "structure metrics produced by senior review"),
+            _stage(4, "EXECUTED", "dead-code analysis produced by senior review"),
+            _stage(5, "EXECUTED", "senior review completed"),
+        ]
+    )
 
     # Stage 2: anti-pattern lint
     issues.extend(_lint_issues(files))
+    stages.append(_stage(2, "EXECUTED", "anti-pattern detectors completed"))
     # Stage 6: modernization advisor
     issues.extend(_modernize_issues(files))
+    stages.append(_stage(6, "EXECUTED", "modernization analysis completed"))
 
     # group static code_quality findings per file for line-review grounding
     static_by_file: dict[str, list] = {}
@@ -149,14 +185,31 @@ def run_deep_review(target: str | Path, *, profile: str = "auto",
         if it.get("category") == "code_quality" and it.get("file"):
             static_by_file.setdefault(it["file"], []).append(it)
 
-    # Stage 7: grounded line review (pack unless skipped)
+    # Stage 7 prepares grounded review packets; it does not fabricate an LLM verdict.
     line_review = _line_review_section(files, static_by_file, fast)
+    if line_review.get("mode") == "skipped":
+        stages.append(_stage(7, "SKIPPED", str(line_review.get("reason", "not run"))))
+    else:
+        stages.append(
+            _stage(
+                7,
+                "EXECUTED",
+                f"{line_review.get('packets', 0)} grounded packet(s) prepared; no LLM verdict claimed",
+            )
+        )
 
     # v2.5 (#6): structured graphs (call / input-usage / order-lifecycle /
     # risk-invariant). Additive evidence section; does not alter the senior
     # score/issue counts so existing contracts stay stable.
     from .mq5_graphs import analyze_graphs
     graphs = analyze_graphs(files)
+    stages.append(_stage(0, "EXECUTED", "symbol and lifecycle graphs generated"))
+    stages.sort(key=lambda item: item["id"])
+    checked_categories = [
+        f"Stage {item['id']}: {item['name']}"
+        for item in stages
+        if item["status"] == "EXECUTED"
+    ]
 
     counts = {s: sum(1 for i in issues if i.get("severity") == s)
               for s in ("critical", "error", "warn", "info")}
@@ -172,7 +225,7 @@ def run_deep_review(target: str | Path, *, profile: str = "auto",
     )
 
     return {
-        "schema_version": "2.4",
+        "schema_version": "2.5",
         "artifact_type": "ea_deep_review",
         "tool": TOOL,
         "project": str(root),
@@ -187,15 +240,8 @@ def run_deep_review(target: str | Path, *, profile: str = "auto",
         "line_review": line_review,
         "scan": scan,
         "graphs": graphs,
-        "checked_categories": [
-            "strategy/signals (Stage 1)",
-            "anti-patterns (Stage 2)",
-            "structure & complexity (Stage 3)",
-            "dead-code / dead-logic (Stage 4)",
-            "risk / execution / state / release (Stage 5)",
-            "modernization (Stage 6)",
-            "grounded line review (Stage 7)",
-        ],
+        "stages": stages,
+        "checked_categories": checked_categories,
     }
 
 
@@ -209,6 +255,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     strat = report.get("strategy", {})
     a(f"- Strategy: {strat.get('family', 'n/a')} "
       f"({', '.join(strat.get('signals', []))})")
+    a(f"- Strategy detection: {strat.get('detection_source', 'n/a')}")
     a(f"- Files scanned: {len(report.get('files_scanned', []))}")
     cq = report.get("code_quality", {})
     if cq:
@@ -216,9 +263,14 @@ def render_markdown(report: dict[str, Any]) -> str:
           f"max complexity {cq.get('max_complexity', 0)}, "
           f"{cq.get('dead_findings', 0)} dead-code findings")
     a("")
-    a("## Checked categories")
-    for c in report.get("checked_categories", []):
-        a(f"- {c}")
+    a("## Stage execution")
+    a("| Stage | Status | Detail |")
+    a("|---|---|---|")
+    for stage in report.get("stages", []):
+        a(
+            f"| {stage.get('id')}: {stage.get('name')} | "
+            f"{stage.get('status')} | {stage.get('detail')} |"
+        )
     a("")
     counts = report.get("issue_counts", {})
     a("## Issue summary")
@@ -334,6 +386,7 @@ def main(argv: list[str] | None = None) -> int:
             "out_dir": str(out_dir),
             "docx": docx_written,
             "line_review_packets": report.get("line_review", {}).get("packets", 0),
+            "stages": report.get("stages", []),
         },
         evidence=report.get("files_scanned", []),
     )

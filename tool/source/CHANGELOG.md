@@ -86,6 +86,17 @@
 - Report `code_quality_ok`, `release_ready` and `release_eligible` separately
   so source quality cannot be confused with native release evidence.
 
+### Truthful deep-review precision
+
+- Add a structured Stage 0–7 execution ledger and exclude skipped stages from
+  the checked-category list.
+- Describe Stage 7 as grounded packet preparation and never imply an LLM
+  verdict was produced; `--fast` records it explicitly as `SKIPPED`.
+- Detect strategy from canonical EA-IR first, then generated enabled-feature
+  contracts, and use source-name heuristics only when neither contract exists.
+- Prevent disabled generic grid/hedge library names from activating strategy
+  risk classification.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

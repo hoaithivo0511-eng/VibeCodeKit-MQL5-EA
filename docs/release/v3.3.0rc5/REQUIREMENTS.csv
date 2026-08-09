@@ -21,8 +21,8 @@ REQ-018,P1,"Separate async submission acknowledgement partial fill and completio
 REQ-019,P1,"Flush persistent state only at critical transaction boundaries",DevOps review,COMPLETED,06
 REQ-020,P1,"Execute real lint and review stages in check-all",Audit review,COMPLETED,07
 REQ-021,P1,"Treat mandatory skipped or untestable stages as release blockers",Release review,COMPLETED,07
-REQ-022,P2,"Report only deep-review stages that actually executed",Audit review,PLANNED,08
-REQ-023,P2,"Detect strategy from explicit enabled features before source heuristics",Audit precision review,PLANNED,08
+REQ-022,P2,"Report only deep-review stages that actually executed",Audit review,COMPLETED,08
+REQ-023,P2,"Detect strategy from explicit enabled features before source heuristics",Audit precision review,COMPLETED,08
 REQ-024,P2,"Separate code quality release readiness and release eligibility",Operator review,COMPLETED,07
 REQ-025,P0,"Require trusted MetaEditor and MT5 Strategy Tester evidence for release",Release contract,PLANNED,10
 REQ-026,P0,"Keep CCBSN as a fixture and forbid fixture-specific production defaults",Architecture invariant,PLANNED,00-10
