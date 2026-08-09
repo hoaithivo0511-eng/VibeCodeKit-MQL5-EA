@@ -97,6 +97,7 @@ jobs:
               'docs/release/v3.3.0rc5/PR-04-COMPLETION.md',
               'docs/release/v3.3.0rc5/PR-05-COMPLETION.md',
               'docs/release/v3.3.0rc5/PR-06-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-07-COMPLETION.md',
               'docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md',
               'docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md',
               'docs/maintenance/INITIAL-IMPORT.md',

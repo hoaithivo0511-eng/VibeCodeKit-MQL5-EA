@@ -36,6 +36,7 @@ def compute_release_eligible(
     retro_ok: bool = True,
     owner_approval_ok: bool = True,
     target_ok: bool = True,
+    mandatory_stages_ok: bool = True,
     unsafe_flags: list[str] | None = None,
     skipped_stages: list[str] | None = None,
 ) -> bool:
@@ -58,7 +59,7 @@ def compute_release_eligible(
         all([
             command_ok, compile_ok, gate_ok, backtest_ok, evidence_ok,
             matrix_ok, stress_ok, hash_chain_ok, quality_ok, forward_ok,
-            retro_ok, owner_approval_ok, target_ok,
+            retro_ok, owner_approval_ok, target_ok, mandatory_stages_ok,
         ])
         and not (unsafe_flags or [])
         and not (skipped_stages or [])

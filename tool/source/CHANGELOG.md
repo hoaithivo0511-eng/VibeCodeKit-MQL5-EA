@@ -77,6 +77,15 @@
 - Flush global-variable persistence at intent transitions and other critical
   transaction boundaries instead of every trade event.
 
+### Executable audit gate
+
+- Replace `check-all` lint and senior-review placeholders with the real static
+  analyzers over every MQL source in the project.
+- Treat every mandatory `FAIL`, `UNTESTABLE` or `SKIPPED` stage as a release
+  readiness and eligibility blocker through the canonical predicate.
+- Report `code_quality_ok`, `release_ready` and `release_eligible` separately
+  so source quality cannot be confused with native release evidence.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

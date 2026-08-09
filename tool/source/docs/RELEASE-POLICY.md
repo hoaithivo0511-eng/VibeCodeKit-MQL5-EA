@@ -60,6 +60,12 @@ Release is eligible only when **all** of these hold:
 - `UNTESTABLE` blocks release-eligibility just like `FAIL`.
 - The verdict is idempotent: re-running `vkmql-check all` does not change a
   result without an input change.
+- `code_quality_ok` means the scan, lint and senior static-review stages all
+  executed and passed. It does not imply native validation.
+- `release_ready` means every mandatory stage explicitly returned `PASS`;
+  `FAIL`, `UNTESTABLE` and `SKIPPED` are all blocking states.
+- `release_eligible` is the final canonical predicate over readiness, trusted
+  evidence, hashes, approvals and the live release target.
 - `compute_release_eligible` treats the newer `stress_ok` and `hash_chain_ok`
   keys as neutral `True` by default so pre-v2.6 callers keep working, while
   `vkmql-check all` always passes the real observed values.

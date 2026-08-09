@@ -19,17 +19,18 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
-from ._agent_io import Envelope, add_gate_report_flag, add_json_flag, maybe_emit
 from . import contract_check as cc
 from . import evidence_attestation as ea
-from . import stress_matrix_v2 as sm
 from . import release_approval as ra
 from . import retro_guard_check as rgc
 from . import spec_schema_v26 as sv
+from . import stress_matrix_v2 as sm
+from ._agent_io import Envelope, add_gate_report_flag, add_json_flag, maybe_emit
 
 TOOL = "vkmql-check-all"
 
@@ -53,6 +54,14 @@ STAGE_ORDER: tuple[str, ...] = (
 # are reported UNTESTABLE (never PASS) unless evidence already exists on disk.
 _ENV_STAGES = {"compile", "backtest"}
 
+# Release readiness requires an explicit PASS from every substantive stage.
+# The final release-policy row records that the predicate executed; it is not
+# itself evidence and is therefore intentionally excluded here.
+MANDATORY_RELEASE_STAGES: tuple[str, ...] = tuple(
+    name for name in STAGE_ORDER if name != "release-policy"
+)
+CODE_QUALITY_STAGES: tuple[str, ...] = ("scan", "lint", "review")
+
 
 @dataclass
 class StageResult:
@@ -67,6 +76,8 @@ class StageResult:
 @dataclass
 class CheckAllResult:
     ok: bool
+    code_quality_ok: bool
+    release_ready: bool
     release_eligible: bool
     project_dir: str
     stages: list[StageResult] = field(default_factory=list)
@@ -74,6 +85,8 @@ class CheckAllResult:
     def to_dict(self) -> dict[str, Any]:
         return {
             "ok": self.ok,
+            "code_quality_ok": self.code_quality_ok,
+            "release_ready": self.release_ready,
             "release_eligible": self.release_eligible,
             "project_dir": self.project_dir,
             "stages": [s.to_dict() for s in self.stages],
@@ -283,9 +296,72 @@ def _stage_env(name: str, project_dir: Path) -> StageResult:
     return StageResult(name, "UNTESTABLE", "requires a real MT5/Wine environment")
 
 
-def _stage_simple(name: str) -> StageResult:
-    # lint / review: advisory placeholders that don't block in this sandbox.
-    return StageResult(name, "SKIPPED", "not run in this environment")
+def _stage_lint(project_dir: Path) -> StageResult:
+    """Run the real anti-pattern pipeline over every MQL source."""
+    try:
+        from .ea_doc_analyzer import read_mql_files
+        from .lint import lint_source
+
+        files = read_mql_files(project_dir)
+        if not files:
+            return StageResult("lint", "FAIL", "no .mq5/.mqh source to lint")
+        findings = [
+            finding
+            for rel, source in files.items()
+            for finding in lint_source(rel, source)
+        ]
+        errors = [finding for finding in findings if finding.severity == "ERROR"]
+        warnings = [finding for finding in findings if finding.severity == "WARN"]
+        if errors:
+            codes = ", ".join(sorted({finding.code for finding in errors}))
+            return StageResult(
+                "lint",
+                "FAIL",
+                f"{len(errors)} error(s), {len(warnings)} warning(s); codes: {codes}",
+            )
+        return StageResult(
+            "lint",
+            "PASS",
+            f"{len(files)} source file(s); 0 errors, {len(warnings)} warning(s)",
+        )
+    except Exception as exc:  # noqa: BLE001
+        return StageResult("lint", "UNTESTABLE", f"lint error: {exc}")
+
+
+def _stage_review(project_dir: Path) -> StageResult:
+    """Run senior static review without confusing evidence gaps with code defects."""
+    try:
+        from .ea_senior_review import review_project
+
+        report = review_project(project_dir)
+        issues = report.get("issues", [])
+        code_blockers = [
+            issue
+            for issue in issues
+            if issue.get("category") != "release"
+            and issue.get("severity") in {"critical", "error"}
+        ]
+        release_blockers = [
+            issue
+            for issue in issues
+            if issue.get("category") == "release"
+            and issue.get("severity") in {"critical", "error"}
+        ]
+        if code_blockers:
+            titles = ", ".join(str(issue.get("title", "unnamed")) for issue in code_blockers[:5])
+            return StageResult(
+                "review",
+                "FAIL",
+                f"{len(code_blockers)} static blocker(s): {titles}",
+            )
+        return StageResult(
+            "review",
+            "PASS",
+            f"senior review executed; 0 static blockers; "
+            f"{len(release_blockers)} evidence blocker(s) tracked separately",
+        )
+    except Exception as exc:  # noqa: BLE001
+        return StageResult("review", "UNTESTABLE", f"review error: {exc}")
 
 
 def _release_target(project_dir: Path) -> str:
@@ -311,7 +387,13 @@ def _stage_approval(project_dir: Path) -> StageResult:
 
 def run_check_all(project_dir: Path | str) -> CheckAllResult:
     project_dir = Path(project_dir)
-    res = CheckAllResult(ok=True, release_eligible=False, project_dir=str(project_dir))
+    res = CheckAllResult(
+        ok=True,
+        code_quality_ok=False,
+        release_ready=False,
+        release_eligible=False,
+        project_dir=str(project_dir),
+    )
     if not project_dir.is_dir():
         res.ok = False
         res.stages.append(StageResult("scan", "FAIL", f"project dir not found: {project_dir}"))
@@ -320,13 +402,13 @@ def run_check_all(project_dir: Path | str) -> CheckAllResult:
     runners: dict[str, Callable[[], StageResult]] = {
         "scan": lambda: _stage_scan(project_dir),
         "contract": lambda: _stage_contract(project_dir),
-        "lint": lambda: _stage_simple("lint"),
+        "lint": lambda: _stage_lint(project_dir),
         "compile": lambda: _stage_env("compile", project_dir),
         "backtest": lambda: _stage_env("backtest", project_dir),
         "quality": lambda: _stage_quality(project_dir),
         "forward": lambda: _stage_forward(project_dir),
         "stress": lambda: _stage_stress(project_dir),
-        "review": lambda: _stage_simple("review"),
+        "review": lambda: _stage_review(project_dir),
         "retro": lambda: _stage_retro(project_dir),
         "approval": lambda: _stage_approval(project_dir),
         "evidence": lambda: _stage_evidence(project_dir),
@@ -338,6 +420,10 @@ def run_check_all(project_dir: Path | str) -> CheckAllResult:
     statuses = {s.name: s.status for s in res.stages}
     has_fail = any(s.status == "FAIL" for s in res.stages)
     res.ok = not has_fail
+    res.code_quality_ok = all(statuses.get(name) == "PASS" for name in CODE_QUALITY_STAGES)
+    res.release_ready = all(
+        statuses.get(name) == "PASS" for name in MANDATORY_RELEASE_STAGES
+    )
     # Route the final verdict through the kit's single canonical predicate so a
     # build can never be "release-eligible" here but "blocked" elsewhere. A
     # stage is only eligibility-positive when it is an explicit PASS;
@@ -360,6 +446,7 @@ def run_check_all(project_dir: Path | str) -> CheckAllResult:
         retro_ok=_pass("retro"),
         owner_approval_ok=_pass("approval"),
         target_ok=_release_target(project_dir) == "live",
+        mandatory_stages_ok=res.release_ready,
     )
     return res
 
@@ -369,6 +456,8 @@ def render_report(res: CheckAllResult) -> str:
         "# vkmql-check all — RELEASE GATE",
         "",
         f"- Project: `{res.project_dir}`",
+        f"- Code quality checks passed: **{res.code_quality_ok}**",
+        f"- Release ready: **{res.release_ready}**",
         f"- Release eligible: **{res.release_eligible}**",
         "",
         "| Stage | Status | Detail |",
@@ -378,8 +467,8 @@ def render_report(res: CheckAllResult) -> str:
         lines.append(f"| {s.name} | {s.status} | {s.detail} |")
     lines += [
         "",
-        "> UNTESTABLE stages (compile/backtest/stress without a real MT5 run)",
-        "> block release-eligibility. No evidence = no release.",
+        "> Any mandatory stage that is FAIL, UNTESTABLE or SKIPPED blocks",
+        "> release readiness and eligibility. No evidence = no release.",
         "",
     ]
     # Actionable hint: a FAILing contract stage almost always means the
@@ -431,6 +520,8 @@ def main(argv: list[str] | None = None) -> int:
         exit_code=exit_code,
         summary=(
             f"gate {'ok' if res.ok else 'FAILED'}; "
+            f"code_quality_ok={res.code_quality_ok}; "
+            f"release_ready={res.release_ready}; "
             f"release_eligible={res.release_eligible}"
             + ("; require-release" if args.require_release else "")
         ),
