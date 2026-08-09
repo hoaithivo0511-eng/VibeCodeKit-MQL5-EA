@@ -1,0 +1,44 @@
+# Python caches / test outputs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.json
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Temporary / patch artifacts
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+
+# MQL5 native/generated outputs belong in release evidence/assets, not source control
+*.ex5
+*.log
+
+# Local release-prep workspaces
+_release-work/
+release-work/
