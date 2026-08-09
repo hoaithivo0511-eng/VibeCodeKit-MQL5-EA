@@ -4,6 +4,7 @@ resolve_ambiguities:
 - AMB-ACCOUNT-MODEL
 - AMB-SIGNAL-LOGIC
 - AMB-REMOTE-COMMAND-MAP
+- AMB-REMOTE-COMMAND-OWNERSHIP
 assumptions:
 - CCBSN is a golden acceptance fixture only; no values are generic defaults.
 overrides:
@@ -264,6 +265,10 @@ overrides:
     - controls.pending_order_remote
     - controls.reset_lots
     new_cycle_semantics: true_means_allow_new_cycle
+    pending_command_ownership:
+      magic: 880303
+      comment_prefix: VCKDEMO
+      symbol_scope: managed_symbol
     pending_commands:
       stop_ea:
         order_type: buy_stop

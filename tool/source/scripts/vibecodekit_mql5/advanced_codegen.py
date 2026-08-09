@@ -137,6 +137,11 @@ def _command_definitions(ir: EAIR) -> list[dict[str, Any]]:
     return result
 
 
+def _command_ownership(ir: EAIR) -> dict[str, Any]:
+    ownership = ir.controls.get("pending_command_ownership") or {}
+    return ownership if isinstance(ownership, dict) else {}
+
+
 def _remote_action_statement(action: dict[str, Any]) -> str:
     action_type = str(action.get("type", "")).lower()
     if action_type == "set_state":
@@ -149,38 +154,81 @@ def _remote_action_statement(action: dict[str, Any]) -> str:
         }[str(action["path"])]
         if str(action["path"]).startswith("direction."):
             value = "false" if value == "true" else "true"
-        return f"{target}={value};used=true;"
+        return f"{target}={value};applied=true;"
     scope = str(action.get("scope", ""))
     return {
-        "managed_all": "used=CloseMagicPositions();",
-        "managed_buy": "used=CloseSide(POSITION_TYPE_BUY);",
-        "managed_sell": "used=CloseSide(POSITION_TYPE_SELL);",
-        "account_all": "used=CloseAccountPositions();",
+        "managed_all": "CloseMagicPositions();applied=RemoteManagedScopeEmpty(0);",
+        "managed_buy": "CloseSide(POSITION_TYPE_BUY);applied=RemoteManagedScopeEmpty(1);",
+        "managed_sell": "CloseSide(POSITION_TYPE_SELL);applied=RemoteManagedScopeEmpty(-1);",
+        "account_all": "CloseAccountPositions();applied=RemoteAccountScopeEmpty();",
     }[scope]
+
+
+def _remote_effect_expression(action: dict[str, Any]) -> str:
+    if str(action.get("type", "")).lower() == "set_state":
+        value = "true" if action.get("value") is True else "false"
+        target = {
+            "ea.enabled": "g_ea_enabled",
+            "cycle.new_enabled": "g_new_cycle",
+            "direction.buy_enabled": "g_stop_buy",
+            "direction.sell_enabled": "g_stop_sell",
+        }[str(action["path"])]
+        if str(action["path"]).startswith("direction."):
+            value = "false" if value == "true" else "true"
+        return f"{target}=={value}"
+    return {
+        "managed_all": "RemoteManagedScopeEmpty(0)",
+        "managed_buy": "RemoteManagedScopeEmpty(1)",
+        "managed_sell": "RemoteManagedScopeEmpty(-1)",
+        "account_all": "RemoteAccountScopeEmpty()",
+    }[str(action.get("scope", ""))]
 
 
 def _remote_command_handler(ir: EAIR) -> str:
     commands = _command_definitions(ir)
     if not commands:
         return "bool ProcessRemoteCommands(){return false;}"
-    branches: list[str] = []
+    match_branches: list[str] = []
+    apply_branches: list[str] = []
+    effect_branches: list[str] = []
     for index, command in enumerate(commands):
         prefix = "if" if index == 0 else "else if"
         ident = command["identifier"]
         statement = _remote_action_statement(command["action"])
-        branches.append(
+        match_branches.append(
             f"{prefix}(type==VCK_CMD_{ident}_TYPE&&MathAbs(p-InpCmd_{ident})<=point)"
-            f"{{{statement}}}"
+            f"return {index};"
         )
-    body = "".join(branches)
+        apply_branches.append(f"{prefix}(command_index=={index}){{{statement}}}")
+        effect_branches.append(
+            f"{prefix}(command_index=={index})return {_remote_effect_expression(command['action'])};"
+        )
+    match_body = "".join(match_branches)
+    apply_body = "".join(apply_branches)
+    effect_body = "".join(effect_branches)
     return (
-        "bool ProcessRemoteCommands(){if(!VCK_USE_REMOTE)return false;"
-        "double point=SymbolInfoDouble(g_symbol,SYMBOL_POINT);"
-        "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);"
-        "if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=g_symbol)continue;"
-        "ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);"
-        "double p=OrderGetDouble(ORDER_PRICE_OPEN);bool used=false;" + body +
-        "if(used){Trade.DeleteOrder(ticket);PersistState();return true;}}return false;}"
+        "bool RemoteManagedScopeEmpty(const int direction){for(int i=0;i<PositionsTotal();i++){ulong t=PositionGetTicket(i);"
+        "if(t==0||!PositionSelectByTicket(t))continue;if(PositionGetString(POSITION_SYMBOL)!=g_symbol||(long)PositionGetInteger(POSITION_MAGIC)!=InpMagic)continue;"
+        "ENUM_POSITION_TYPE side=(ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);if(direction==0||(direction>0&&side==POSITION_TYPE_BUY)||(direction<0&&side==POSITION_TYPE_SELL))return false;}return true;}"
+        "bool RemoteAccountScopeEmpty(){return PositionsTotal()==0;}"
+        "bool RemoteOrderOwned(const ulong ticket){if(ticket==0||!OrderSelect(ticket))return false;string comment=OrderGetString(ORDER_COMMENT);"
+        "return OrderGetString(ORDER_SYMBOL)==g_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==VCK_COMMAND_OWNER_MAGIC&&StringFind(comment,VCK_COMMAND_COMMENT_PREFIX)==0;}"
+        "int MatchRemoteCommand(){ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);double p=OrderGetDouble(ORDER_PRICE_OPEN);"
+        "double point=SymbolInfoDouble(g_symbol,SYMBOL_POINT);" + match_body + "return -1;}"
+        "bool ApplyRemoteCommandOnce(const int command_index){bool applied=false;" + apply_body + "return applied;}"
+        "bool RemoteCommandEffectSatisfied(const int command_index){" + effect_body + "return false;}"
+        "bool ContinueRemoteCommand(){int state=CommandLedger.State();if(state==VCK_CMD_IDLE)return false;"
+        "ulong ticket=CommandLedger.Ticket();int command_index=CommandLedger.CommandIndex();"
+        "if(state==VCK_CMD_APPLIED){CommandLedger.FinalizeApplied();return true;}"
+        "if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistState();Log.Event(\"REMOTE_COMMAND_BLOCKED\",\"manual reconciliation required\",(double)ticket);return true;}"
+        "if(state==VCK_CMD_CLAIMED){if(!RemoteOrderOwned(ticket)){CommandLedger.Block();return true;}"
+        "if(!Trade.DeleteOrder(ticket))return true;if(!CommandLedger.MarkDeleted(ticket,command_index))return true;state=VCK_CMD_DELETED;}"
+        "if(state==VCK_CMD_DELETED){if(!CommandLedger.BeginApply(ticket,command_index))return true;ApplyRemoteCommandOnce(command_index);state=VCK_CMD_APPLYING;}"
+        "if(state==VCK_CMD_APPLYING){if(RemoteCommandEffectSatisfied(command_index)){PersistState();CommandLedger.MarkApplied(ticket,command_index);}"
+        "else{g_ea_enabled=false;PersistState();Log.Event(\"REMOTE_COMMAND_INCOMPLETE\",\"effect not satisfied; no replay\",(double)ticket);}return true;}return true;}"
+        "bool ProcessRemoteCommands(){if(!VCK_USE_REMOTE)return false;if(CommandLedger.State()!=VCK_CMD_IDLE)return ContinueRemoteCommand();"
+        "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);if(!RemoteOrderOwned(ticket))continue;int command_index=MatchRemoteCommand();"
+        "if(command_index<0)continue;if(!CommandLedger.Claim(ticket,command_index))return true;return ContinueRemoteCommand();}return false;}"
     )
 
 def _sessions(ir: EAIR) -> list[dict[str, Any]]:
@@ -221,6 +269,7 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
     while len(sessions) < 4:
         sessions.append({"enabled": False, "start": "00:00", "end": "00:00"})
     commands = _command_definitions(ir)
+    command_ownership = _command_ownership(ir)
 
     lines: list[str] = [
         "// digits-tested: 5,4,3,2", f"// Generated from EA-IR {ir.sha256()}", "#pragma once", "",
@@ -390,6 +439,10 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         lines += [f"input bool InpSession{i}Enabled={str(session['enabled']).lower()};", f'input string InpSession{i}Start="{session["start"]}";', f'input string InpSession{i}End="{session["end"]}";']
     if commands:
         lines += ['', 'input group "Remote controls"']
+        lines += [
+            f"const long VCK_COMMAND_OWNER_MAGIC={int(command_ownership['magic'])};",
+            f'const string VCK_COMMAND_COMMENT_PREFIX="{command_ownership["comment_prefix"]}";',
+        ]
         for command in commands:
             ident = command["identifier"]
             lines += [
@@ -525,6 +578,31 @@ public:
      }
    bool Overflowed(){return GlobalVariableCheck(m_prefix+"overflow")&&GlobalVariableGet(m_prefix+"overflow")>0.5;}
    bool AcceptClosedPosition(const ulong position_id){return Accept("position",position_id);}
+  };
+'''
+
+
+REMOTE_COMMAND_LEDGER = r'''// digits-tested: 5,4,3,2
+#pragma once
+enum VCKRemoteCommandState { VCK_CMD_IDLE=0,VCK_CMD_CLAIMED,VCK_CMD_DELETED,VCK_CMD_APPLYING,VCK_CMD_APPLIED,VCK_CMD_BLOCKED };
+class CRemoteCommandLedger
+  {
+private:
+   string m_prefix;
+   string Key(const string suffix){return m_prefix+suffix;}
+   void SaveTicket(const ulong value){GlobalVariableSet(Key("ticket_hi"),(double)(value>>32));GlobalVariableSet(Key("ticket_lo"),(double)(value&0xFFFFFFFF));}
+   void Clear(){GlobalVariableDel(Key("ticket_hi"));GlobalVariableDel(Key("ticket_lo"));GlobalVariableDel(Key("command"));GlobalVariableSet(Key("state"),(double)VCK_CMD_IDLE);GlobalVariablesFlush();}
+public:
+   void Configure(const long magic,const string symbol){m_prefix="VCK_REMOTE_"+(string)magic+"_"+symbol+"_";if(!GlobalVariableCheck(Key("state")))GlobalVariableSet(Key("state"),(double)VCK_CMD_IDLE);}
+   int State(){return GlobalVariableCheck(Key("state"))?(int)GlobalVariableGet(Key("state")):VCK_CMD_IDLE;}
+   ulong Ticket(){ulong hi=GlobalVariableCheck(Key("ticket_hi"))?(ulong)GlobalVariableGet(Key("ticket_hi")):0,lo=GlobalVariableCheck(Key("ticket_lo"))?(ulong)GlobalVariableGet(Key("ticket_lo")):0;return(hi<<32)|lo;}
+   int CommandIndex(){return GlobalVariableCheck(Key("command"))?(int)GlobalVariableGet(Key("command")):-1;}
+   bool Claim(const ulong ticket,const int command_index){string state=Key("state");if(!GlobalVariableSetOnCondition(state,(double)VCK_CMD_CLAIMED,(double)VCK_CMD_IDLE))return false;SaveTicket(ticket);GlobalVariableSet(Key("command"),(double)command_index);GlobalVariablesFlush();return true;}
+   bool MarkDeleted(const ulong ticket,const int command_index){if(State()!=VCK_CMD_CLAIMED||Ticket()!=ticket||CommandIndex()!=command_index)return false;GlobalVariableSet(Key("state"),(double)VCK_CMD_DELETED);GlobalVariablesFlush();return true;}
+   bool BeginApply(const ulong ticket,const int command_index){if(Ticket()!=ticket||CommandIndex()!=command_index||!GlobalVariableSetOnCondition(Key("state"),(double)VCK_CMD_APPLYING,(double)VCK_CMD_DELETED))return false;GlobalVariablesFlush();return true;}
+   void MarkApplied(const ulong ticket,const int command_index){if(State()==VCK_CMD_APPLYING&&Ticket()==ticket&&CommandIndex()==command_index){GlobalVariableSet(Key("state"),(double)VCK_CMD_APPLIED);GlobalVariablesFlush();}}
+   void FinalizeApplied(){if(State()==VCK_CMD_APPLIED)Clear();}
+   void Block(){GlobalVariableSet(Key("state"),(double)VCK_CMD_BLOCKED);GlobalVariablesFlush();}
   };
 '''
 
@@ -713,6 +791,7 @@ MAIN_TEMPLATE = r'''// digits-tested: 5,4,3,2
 #include <__NAME__/Core/AsyncTradeExecutor.mqh>
 #include <__NAME__/Core/PositionBook.mqh>
 #include <__NAME__/Core/TradeEventReducer.mqh>
+#include <__NAME__/Core/RemoteCommandLedger.mqh>
 #include <__NAME__/Signal/EntryEngine.mqh>
 #include <__NAME__/Risk/GridRiskGuard.mqh>
 #include <__NAME__/Exit/BasketCloseEngine.mqh>
@@ -722,7 +801,7 @@ MAIN_TEMPLATE = r'''// digits-tested: 5,4,3,2
 enum VCKLifecycleState { VCK_IDLE,VCK_ACTIVE_CYCLE,VCK_DCA_ACTIVE,VCK_HEDGE_ACTIVE,VCK_HEDGE_ZONE_ACTIVE,VCK_CLOSING,VCK_COOLDOWN,VCK_STOPPED };
 enum VCKExposureSource { VCK_SRC_ENTRY,VCK_SRC_DCA,VCK_SRC_HEDGE,VCK_SRC_HEDGE_ZONE,VCK_SRC_REVERSE,VCK_SRC_BALANCE };
 enum VCKZonePhase { VCK_ZONE_IDLE,VCK_ZONE_ACTIVE,VCK_ZONE_EXITING,VCK_ZONE_RECONCILING };
-CAsyncTradeExecutor Trade; CTradeEventReducer EventReducer; CVCKPositionBook Book; CVCKEntryEngine Entry; CGridRiskGuard GridRisk; CBasketCloseEngine Basket; CPersistentStateStore StateStore; CStructuredLogger Log; CMfeMaeLogger MfeMae;
+CAsyncTradeExecutor Trade; CTradeEventReducer EventReducer; CRemoteCommandLedger CommandLedger; CVCKPositionBook Book; CVCKEntryEngine Entry; CGridRiskGuard GridRisk; CBasketCloseEngine Basket; CPersistentStateStore StateStore; CStructuredLogger Log; CMfeMaeLogger MfeMae;
 VCKLifecycleState g_state=VCK_IDLE; int g_zone_phase=VCK_ZONE_IDLE; string g_symbol=""; double g_pip=0; bool g_ea_enabled=true,g_new_cycle=true,g_stop_buy=false,g_stop_sell=false,g_hedge_zone=false,g_daily_history_ready=true; datetime g_last_entry=0,g_last_balance=0,g_last_clear=0,g_last_dca_bar=0,g_cooldown_until=0; double g_lottery_factor=1,g_buy_reset_lot=0,g_sell_reset_lot=0,g_zone_low=0,g_zone_high=0,g_day_start_balance=0,g_persisted_peak=0; int g_daily_halt_day=0,g_balance_day=0,g_zone_cycle_id=0,g_history_sync_confirmations=0; ulong g_zone_anchor_position_id=0;
 const string VCKP_PREFIX="VCKP_"; bool g_close_armed=false; datetime g_close_armed_at=0;
 void PersistState(){StateStore.Save(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.SaveExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,GridRisk.Peak(),g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);}
@@ -800,7 +879,7 @@ void OnChartEvent(const int id,const long &lparam,const double &dparam,const str
 
 __INPUT_VALIDATOR__
 
-int OnInit(){if(!ValidateOperationalInputs())return INIT_PARAMETERS_INCORRECT;g_symbol=StringLen(InpTradeSymbol)>0?InpTradeSymbol:_Symbol;if(!SymbolSelect(g_symbol,true))return INIT_FAILED;if((VCK_USE_DCA||VCK_USE_HEDGE||VCK_USE_HEDGE_ZONE||VCK_USE_REVERSE_ENTRY||VCK_USE_LOT_BALANCE)&&(ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING){Print("Composition requires MT5 hedging account");return INIT_FAILED;}g_pip=PipSize();if(g_pip<=0||!Entry.Init(g_symbol,InpSignalTimeframe))return INIT_FAILED;MathSrand((int)GetTickCount());Trade.Configure(InpMagic,g_symbol,InpSignalTimeframe,InpMaxSpreadPips,InpAsyncExecution);EventReducer.Configure(InpMagic,g_symbol);StateStore.Configure(InpMagic,g_symbol);StateStore.Load(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.LoadExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,g_persisted_peak,g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);GridRisk.Init(g_persisted_peak);Log.Configure("__NAME__");MfeMae.Configure("__NAME__");Trade.Reconcile();VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);CreatePanel();Log.Event("INIT","EA initialized");return INIT_SUCCEEDED;}
+int OnInit(){if(!ValidateOperationalInputs())return INIT_PARAMETERS_INCORRECT;g_symbol=StringLen(InpTradeSymbol)>0?InpTradeSymbol:_Symbol;if(!SymbolSelect(g_symbol,true))return INIT_FAILED;if((VCK_USE_DCA||VCK_USE_HEDGE||VCK_USE_HEDGE_ZONE||VCK_USE_REVERSE_ENTRY||VCK_USE_LOT_BALANCE)&&(ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING){Print("Composition requires MT5 hedging account");return INIT_FAILED;}g_pip=PipSize();if(g_pip<=0||!Entry.Init(g_symbol,InpSignalTimeframe))return INIT_FAILED;MathSrand((int)GetTickCount());Trade.Configure(InpMagic,g_symbol,InpSignalTimeframe,InpMaxSpreadPips,InpAsyncExecution);EventReducer.Configure(InpMagic,g_symbol);CommandLedger.Configure(InpMagic,g_symbol);StateStore.Configure(InpMagic,g_symbol);StateStore.Load(g_ea_enabled,g_new_cycle,g_stop_buy,g_stop_sell,g_lottery_factor);StateStore.LoadExtended(g_daily_halt_day,g_balance_day,g_day_start_balance,g_persisted_peak,g_hedge_zone,g_zone_phase,g_zone_cycle_id,g_zone_anchor_position_id,g_zone_low,g_zone_high,g_cooldown_until);GridRisk.Init(g_persisted_peak);Log.Configure("__NAME__");MfeMae.Configure("__NAME__");Trade.Reconcile();VCKSideStats buy,sell;Book.Collect(g_symbol,InpMagic,POSITION_TYPE_BUY,buy);Book.Collect(g_symbol,InpMagic,POSITION_TYPE_SELL,sell);ReconcileHedgeZoneState(buy,sell);CreatePanel();Log.Event("INIT","EA initialized");return INIT_SUCCEEDED;}
 void OnDeinit(const int reason){PersistState();Log.Event("DEINIT",IntegerToString(reason));Entry.Release();ObjectsDeleteAll(0,VCKP_PREFIX);}
 bool TickAdmissionGate()
   {
@@ -1038,6 +1117,7 @@ def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -
             f"Include/{name}/Core/AsyncTradeExecutor.mqh": TRADE_EXECUTOR,
             f"Include/{name}/Core/TradeIntentLedger.mqh": TRADE_INTENT_LEDGER,
             f"Include/{name}/Core/TradeEventReducer.mqh": TRADE_EVENT_REDUCER,
+            f"Include/{name}/Core/RemoteCommandLedger.mqh": REMOTE_COMMAND_LEDGER,
             f"Include/{name}/Core/PositionBook.mqh": POSITION_BOOK,
             f"Include/{name}/Signal/EntryEngine.mqh": ENTRY_ENGINE,
             f"Include/{name}/Risk/GridRiskGuard.mqh": GRID_RISK_GUARD,

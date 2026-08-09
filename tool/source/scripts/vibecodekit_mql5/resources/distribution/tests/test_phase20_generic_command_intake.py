@@ -27,6 +27,13 @@ def test_structured_command_ids_and_prices_are_project_defined(tmp_path: Path):
         "resolve_ambiguities": [a["id"] for a in ir.ambiguities],
         "overrides": {
         "runtime": {"account_model": "hedging", "symbols": ["EURUSD"], "timeframes": ["H1"]},
+        "controls": {
+            "pending_command_ownership": {
+                "magic": 881234,
+                "comment_prefix": "NIMBUSCMD",
+                "symbol_scope": "managed_symbol",
+            },
+        },
         "strategy": {
             "features": ["strategy.entry.signal_selectable", "strategy.dca.enabled", "strategy.dca.step"],
             "signals": ["rsi"], "signal_logic": "selectable",

@@ -62,6 +62,5 @@ P0/P1 requirements require 100% PASS. A `SKIPPED`, `UNTESTABLE`, `MISSING` or
 ## Current gate
 
 The owner approved Wave 1 after reviewing the Wave 0 Completion Reports.
-Tasks 01, 02 and 03 are complete. Runtime Tasks 04, 05 and 06 must now be
-implemented and verified sequentially; do not start the Wave 2 audit changes
-until the Wave 1 owner gate.
+Tasks 01 through 05 are complete. Runtime Task 06 is the remaining Wave 1
+change and must pass its completion gate before any Wave 2 audit work starts.

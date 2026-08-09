@@ -53,6 +53,17 @@
   `VCK_CONFIG_INVALID` diagnostic when operational inputs violate the contract.
 - Emit `RUNTIME-INPUT-CONTRACTS.json` bound to the canonical EA-IR hash.
 
+### Remote command lifecycle
+
+- Require every pending-order command channel to declare a positive owner
+  magic, portable comment prefix and managed-symbol scope.
+- Match all ownership factors before claiming a command; price and order type
+  alone are never authority.
+- Persist a compare-and-swap command ledger across `CLAIMED`, `DELETED`,
+  `APPLYING` and `APPLIED` boundaries.
+- Delete a claimed pending order before applying its effect and verify effects
+  without replaying an action after an uncertain interruption.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

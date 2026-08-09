@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 from .ea_ir import EAIR
 from .feature_registry import get
@@ -78,10 +79,55 @@ _ALLOWED_STATE_PATHS = {
 }
 _ALLOWED_CLOSE_SCOPES = {"managed_all", "managed_buy", "managed_sell", "account_all"}
 _ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+_COMMENT_PREFIX_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{2,15}$")
+
+
+def _validate_remote_ownership(ir: EAIR) -> list[dict[str, Any]]:
+    path = "controls.pending_command_ownership"
+    ownership = ir.controls.get("pending_command_ownership")
+    if not isinstance(ownership, dict) or not ownership:
+        return [{
+            "id": "MISSING-REMOTE-COMMAND-OWNERSHIP",
+            "path": path,
+            "message": "Pending-order commands require an explicit magic, comment prefix and managed-symbol scope.",
+        }]
+    blockers: list[dict[str, Any]] = []
+    expected = {"magic", "comment_prefix", "symbol_scope"}
+    unknown = sorted(set(ownership) - expected)
+    missing = sorted(expected - set(ownership))
+    if unknown or missing:
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-OWNERSHIP-SHAPE",
+            "path": path,
+            "missing": missing,
+            "unknown": unknown,
+        })
+    magic = ownership.get("magic")
+    if isinstance(magic, bool) or not isinstance(magic, int) or magic <= 0:
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-OWNER-MAGIC",
+            "path": path + ".magic",
+            "value": magic,
+        })
+    prefix = ownership.get("comment_prefix")
+    if not isinstance(prefix, str) or not _COMMENT_PREFIX_RE.fullmatch(prefix):
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-COMMENT-PREFIX",
+            "path": path + ".comment_prefix",
+            "value": prefix,
+            "message": "Use a portable 3-16 character ownership prefix.",
+        })
+    if ownership.get("symbol_scope") != "managed_symbol":
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-SYMBOL-SCOPE",
+            "path": path + ".symbol_scope",
+            "value": ownership.get("symbol_scope"),
+        })
+    return blockers
 
 
 def _validate_remote_commands(ir: EAIR) -> list[dict[str, Any]]:
-    blockers: list[dict[str, Any]] = []
+    blockers = _validate_remote_ownership(ir)
     commands = ir.controls.get("pending_commands") or {}
     if not isinstance(commands, dict) or not commands:
         return [{
@@ -144,8 +190,8 @@ def validate(ir: EAIR, requested: Iterable[str]) -> list[dict[str, Any]]:
     blockers: list[dict[str, Any]] = []
 
     executable = any(
-        p.startswith("strategy.entry.") or p.startswith("strategy.dca.") or
-        p.startswith("strategy.hedge.") for p in paths
+        p.startswith(("strategy.entry.", "strategy.dca.", "strategy.hedge."))
+        for p in paths
     )
     required_groups: dict[tuple[str, ...], set[str]] = {}
     if executable:

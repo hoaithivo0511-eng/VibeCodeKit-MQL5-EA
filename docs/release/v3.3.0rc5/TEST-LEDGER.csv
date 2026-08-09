@@ -34,3 +34,9 @@ T04-001,Runtime contract focused suite,Python 3.12,6/6 tests passed,test_phase22
 T04-002,Advanced generator and contract coverage,coverage.py,96.76% combined,pytest-cov --cov-fail-under=95,PASS,"advanced_codegen 95%; runtime_input_contracts 100%"
 T04-003,RC5 source regression after Task 04,Python 3.12,169/169 tests passed,task04-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
 T04-004,RC5 selftest after Task 04,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,27 shipped test modules detected
+T05-001,Remote command lifecycle focused suite,Python 3.12,7/7 tests passed,test_phase23_remote_command_lifecycle.py,PASS,"Ownership factors; ambiguity; claim/delete/apply; replay stop; project isolation"
+T05-002,Affected remote and generator suite,Python 3.12,35/35 tests passed,phase10/12/16/18/19/20/23 tests,PASS,Generic and CCBSN fixture profiles both pass
+T05-003,Touched runtime pipeline coverage,coverage.py,85.68% combined,pytest-cov --cov-fail-under=85,PASS,"advanced_codegen 97%; feature_config/intake/profile branches included"
+T05-004,Generated EA static lint,Python 3.12,mql5-lint ok with 0 errors,generated OrionRecovery main,PASS,One unrelated UX panel warning
+T05-005,RC5 source regression after Task 05,Python 3.12,176/176 tests passed,task05-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T05-006,RC5 selftest after Task 05,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,28 shipped test modules detected

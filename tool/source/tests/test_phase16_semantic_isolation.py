@@ -36,6 +36,11 @@ def generic_ir() -> EAIR:
         controls={
             "features": ["controls.pending_order_remote"],
             "pending_command_transport": "pending_order_v1",
+            "pending_command_ownership": {
+                "magic": 880001,
+                "comment_prefix": "ORIONCMD",
+                "symbol_scope": "managed_symbol",
+            },
             "pending_commands": {
                 "pause_engine": {
                     "order_type": "buy_limit",

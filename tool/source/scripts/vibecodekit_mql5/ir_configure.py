@@ -23,7 +23,11 @@ _ALLOWED_ROOTS = {"identity", "runtime", "strategy", "risk", "controls", "metada
 # Mappings whose keys are complete operator-defined contracts, not partial
 # configuration fragments. Merging these with extracted maps can create duplicate
 # commands or stale policies, so an explicit profile replaces them atomically.
-_ATOMIC_MAPPING_PATHS = {"controls.pending_commands", "runtime.time_policy"}
+_ATOMIC_MAPPING_PATHS = {
+    "controls.pending_command_ownership",
+    "controls.pending_commands",
+    "runtime.time_policy",
+}
 
 
 def _load_mapping(path: Path) -> dict[str, Any]:
@@ -34,7 +38,7 @@ def _load_mapping(path: Path) -> dict[str, Any]:
         import yaml
         raw = yaml.safe_load(text)
     if not isinstance(raw, dict):
-        raise ValueError("profile root must be a mapping")
+        raise TypeError("profile root must be a mapping")
     return raw
 
 
@@ -68,7 +72,7 @@ def apply_profile(ir: EAIR, profile: dict[str, Any], *, source: str = "profile")
         )
     overrides = profile.get("overrides") or {}
     if not isinstance(overrides, dict):
-        raise ValueError("profile overrides must be a mapping")
+        raise TypeError("profile overrides must be a mapping")
     unknown = sorted(set(overrides) - _ALLOWED_ROOTS)
     if unknown:
         raise ValueError(f"unsupported profile override roots: {', '.join(unknown)}")
@@ -76,7 +80,7 @@ def apply_profile(ir: EAIR, profile: dict[str, Any], *, source: str = "profile")
     raw = ir.to_dict(include_hash=False)
     for root, values in overrides.items():
         if not isinstance(values, dict):
-            raise ValueError(f"profile overrides.{root} must be a mapping")
+            raise TypeError(f"profile overrides.{root} must be a mapping")
         raw[root] = _deep_merge(dict(raw.get(root) or {}), values, prefix=root)
 
     name = str((raw.get("identity") or {}).get("name") or "")
@@ -90,7 +94,7 @@ def apply_profile(ir: EAIR, profile: dict[str, Any], *, source: str = "profile")
     profile_name = str(profile.get("profile_name") or Path(source).stem)
     assumptions = profile.get("assumptions") or []
     if not isinstance(assumptions, list):
-        raise ValueError("profile assumptions must be a list")
+        raise TypeError("profile assumptions must be a list")
     metadata = dict(raw.get("metadata") or {})
     metadata.update({
         "configuration_profile": profile_name,
@@ -154,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         configured = run(args.ir, args.profile, args.out)
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         print(f"mql5-ir-configure: {exc}", file=sys.stderr)
         return 2
     print(json.dumps({
