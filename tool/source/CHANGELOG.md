@@ -22,6 +22,19 @@
 - Apply the same path boundary to the deterministic mock transport used by
   regression tests.
 
+### Canonical prompt quickstart
+
+- Make `mql5-spec-from-prompt` emit complete EA-IR 3.1 JSON by default and
+  preserve `--ir` as an alias for existing callers.
+- Require `--legacy` for the older single-preset YAML view.
+- Mark legacy prompt output as `legacy_scaffold` with
+  `release_eligible: false` and propagate that marker into the canonical
+  release blocker list.
+- Reject attempts to convert a legacy mapping into EA-IR by adding only a
+  `schema_version` field.
+- Update quickstart and operator documentation to use the canonical
+  `EA-IR.json → mql5-auto-build` flow.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

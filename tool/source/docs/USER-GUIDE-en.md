@@ -32,7 +32,7 @@ audience: end_user, dev_team, ai_agent_operator
 - [2. Health check `mql5-doctor`](#2-health-check-mql5-doctor)
 - [3. Choose one of two paths](#3-choose-one-of-two-paths)
 - [4. Path A — CLI hands-on, 7 steps](#4-path-a--cli-hands-on-7-steps)
-  - [4.1. Idea → `ea-spec.yaml`](#41-idea--ea-specyaml)
+  - [4.1. Idea → canonical EA-IR](#41-idea--canonical-ea-ir)
   - [4.2. Validate the spec (8 blocks)](#42-validate-the-spec-8-blocks)
   - [4.3. Build with `mql5-auto-build`](#43-build-with-mql5-auto-build)
   - [4.3.1. EA docs auto-generation (Neo-Retro Dev Deck)](#431-ea-docs-auto-generation-neo-retro-dev-deck)
@@ -64,24 +64,24 @@ elaboration on these.
 # (2) Health check
 python -m vibecodekit_mql5.doctor
 
-# (3) Free-text → ea-spec.yaml
+# (3) Free-text → canonical EA-IR 3.1
 python -m vibecodekit_mql5.spec_from_prompt \
-    "trend EA EURUSD H1 MACD + EMA cross, risk 0.5%, SL 30 TP 60, FTMO prop firm" \
-    --out ea-spec.yaml
+    "EA named TrendEA account netting EURUSD H1 trend MACD + EMA cross, risk 0.5%, SL 30 TP 60" \
+    --strict --out EA-IR.json
 
 # (4) Build + lint + compile + permission gate + dashboard, one command
-python -m vibecodekit_mql5.auto_build --spec ea-spec.yaml \
-    --out ./dist --mode personal
+python -m vibecodekit_mql5.auto_build --spec EA-IR.json \
+    --out-dir ./dist
 
 # (5) Trader-17 + RRI sanity check before backtesting
-python -m vibecodekit_mql5.trader_check ./dist/MyEA.mq5
+python -m vibecodekit_mql5.trader_check ./dist/Experts/TrendEA/TrendEA.mq5
 ```
 
 Produces:
 
-- `./dist/MyEA.mq5` — fully rendered source with RiskGuard,
+- `./dist/Experts/TrendEA/TrendEA.mq5` — generated source with RiskGuard,
   PipNormalizer, same-bar guard, all 8 TIPs.
-- `./dist/MyEA.ex5` — compiled clean.
+- `./dist/Experts/TrendEA/TrendEA.ex5` — compiled output when MetaEditor is configured.
 - `./dist/dashboard.html` — 64-cell quality matrix.
 - `./dist/lint.json`, `./dist/permission.json` — audit artefacts.
 
@@ -212,25 +212,36 @@ prompt → spec → build → verify → test → review → ship
         4.1 4.2 4.3-4.4 4.5 4.6 4.7
 ```
 
-### 4.1. Idea → `ea-spec.yaml`
+### 4.1. Idea → canonical EA-IR
 
 Two ways to land on a spec:
 
-**(a) Free-text → spec (chat-driven)**
+**(a) Free-text → canonical EA-IR (default)**
 
 Fastest for classic EAs:
 
 ```bash
 python -m vibecodekit_mql5.spec_from_prompt \
-    "trend EA EURUSD H1 MACD + EMA cross, risk 0.5%, SL 30 pips TP 60 pips, prop firm FTMO daily-DD 5%, close Friday 20h" \
-    --out ea-spec.yaml
+    "EA named TrendEA account netting EURUSD H1 MACD + EMA cross, risk 0.5%, SL 30 pips TP 60 pips" \
+    --strict --out EA-IR.json
 ```
 
-The parser infers `preset`, `stack` (default `wizard-composable`),
-`signals`, `filters`, and the three PR-2 blocks (`prop_firm`,
-`time_exit`, `stealth`) when the prompt mentions them. Output
-includes `inferred` (auto-derived) and `defaulted` (fallback)
-sections so you can review before building.
+The output is a real EA-IR object with `identity`, `runtime`, `strategy`,
+`risk`, `controls`, requirement evidence, ambiguities, conflicts and a
+canonical `ir_sha256`. It can be passed directly to `mql5-auto-build`.
+
+**(b) Explicit legacy single-preset YAML**
+
+Only use this path for an older consumer that cannot read EA-IR:
+
+```bash
+python -m vibecodekit_mql5.spec_from_prompt \
+    "EA named TrendEA account netting EURUSD H1 trend risk 0.5%" \
+    --legacy --out ea-spec.yaml
+```
+
+The compatibility document contains `compatibility.release_eligible: false`.
+It is never silently relabelled as EA-IR and cannot support a release claim.
 
 ```yaml
 name: TrendEA_EURUSD_H1
@@ -239,6 +250,9 @@ stack: wizard-composable
 symbol: EURUSD
 timeframe: H1
 mode: personal
+compatibility:
+  mode: legacy_scaffold
+  release_eligible: false
 risk:
   per_trade_pct: 0.5
   sl_pips: 30
@@ -260,7 +274,7 @@ time_exit:
   friday_close_hour: 20
 ```
 
-**(b) Hand-write from template**
+**(c) Hand-write the legacy template**
 
 Required for EAs with custom hooks or the 5 new PR-8 blocks
 (`trailing`, `partial_close`, `correlation`, `swap_filter`, `logs`).
@@ -658,8 +672,8 @@ local dashboard.
 
 The agent will chain:
 
-1. `spec.from_prompt` — generate `ea-spec.yaml`.
-2. `spec.validate` — confirm schema OK.
+1. `spec.from_prompt` — generate canonical `EA-IR.json`.
+2. EA-IR validation — confirm schema, hash and blocking ambiguities.
 3. `build.auto` — render + compile + permission gate + docs + dashboard.
 4. `verify.lint` — scan 23 anti-patterns.
 5. `verify.trader17` — 17-point checklist.

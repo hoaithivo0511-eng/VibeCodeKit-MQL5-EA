@@ -135,18 +135,24 @@ on while writing your strategy. A one-shot version of the whole
 pipeline lives at:
 
 ```bash
-mql5-auto-build --spec ea-spec.yaml --out-dir build/MyEA
+mql5-auto-build --spec EA-IR.json --out-dir build/MyEA
 ```
 
 …which chains scan → build → lint → compile → permission → dashboard
 and writes a single idempotent `auto-build-report.json`.
 
-To generate an `ea-spec.yaml` from a free-text idea:
+Generate canonical EA-IR from a free-text idea, then feed it directly to the
+auto-build pipeline:
 
 ```bash
-mql5-spec-from-prompt "trend EA on EURUSD H1, risk 0.5% per trade" \
-    --out ea-spec.yaml
+mql5-spec-from-prompt \
+    "EA named TrendEA, account netting, EURUSD H1, trend-following, risk 0.5%" \
+    --strict --out EA-IR.json
+mql5-auto-build --spec EA-IR.json --out-dir build/MyEA
 ```
+
+The older single-preset YAML is compatibility-only and must be requested with
+`--legacy`; it carries `compatibility.release_eligible: false`.
 
 ---
 

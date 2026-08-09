@@ -208,15 +208,15 @@ and a green-CI pull request. Each command is deterministic, regex-only
 feed into the next stage.
 
 ```bash
-# Free-text → schema-valid ea-spec.yaml (use --explain to see what
-# was inferred vs defaulted; --strict to fail if any required field
-# isn't recognisable in the prompt).
-mql5-spec-from-prompt "build EA trend EURUSD H1 risk 0.5% macd or sar" \
-    --out ea-spec.yaml --explain
+# Free-text → canonical EA-IR 3.1 JSON. Strict mode blocks unresolved
+# planning fields; --explain reports requirement/ambiguity counts.
+mql5-spec-from-prompt \
+    "EA named TrendEA account netting EURUSD H1 trend risk 0.5% macd or sar" \
+    --out EA-IR.json --strict --explain
 
 # Single-shot pipeline: scan → build → lint → compile → permission-gate
 # → dashboard. Writes auto-build-report.json (idempotent).
-mql5-auto-build --spec ea-spec.yaml --out-dir build/MyEA
+mql5-auto-build --spec EA-IR.json --out-dir build/MyEA
 
 # Apply the 8-AP transformer loop to an existing .mq5 (AP-1, 3, 5, 15,
 # 17, 18, 20, 21). Re-runs the lint after each pass.
@@ -238,10 +238,10 @@ Flags worth knowing:
 * `mql5-auto-build --publish-cmd <cmd>` overrides the dashboard
   publish hook for that one run.
 
-Schema reference for `ea-spec.yaml` (risk / signals / filters / hooks /
-stack overrides) lives at `scripts/vibecodekit_mql5/spec_schema.py`;
-recognisers for `mql5-spec-from-prompt` are tabulated in
-the chat-driven build parser (see the master guide §4).
+For old single-preset consumers only, add `--legacy --out ea-spec.yaml`.
+That YAML includes `compatibility.release_eligible: false`; it cannot be used
+as release evidence. Its schema reference lives at
+`scripts/vibecodekit_mql5/spec_schema.py`.
 
 ### 3.4. Verify (13)
 

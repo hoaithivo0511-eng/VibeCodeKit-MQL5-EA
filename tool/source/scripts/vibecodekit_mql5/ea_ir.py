@@ -96,16 +96,28 @@ class EAIR:
 
 def from_dict(raw: dict[str, Any]) -> EAIR:
     if not isinstance(raw, dict):
-        raise ValueError("EA-IR must be a mapping")
+        raise ValueError("EA-IR must be a mapping")  # noqa: TRY004
     if raw.get("schema_version") != IR_SCHEMA_VERSION:
         raise ValueError(
             f"unsupported EA-IR schema_version={raw.get('schema_version')!r}; "
             f"expected {IR_SCHEMA_VERSION!r}"
         )
+    legacy_keys = {"name", "preset", "stack", "symbol", "timeframe", "compatibility"}
+    present_legacy = sorted(legacy_keys & set(raw))
+    if present_legacy:
+        raise ValueError(
+            "legacy scaffold mapping cannot be relabelled as EA-IR; "
+            f"unexpected top-level keys: {present_legacy}"
+        )
+    for section in ("identity", "runtime", "strategy"):
+        if not isinstance(raw.get(section), dict):
+            raise ValueError(f"EA-IR requires a {section!r} mapping")  # noqa: TRY004
     requirements: list[Requirement] = []
     for item in raw.get("requirements", []):
         if not isinstance(item, dict):
-            raise ValueError("EA-IR requirements entries must be mappings")
+            raise ValueError(  # noqa: TRY004
+                "EA-IR requirements entries must be mappings"
+            )
         refs = [SourceRef(**r) for r in item.get("source_refs", [])]
         requirements.append(
             Requirement(

@@ -4,12 +4,20 @@ Central policy: no compile/backtest/gate evidence, no release claim.
 """
 from __future__ import annotations
 
-import hashlib, json
+import hashlib
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-UNSAFE_FLAGS = {"--draft", "--no-compile", "--no-gate", "--allow-skips", "--unsafe-allow-skips"}
+UNSAFE_FLAGS = {
+    "--draft",
+    "--no-compile",
+    "--no-gate",
+    "--allow-skips",
+    "--unsafe-allow-skips",
+    "--legacy-scaffold",
+}
 FIXTURE_DIRS = {"tests", "fixtures", "examples", "samples", "docs"}
 
 
@@ -191,7 +199,7 @@ def validate_release_manifest(out_dir: Path) -> tuple[bool, str]:
         return False, "missing evidence/manifest.json"
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except Exception as exc:
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         return False, f"invalid evidence manifest: {exc}"
     # Route release-looking manifests through the same provenance gate as the
     # attestation and check-all commands.  This prevents three policy paths

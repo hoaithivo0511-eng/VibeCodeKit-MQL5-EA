@@ -19,3 +19,10 @@ T01-001,Worker artifact security,Python 3.12,18/18 targeted tests passed,tests/t
 T01-002,Worker module coverage,coverage.py,94.87% combined,pytest-cov --cov-fail-under=90,PASS,"worker_protocol 98%; remote_worker_client 93%"
 T01-003,RC5 source regression after Task 01,Python 3.12,144/144 tests passed,task01-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
 T01-004,RC5 selftest after Task 01,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,25 shipped test modules detected
+T02-001,Canonical prompt and compatibility flow,Python 3.12,20/20 focused tests passed,test_phase4_legacy_bridge.py and test_phase4_auto_build_ir.py,PASS,"Default EA-IR; legacy flag; relabel rejection; release blocker; end-to-end build"
+T02-002,Prompt parser coverage,coverage.py,94%,pytest-cov,PASS,Minimum target 80%
+T02-003,Auto-build coverage,coverage.py,84%,pytest-cov,PASS,Minimum target 75%
+T02-004,Wave 0 RC5 source regression,Python 3.12,159/159 tests passed,wave0-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T02-005,Installed CLI quickstart smoke,Python 3.12 editable install,Canonical EA-IR generated and source_complete true,mql5-spec-from-prompt then mql5-auto-build,PASS,release_eligible remains false without native evidence
+T02-006,RC5 selftest after Wave 0,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,25 shipped test modules detected
+T02-007,Touched Python lint,Ruff,No findings,ruff check touched modules and mirrored tests,PASS,Includes EA-IR and release policy changes
