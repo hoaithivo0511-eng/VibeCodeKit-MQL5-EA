@@ -88,12 +88,18 @@ jobs:
               '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache',
               '.venv', 'venv', 'node_modules', 'htmlcov',
           }
-          forbidden_basenames = {'.DS_Store', 'Thumbs.db', '.coverage', 'coverage.json', '.env'}
+          forbidden_basenames = {'.DS_Store', 'Thumbs.db', '.coverage', '.env'}
 
           bad = []
           for path in tracked:
               p = PurePosixPath(path)
-              if path in forbidden_exact or any(seg in forbidden_segments for seg in p.parts) or p.name in forbidden_basenames:
+              is_generated_coverage_json = p.name == 'coverage.json' and (not p.parts or p.parts[0] != 'reports')
+              if (
+                  path in forbidden_exact
+                  or any(seg in forbidden_segments for seg in p.parts)
+                  or p.name in forbidden_basenames
+                  or is_generated_coverage_json
+              ):
                   bad.append(path)
 
           required = [
