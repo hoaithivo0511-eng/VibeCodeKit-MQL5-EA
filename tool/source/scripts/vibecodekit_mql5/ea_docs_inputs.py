@@ -11,6 +11,8 @@ Grammar supported (everything the kit's scaffolds actually emit):
     input  group "Group Label";
 
 Comment-only lines, blank lines, and ``//+----...`` banners are ignored.
+Declarations inside block comments are ignored as code, while comment markers
+inside quoted defaults remain ordinary string data.
 Enum types are kept as raw identifiers (e.g. ``ENUM_TIMEFRAMES``); the
 renderer surfaces the type verbatim so the trader sees what the EA's
 combobox accepts in the strategy tester.
@@ -22,8 +24,8 @@ compiler's job. It only extracts the four columns of the inputs table.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable
 
 __all__ = [
     "InputDecl",
@@ -31,27 +33,21 @@ __all__ = [
 ]
 
 
-# Match ``input <type> <name> = <default>; [// tooltip]``.
-#
-# - Supports ``sinput`` (static input) by making the ``s`` prefix optional.
-# - Skips ``input group "..."`` lines (handled separately).
-# - ``<type>`` is one identifier (no namespace qualifier in MQL5 inputs).
-# - ``<default>`` is everything up to the trailing ``;`` (greedy minus
-#   the ``;`` itself). We don't try to parse out expressions like
-#   ``2 * 60`` — store the raw text.
-# - Trailing ``//`` comment is captured as the tooltip (whitespace
-#   trimmed).
+# Match the code part of ``input <type> <name> = <default>;``.  Inline
+# comments are separated by the small lexer below so ``https://`` and ``/*``
+# inside a quoted string are never mistaken for comments.  The final
+# semicolon is matched greedily, which also preserves semicolons inside a
+# quoted string default.
 _INPUT_RE = re.compile(
     r"""
     ^\s*                                # leading whitespace
-    s?input\s+                          # input | sinput
+    (?P<storage>s?input)\s+             # input | sinput
     (?P<type>[A-Za-z_][A-Za-z0-9_]*)\s+ # type
     (?!group\b)                         # not an input group
     (?P<name>[A-Za-z_][A-Za-z0-9_]*)    # identifier
     \s*=\s*
-    (?P<default>[^;/]+?)                # default — stop at ';' or '//'
+    (?P<default>.+)                     # raw default; lexer removed comments
     \s*;\s*
-    (?://\s*(?P<tooltip>.*?))?          # optional inline comment
     \s*$
     """,
     re.MULTILINE | re.VERBOSE,
@@ -77,6 +73,7 @@ class InputDecl:
     default: str
     tooltip: str = ""
     line_number: int = 0  # 1-based, matches grep / editor jump-to-line
+    storage: str = "input"
 
     def to_dict(self) -> dict[str, str | int]:
         return {
@@ -86,6 +83,7 @@ class InputDecl:
             "default": self.default,
             "tooltip": self.tooltip,
             "line_number": self.line_number,
+            "storage": self.storage,
         }
 
 
@@ -101,18 +99,18 @@ def parse_inputs(mq5_text: str) -> list[InputDecl]:
     Preserves source order so the rendered table reads top-to-bottom
     just like the strategy-tester sidebar.
 
-    Lines that look like declarations but live inside ``/* ... */``
-    block comments are still picked up — that's a deliberate
-    simplification (full lex of MQL5 source would be overkill for
-    what is, in practice, never a real-world false positive). If a
-    scaffold author commented out an ``input`` line they should
-    delete it rather than wrap it.
+    The scanner is deliberately line-oriented because MQL5 input declarations
+    are single-line statements, but it still tracks block comments and quoted
+    strings.  This keeps declaration counts exact without pretending to be a
+    complete MQL5 parser.
     """
     if not mq5_text:
         return []
 
     state = _ScanState()
+    in_block_comment = False
     for line_no, line in _iter_logical_lines(mq5_text):
+        line, tooltip, in_block_comment = _strip_comments(line, in_block_comment)
         # Skip ``//`` line comments entirely (very common in MQL5
         # banner blocks) before any regex work.
         stripped = line.lstrip()
@@ -125,7 +123,6 @@ def parse_inputs(mq5_text: str) -> list[InputDecl]:
 
         if (m := _INPUT_RE.match(line)) is not None:
             default = m.group("default").strip().rstrip(",")
-            tooltip = (m.group("tooltip") or "").strip()
             state.decls.append(
                 InputDecl(
                     group=state.current_group,
@@ -134,10 +131,60 @@ def parse_inputs(mq5_text: str) -> list[InputDecl]:
                     default=default,
                     tooltip=tooltip,
                     line_number=line_no,
+                    storage=m.group("storage"),
                 )
             )
 
     return state.decls
+
+
+def _strip_comments(line: str, in_block: bool) -> tuple[str, str, bool]:
+    """Return code, trailing ``//`` tooltip, and block-comment state.
+
+    Quote and escape handling is intentionally limited to what can occur in an
+    MQL5 single-line input default.  Newlines are processed by the caller.
+    """
+    code: list[str] = []
+    tooltip = ""
+    quote = ""
+    escaped = False
+    i = 0
+    while i < len(line):
+        ch = line[i]
+        nxt = line[i + 1] if i + 1 < len(line) else ""
+        if in_block:
+            if ch == "*" and nxt == "/":
+                in_block = False
+                i += 2
+            else:
+                i += 1
+            continue
+        if quote:
+            code.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == quote:
+                quote = ""
+            i += 1
+            continue
+        if ch in {'"', "'"}:
+            quote = ch
+            code.append(ch)
+            i += 1
+            continue
+        if ch == "/" and nxt == "*":
+            in_block = True
+            code.append(" ")
+            i += 2
+            continue
+        if ch == "/" and nxt == "/":
+            tooltip = line[i + 2 :].strip()
+            break
+        code.append(ch)
+        i += 1
+    return "".join(code), tooltip, in_block
 
 
 def _iter_logical_lines(text: str) -> Iterable[tuple[int, str]]:
@@ -147,5 +194,4 @@ def _iter_logical_lines(text: str) -> Iterable[tuple[int, str]]:
     continuations — MQL5 inputs are always written on a single line,
     and the scaffolds the kit ships with hold to that.
     """
-    for i, line in enumerate(text.splitlines(), start=1):
-        yield i, line
+    yield from enumerate(text.splitlines(), start=1)

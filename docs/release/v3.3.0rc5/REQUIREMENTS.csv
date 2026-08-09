@@ -8,7 +8,7 @@ REQ-005,P0,"Emit a complete canonical EA-IR from the default prompt flow",Quicks
 REQ-006,P0,"Never relabel a legacy mapping as EA-IR by adding schema_version only",Architecture review,COMPLETED,02
 REQ-007,P0,"Require an explicit compatibility flag for legacy scaffold output",Operator review,COMPLETED,02
 REQ-008,P0,"Prevent legacy scaffold output from becoming release eligible",Release review,COMPLETED,02
-REQ-009,P1,"Parse both input and sinput declarations accurately",Documentation review,PLANNED,03
+REQ-009,P1,"Parse both input and sinput declarations accurately",Documentation review,COMPLETED,03
 REQ-010,P1,"Define field-level units ranges sign and zero semantics",Runtime review,PLANNED,04
 REQ-011,P1,"Fail OnInit for invalid operational configuration",Runtime review,PLANNED,04
 REQ-012,P1,"Require explicit ownership for pending-order commands",Security review,PLANNED,05

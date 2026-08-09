@@ -35,6 +35,14 @@
 - Update quickstart and operator documentation to use the canonical
   `EA-IR.json → mql5-auto-build` flow.
 
+### Input semantics
+
+- Preserve `input` versus `sinput` storage semantics in generated parameter
+  documentation.
+- Ignore declarations inside line and block comments without corrupting quoted
+  URL/comment markers, semicolons or arithmetic defaults.
+- Bind parser behavior to exact-count regression fixtures.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening
