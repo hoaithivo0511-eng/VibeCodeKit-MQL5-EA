@@ -1,0 +1,38 @@
+name: RC4 Package Regression
+
+on:
+  push:
+    branches:
+      - main
+      - 'release-prep/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-archive-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Extract canonical source archive
+        run: |
+          rm -rf /tmp/vkmql-source-zip
+          mkdir -p /tmp/vkmql-source-zip
+          unzip -q tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip -d /tmp/vkmql-source-zip
+      - name: Install extracted source + test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install '/tmp/vkmql-source-zip[dev]' 'reportlab>=4'
+      - name: Run extracted source regression
+        run: |
+          cd /tmp/vkmql-source-zip
+          python -m pytest -q
+      - name: Run extracted source selftest
+        run: |
+          cd /tmp/vkmql-source-zip
+          python -m vibecodekit_mql5.selftest
