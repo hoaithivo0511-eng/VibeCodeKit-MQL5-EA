@@ -21,13 +21,121 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: tool/source/pyproject.toml
-      - name: Install source + dev dependencies
-        run: python -m pip install --upgrade pip && python -m pip install './tool/source[dev]'
-      - name: Source regression
+      - name: Install source + complete test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]' 'reportlab>=4'
+      - name: Source regression + coverage
         working-directory: tool/source
-        run: python -m pytest -q
+        run: |
+          python -m pytest -q \
+            --junitxml=/tmp/source-junit.xml \
+            --cov=vibecodekit_mql5 \
+            --cov-report=term \
+            --cov-report=json:/tmp/source-coverage.json
+      - name: Enforce 126 tests with zero skip/fail/error
+        run: |
+          python - <<'PY'
+          import json
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse('/tmp/source-junit.xml').getroot()
+          suites = list(root.findall('testsuite')) if root.tag == 'testsuites' else [root]
+          counts = {k: sum(int(s.attrib.get(k, 0)) for s in suites) for k in ('tests', 'failures', 'errors', 'skipped')}
+          print('source junit:', counts)
+          if counts != {'tests': 126, 'failures': 0, 'errors': 0, 'skipped': 0}:
+              raise SystemExit('source suite must be exactly 126 PASS with no skips')
+          cov = json.load(open('/tmp/source-coverage.json', encoding='utf-8'))
+          print(f"source coverage total: {cov['totals']['percent_covered']:.2f}%")
+          PY
       - name: Source selftest
         run: python -m vibecodekit_mql5.selftest
+
+  source-archive-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Safely extract canonical source archive
+        run: |
+          rm -rf /tmp/vkmql-source-zip
+          mkdir -p /tmp/vkmql-source-zip
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+
+          archive = Path('tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip')
+          target = Path('/tmp/vkmql-source-zip')
+          with zipfile.ZipFile(archive) as zf:
+              for info in zf.infolist():
+                  p = PurePosixPath(info.filename.replace('\\', '/'))
+                  if p.is_absolute() or '..' in p.parts:
+                      raise SystemExit(f'unsafe source archive member: {info.filename}')
+              zf.extractall(target)
+          print('source archive extraction: PASS')
+          PY
+      - name: Install archive + complete test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install '/tmp/vkmql-source-zip[dev]' 'reportlab>=4'
+      - name: Fresh source archive regression
+        working-directory: /tmp/vkmql-source-zip
+        run: python -m pytest -q --junitxml=/tmp/archive-junit.xml
+      - name: Enforce archive 126 tests with zero skip/fail/error
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('/tmp/archive-junit.xml').getroot()
+          suites = list(root.findall('testsuite')) if root.tag == 'testsuites' else [root]
+          counts = {k: sum(int(s.attrib.get(k, 0)) for s in suites) for k in ('tests', 'failures', 'errors', 'skipped')}
+          print('archive junit:', counts)
+          if counts != {'tests': 126, 'failures': 0, 'errors': 0, 'skipped': 0}:
+              raise SystemExit('source archive suite must be exactly 126 PASS with no skips')
+          PY
+      - name: Source archive selftest
+        working-directory: /tmp/vkmql-source-zip
+        run: python -m vibecodekit_mql5.selftest
+
+  wheel-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install wheel + test-only dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'pytest>=7.4' 'pytest-cov>=4.1' 'ruff>=0.1' 'reportlab>=4'
+          python -m pip install tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
+      - name: Prepare tests outside source checkout
+        run: |
+          rm -rf /tmp/vkmql-wheel-tests
+          mkdir -p /tmp/vkmql-wheel-tests
+          cp -R tool/source/tests/. /tmp/vkmql-wheel-tests/
+      - name: Installed wheel regression
+        working-directory: /tmp/vkmql-wheel-tests
+        env:
+          PYTHONPATH: ''
+        run: python -m pytest -q --junitxml=/tmp/wheel-junit.xml
+      - name: Enforce wheel 126 tests with zero skip/fail/error
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('/tmp/wheel-junit.xml').getroot()
+          suites = list(root.findall('testsuite')) if root.tag == 'testsuites' else [root]
+          counts = {k: sum(int(s.attrib.get(k, 0)) for s in suites) for k in ('tests', 'failures', 'errors', 'skipped')}
+          print('wheel junit:', counts)
+          if counts != {'tests': 126, 'failures': 0, 'errors': 0, 'skipped': 0}:
+              raise SystemExit('wheel suite must be exactly 126 PASS with no skips')
+          PY
+      - name: Wheel selftest
+        working-directory: /tmp
+        env:
+          PYTHONPATH: ''
+        run: mql5-selftest
 
   artifact-parity:
     runs-on: ubuntu-latest
@@ -62,11 +170,8 @@ jobs:
                       raise SystemExit(f'byte mismatch: {name}')
           print(f'expanded source parity: PASS ({len(members)} files)')
           PY
-      - name: Wheel selftest
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
-          mql5-selftest
+      - name: Verify root/package license parity
+        run: cmp --silent LICENSE tool/source/LICENSE && echo 'license parity: PASS'
 
   repository-hygiene:
     runs-on: ubuntu-latest
