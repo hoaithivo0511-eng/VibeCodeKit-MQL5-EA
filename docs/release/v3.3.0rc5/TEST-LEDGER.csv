@@ -1,0 +1,17 @@
+test_id,scope,environment,result,evidence,status,notes
+T00-001,RC5 editable install,Python 3.12 fresh venv,"vibecodekit-mql5-ea 3.3.0rc5; reportlab 5.0.0; pytest 9.1.1",pip install -e ./tool/source[dev],PASS,Dev dependency closure includes ReportLab
+T00-002,RC5 source regression,Python 3.12 fresh venv,126 passed in 2.23s,rc5-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T00-003,RC5 source selftest,Python 3.12 fresh venv,13/13 invariants passed,mql5-selftest output,PASS,Version triple reports 3.3.0rc5
+T00-004,RC4 source archive regression,Python 3.12 isolated extraction,126 passed,rc4-source-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T00-005,RC4 source archive selftest,Python 3.12 isolated extraction,13/13 invariants passed,mql5-selftest output,PASS,Version triple remains 3.3.0rc4
+T00-006,RC4 wheel import isolation,Python 3.12 fresh venv,Package imported from site-packages,import origin assertion,PASS,Version metadata remains 3.3.0rc4
+T00-007,RC4 wheel regression,Python 3.12 fresh venv,126 passed in 4.49s,rc4-wheel-tests.xml validated by assert_junit_clean.py,PASS,"Tests copied from frozen RC4 source archive; 0 failures; 0 errors; 0 skipped"
+T00-008,RC4 wheel selftest,Python 3.12 fresh venv,13/13 invariants passed,mql5-selftest output,PASS,Executed outside active source checkout
+T00-009,RC4 bundle immutability,SHA-256,33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c,sha256sum,PASS,Matches frozen release contract
+T00-010,RC4 source archive immutability,SHA-256,a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f,sha256sum,PASS,Matches frozen release contract
+T00-011,RC4 wheel immutability,SHA-256,5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a,sha256sum,PASS,Matches frozen release contract
+T00-012,Workflow syntax,PyYAML BaseLoader,4 workflow files parsed,local structure validation,PASS,Mapping shapes validated without evaluating GitHub expressions
+T00-013,Metadata syntax,Python json parser,All changed JSON documents parsed,local structure validation,PASS,Agent contracts and tool catalogs remain valid JSON
+T00-014,JUnit gate script,Ruff,No lint findings,ruff check scripts/maintenance/assert_junit_clean.py,PASS,Checked after import ordering and shebang correction
+T00-015,Repository integrity,Git and manifest,Manifest regenerated and verified,repo_manifest.py --check,PASS,Final tracked-file digest inventory is current
+T00-016,Native MQL5 evidence,MetaEditor and MT5,Not run,Release Task 10,DEFERRED,PR-00 changes no generated MQL5 runtime behavior

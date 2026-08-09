@@ -1,3 +1,16 @@
+## [3.3.0rc5] - Unreleased
+
+### Hardening foundation
+
+- Opened the RC5 hardening line from the immutable RC4 pre-release baseline.
+- Made the PDF-ingest regression dependency part of the declared development
+  environment so the full suite cannot silently skip after `.[dev]` install.
+- Separated active RC5 source validation from frozen RC4 artifact validation;
+  runtime/security fixes and RC5 candidate artifacts are delivered in later
+  reviewed tasks.
+- Production release remains blocked pending the planned security/runtime
+  fixes and trusted MetaEditor plus MT5 Strategy Tester evidence.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

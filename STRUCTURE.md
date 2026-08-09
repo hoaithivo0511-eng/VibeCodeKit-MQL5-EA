@@ -1,4 +1,4 @@
-# Repository structure — v3.3.0rc4 release candidate
+# Repository structure — v3.3.0rc5 hardening line
 
 This map describes the **role** of each repository area rather than embedding file/byte counts that become stale after maintenance commits.
 
@@ -8,19 +8,19 @@ This map describes the **role** of each repository area rather than embedding fi
 ├── demo/                       golden + generic acceptance fixtures
 ├── docs/
 │   ├── maintenance/            repository bootstrap/maintenance history
-│   └── release/v3.3.0rc4/      phased release-prep plan and final report
+│   └── release/                 immutable RC4 evidence + active RC5 plan
 ├── native/                     MetaEditor/MT5 native-validation handoff
-├── reports/                    existing RC4 audit/test evidence
+├── reports/                    historical RC4 audit/test evidence
 ├── scripts/maintenance/        safe repository-maintenance helpers
 ├── tool/
-│   ├── source/                 expanded canonical source (605 files)
-│   ├── *-source-full.zip       canonical source archive
-│   ├── *.whl                   installable package
+│   ├── source/                 active RC5 hardening source
+│   ├── *-source-full.zip       versioned frozen/candidate source archives
+│   ├── *.whl                   versioned frozen/candidate wheels
 │   └── *.manifest.json         distribution manifest
-├── BUNDLE-MANIFEST.json        immutable original bundle manifest
-├── SHA256SUMS.txt              immutable original bundle checksum set
+├── BUNDLE-MANIFEST.json        immutable RC4 bundle manifest
+├── SHA256SUMS.txt              immutable RC4 bundle checksum set
 ├── REPO-MANIFEST.sha256        repository-level integrity inventory
-├── README.md                   release-candidate overview
+├── README.md                   hardening/release overview
 └── LICENSE                     MIT license, identical to packaged source
 ```
 
@@ -28,19 +28,21 @@ This map describes the **role** of each repository area rather than embedding fi
 
 ### Canonical RC4 artifact boundary
 
-The following are treated as frozen release-candidate artifacts during repository-only cleanup:
+The following remain frozen historical RC4 artifacts throughout RC5 hardening:
 
 - `VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip`
 - `tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip`
 - `tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl`
-- `tool/source/` expanded contents
 - original bundle evidence in `BUNDLE-MANIFEST.json` and `SHA256SUMS.txt`
 
-Changing any of these requires a deliberate package rebuild, new hashes and a full regression cycle. Release-prep documentation cleanup alone must not mutate them.
+They must never be overwritten by RC5 outputs. The active `tool/source/` tree
+is allowed to change on the RC5 branch. RC5 artifacts receive new filenames,
+hashes, manifests and a full regression cycle.
 
 ### Repository-maintenance boundary
 
-The following may change without rebuilding the canonical package, provided repository integrity metadata is regenerated afterward:
+The following may change during reviewed RC5 development, provided repository
+integrity metadata is regenerated afterward:
 
 - root README/structure/license/ignore policy;
 - `.github/workflows/`;
@@ -48,6 +50,7 @@ The following may change without rebuilding the canonical package, provided repo
 - `docs/release/`;
 - `scripts/maintenance/`;
 - release-prep reports and repository-level manifest.
+- `tool/source/`, until an RC5 candidate is frozen.
 
 ## Generated/native outputs
 
@@ -55,4 +58,7 @@ Python caches, local virtual environments, coverage output, editor/OS noise, tem
 
 ## Release status
 
-The RC4 repository may pass deterministic source/static/package gates while still being **not production-release eligible**. Native MetaEditor compilation and MT5 Strategy Tester evidence remain independent gates; do not infer them from static or Python regression success.
+RC5 may pass deterministic source/static/package gates while still being **not
+production-release eligible**. Native MetaEditor compilation and MT5 Strategy
+Tester evidence remain independent gates; do not infer them from static or
+Python regression success.

@@ -1,15 +1,17 @@
-name: Refresh Release-Prep Manifest
+name: Refresh Repository Manifest
 
 on:
   push:
     branches:
       - 'release-prep/**'
+      - 'hardening/**'
     paths:
       - '.github/workflows/repo-manifest-check.yml'
       - '.github/workflows/repo-manifest-refresh.yml'
       - '.github/workflows/release-gate.yml'
       - '.github/workflows/package-regression.yml'
       - 'scripts/maintenance/repo_manifest.py'
+      - 'scripts/maintenance/assert_junit_clean.py'
       - 'docs/release/**'
       - '.gitignore'
       - 'LICENSE'

@@ -3,7 +3,7 @@
   "generated_by": "mql5-agent-contract",
   "kit": {
     "name": "vibecodekit-mql5-ea",
-    "version": "3.3.0rc4",
+    "version": "3.3.0rc5",
     "flavor": "slim",
     "canonical_layout": "mt5"
   },
