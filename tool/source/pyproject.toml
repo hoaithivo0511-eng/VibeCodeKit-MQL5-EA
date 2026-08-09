@@ -1,0 +1,239 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vibecodekit-mql5-ea"
+version = "3.3.0rc4"
+description = "Vibecode methodology kit for MQL5 Expert Advisor development"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{name = "vibecodekit-mql5-ea contributors"}]
+
+dependencies = [
+    # Keep minimal; add extras as needed.
+    # PyYAML lives in core because `mql5-auto-build` accepts a YAML spec by
+    # default and the documented quickstart pipes `mql5-spec-from-prompt`
+    # YAML output straight into it; without PyYAML the first chat-driven
+    # build after a fresh `pip install -e .` fails on `load_spec`.
+    "pyyaml>=6.0",
+    # Ed25519 verification of native-runner release attestations. Core, not
+    # optional: without it the release gate cannot check its own trust root.
+    "cryptography>=42",
+    # LLM-driven .docx ship pipeline (`mql5-docs-bundle` emits the LLM
+    # context + prompt; `mql5-docs-assemble` converts the LLM-authored
+    # `guide.md` to a Word document for the ship.zip). Both deps are
+    # pure-Python wheels so they install cleanly on Linux/Wine/Windows
+    # without extra system packages.
+    "python-docx>=1.1.0",
+    "markdown-it-py>=3.0.0",
+    "pypdf>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.1",
+]
+ml = [
+    # ML extras: ONNX/PyTorch/etc
+    "onnx>=1.14",
+    "torch>=2.0",
+    "MetaTrader5>=5.0.45",
+]
+
+[project.scripts]
+mql5-ea-deep-review = "vibecodekit_mql5.deep_review:main"
+mql5-ea-audit = "vibecodekit_mql5.deep_review:main"
+# Discovery (4)
+mql5-scan = "vibecodekit_mql5.scan:main"
+mql5-survey = "vibecodekit_mql5.survey:main"
+mql5-doctor = "vibecodekit_mql5.doctor:main"
+mql5-version = "vibecodekit_mql5.version:main"
+mql5-audit = "vibecodekit_mql5.audit:main"
+# Plan (4)
+mql5-rri = "vibecodekit_mql5.rri:main"
+mql5-vision = "vibecodekit_mql5.vision:main"
+mql5-blueprint = "vibecodekit_mql5.blueprint:main"
+mql5-tip = "vibecodekit_mql5.tip:main"
+# Build (9)
+mql5-build = "vibecodekit_mql5.build:main"
+mql5-project-gen = "vibecodekit_mql5.project_gen:main"
+mql5-ea-compose = "vibecodekit_mql5.ea_compose:main"
+mql5-owner-interview = "vibecodekit_mql5.owner_interview:main"
+mql5-contract-blueprint = "vibecodekit_mql5.contract_blueprint:main"
+mql5-blueprint-tip = "vibecodekit_mql5.blueprint_tip:main"
+mql5-owner-approve = "vibecodekit_mql5.owner_approve:main"
+mql5-contract-build = "vibecodekit_mql5.contract_build:main"
+mql5-ea-doc-verify = "vibecodekit_mql5.ea_doc_verify:main"
+mql5-ea-intake = "vibecodekit_mql5.ea_intake:main"
+mql5-ea-senior-review = "vibecodekit_mql5.ea_senior_review:main"
+mql5-ea-review-report = "vibecodekit_mql5.ea_review_report:main"
+mql5-ea-intake-review = "vibecodekit_mql5.ea_intake_review:main"
+mql5-ea-llm-review-pack = "vibecodekit_mql5.llm_review_pack:main"
+mql5-ea-llm-review-run = "vibecodekit_mql5.llm_review_runner:main"
+mql5-ea-auto-llm-review = "vibecodekit_mql5.ea_auto_llm_review:main"
+mql5-ea-chat-review-pack = "vibecodekit_mql5.chat_review_pack:main"
+mql5-ea-chat-review-workflow = "vibecodekit_mql5.ea_chat_review_workflow:main"
+mql5-auto-build = "vibecodekit_mql5.auto_build:main"
+mql5-auto-fix = "vibecodekit_mql5.auto_fix:main"
+mql5-spec-from-prompt = "vibecodekit_mql5.spec_from_prompt:main"
+mql5-ea-intake-ir = "vibecodekit_mql5.intake:main"
+mql5-doc-intake-ir = "vibecodekit_mql5.document_ingest:main"
+mql5-ir-configure = "vibecodekit_mql5.ir_configure:main"
+mql5-ir-build = "vibecodekit_mql5.ir_build:main"
+mql5-ir-verify = "vibecodekit_mql5.ir_verify:main"
+mql5-dashboard = "vibecodekit_mql5.dashboard:main"
+mql5-docs-bundle = "vibecodekit_mql5.docs_bundle:main"
+mql5-docs-assemble = "vibecodekit_mql5.docs_assemble:main"
+mql5-wizard = "vibecodekit_mql5.wizard:main"
+mql5-pip-normalize = "vibecodekit_mql5.pip_normalize:main"
+mql5-async-build = "vibecodekit_mql5.async_build:main"
+mql5-onnx-export = "vibecodekit_mql5.onnx_export:main"
+mql5-onnx-embed = "vibecodekit_mql5.onnx_embed:main"
+mql5-llm-context = "vibecodekit_mql5.llm_context:main"
+mql5-forge-init = "vibecodekit_mql5.forge_init:main"
+# Verify (12)
+mql5-compile = "vibecodekit_mql5.compile:main"
+mql5-compile-runner = "vibecodekit_mql5.compile_runner:main"
+mql5-compile-repair = "vibecodekit_mql5.compile_repair:main"
+mql5-test-runner = "vibecodekit_mql5.test_runner:main"
+mql5-tester-ini = "vibecodekit_mql5.tester_ini:main"
+mql5-lint = "vibecodekit_mql5.lint:main"
+mql5-ap-policy = "vibecodekit_mql5.ap_policy:main"
+mql5-architecture-check = "vibecodekit_mql5.architecture_check:main"
+mql5-ml-validate = "vibecodekit_mql5.ml_validate:main"
+mql5-method-hiding-check = "vibecodekit_mql5.method_hiding_check:main"
+mql5-backtest = "vibecodekit_mql5.backtest:main"
+mql5-evidence-matrix = "vibecodekit_mql5.evidence_matrix:main"
+mql5-tester-run = "vibecodekit_mql5.tester_run:main"
+mql5-optimize-run = "vibecodekit_mql5.optimize_run:main"
+mql5-walkforward = "vibecodekit_mql5.walkforward:main"
+mql5-walkforward-runner = "vibecodekit_mql5.walkforward_runner:main"
+mql5-monte-carlo = "vibecodekit_mql5.monte_carlo:main"
+mql5-overfit-check = "vibecodekit_mql5.overfit_check:main"
+mql5-multibroker = "vibecodekit_mql5.multibroker:main"
+mql5-multibroker-runner = "vibecodekit_mql5.multibroker_runner:main"
+mql5-fitness = "vibecodekit_mql5.fitness:main"
+mql5-backtest-quality = "vibecodekit_mql5.backtest_quality:main"
+mql5-trade-hygiene = "vibecodekit_mql5.trade_hygiene:main"
+mql5-mt5-python = "vibecodekit_mql5.mt5_python_worker:main"
+mql5-mfe-mae = "vibecodekit_mql5.mfe_mae:main"
+# RRI methodology (3)
+mql5-rri-bt = "vibecodekit_mql5.rri.rri_bt:main"
+mql5-rri-rr = "vibecodekit_mql5.rri.rri_rr:main"
+mql5-rri-chart = "vibecodekit_mql5.rri.rri_chart:main"
+# Review (5)
+mql5-review = "vibecodekit_mql5.review.review:main"
+mql5-eng-review = "vibecodekit_mql5.review.eng_review:main"
+mql5-ceo-review = "vibecodekit_mql5.review.ceo_review:main"
+mql5-cso = "vibecodekit_mql5.review.cso:main"
+mql5-investigate = "vibecodekit_mql5.review.investigate:main"
+# Deploy (3)
+mql5-deploy-vps = "vibecodekit_mql5.deploy_vps:main"
+mql5-cloud-optimize = "vibecodekit_mql5.cloud_optimize:main"
+mql5-canary = "vibecodekit_mql5.canary:main"
+# Ship (4)
+mql5-forge-pr = "vibecodekit_mql5.forge_pr:main"
+mql5-package = "vibecodekit_mql5.package:main"
+mql5-dist = "vibecodekit_mql5.dist_package:main"
+mql5-ship = "vibecodekit_mql5.ship:main"
+mql5-refine = "vibecodekit_mql5.refine:main"
+# Other (4)
+mql5-broker-safety = "vibecodekit_mql5.broker_safety:main"
+mql5-trader-check = "vibecodekit_mql5.trader_check:main"
+mql5-install = "vibecodekit_mql5.install:main"
+mql5-second-opinion = "vibecodekit_mql5.second_opinion:main"
+# Permission orchestrator
+mql5-permission = "vibecodekit_mql5.permission.orchestrator:main"
+# agent contracts: catalogue + hermetic CI fixture generator
+mql5-manifest = "vibecodekit_mql5.manifest:main"
+mql5-agent-contract = "vibecodekit_mql5.agent_contract:main"
+mql5-fixture = "vibecodekit_mql5.fixture:main"
+# High-level workflow verbs (canonical surface) over the mql5-* primitives
+vkmql-new = "vibecodekit_mql5.vkmql:new_main"
+vkmql-check = "vibecodekit_mql5.vkmql:check_main"
+vkmql-ship = "vibecodekit_mql5.vkmql:ship_main"
+# v2.6 BIG HARDENING: agent orchestration verb + governance primitives
+vkmql-agent = "vibecodekit_mql5.vkmql:agent_main"
+mql5-agent = "vibecodekit_mql5.agent_cli:main"
+mql5-spec-v26 = "vibecodekit_mql5.scaffold_v26:spec_main"
+mql5-ai-build-contract = "vibecodekit_mql5.ai_build_contract:main"
+mql5-decisions = "vibecodekit_mql5.decision_ledger:main"
+mql5-retro-check = "vibecodekit_mql5.retro_guard_check:main"
+mql5-retro-init = "vibecodekit_mql5.retro_init:main"
+mql5-release-approve = "vibecodekit_mql5.release_approval:main"
+mql5-completion-report-parse = "vibecodekit_mql5.completion_report_parser:main"
+mql5-tip-state = "vibecodekit_mql5.tip_state:main"
+mql5-contract-check = "vibecodekit_mql5.contract_check:main"
+mql5-stress-matrix = "vibecodekit_mql5.stress_matrix_v2:main"
+mql5-evidence-attestation = "vibecodekit_mql5.evidence_attestation:main"
+mql5-check-all = "vibecodekit_mql5.check_all:main"
+# Compat shims: emit a structured deprecation notice (stderr) then delegate
+mql5-new = "vibecodekit_mql5.vkmql:new_shim_main"
+mql5-check = "vibecodekit_mql5.vkmql:check_shim_main"
+mql5-ship-flow = "vibecodekit_mql5.vkmql:ship_shim_main"
+# onboarding: 5-question interactive bootstrap → ea-spec.yaml
+mql5-init = "vibecodekit_mql5.init:main"
+# closed forge loop: hermetic fixture → backtest parse, no Wine
+mql5-forge-loop = "vibecodekit_mql5.forge_loop:main"
+# .E in-process backtest engine: synthetic bars → strategy logic → MT5-XML
+mql5-bt-sim = "vibecodekit_mql5.bt_engine:main"
+# deterministic step-output generators (RRI step 3/4/5)
+mql5-vision-gen = "vibecodekit_mql5.step_gen.vision_gen:main"
+mql5-blueprint-gen = "vibecodekit_mql5.step_gen.blueprint_gen:main"
+mql5-tip-gen = "vibecodekit_mql5.step_gen.tip_gen:main"
+# actor-role artefact generators (Triangle of Power)
+mql5-contract-gen = "vibecodekit_mql5.step_gen.contract_gen:main"
+mql5-verify-report = "vibecodekit_mql5.step_gen.verify_report:main"
+# layer-5 methodology gate is reachable as a standalone CLI too
+mql5-permission-layer5 = "vibecodekit_mql5.permission.layer5_methodology:main"
+# v2.x additions: role/sign-off SoT + methodology driver
+mql5-role-state = "vibecodekit_mql5.rri.role_state:main"
+mql5-flow = "vibecodekit_mql5.flow:main"
+mql5-rri-run = "vibecodekit_mql5.rri_run:main"
+mql5-role-guard = "vibecodekit_mql5.role_guard:main"
+mql5-ea-patterns = "vibecodekit_mql5.ea_patterns:main"
+mql5-scan-ea = "vibecodekit_mql5.scan_ea:main"
+# ship-in-slim smoke test (no tests/ dir in slim)
+mql5-selftest = "vibecodekit_mql5.selftest:main"
+mql5-gate-escalate = "vibecodekit_mql5.rri.gate_escalate:main"
+mql5-verify-evidence = "vibecodekit_mql5.verify_evidence:main"
+mql5-refine-tip = "vibecodekit_mql5.refine_tip:main"
+# task graph expansion + per-TIP completion report
+mql5-task-graph-gen = "vibecodekit_mql5.step_gen.task_graph_gen:main"
+mql5-completion-report = "vibecodekit_mql5.step_gen.completion_report:main"
+
+# actor-to-actor escalation audit log (raise/list/resolve).
+mql5-escalation = "vibecodekit_mql5.rri.escalation:main"
+mql5-runner-key = "vibecodekit_mql5.runner_key:main"
+
+[tool.setuptools.packages.find]
+where = ["scripts"]
+
+[tool.setuptools.package-data]
+# Ship runtime assets inside the wheel so the kit works without the source
+# checkout (scaffolds, Include headers, profiles, RRI step templates).
+vibecodekit_mql5 = [
+    "resources/**/*",
+    "resources/**/.gitkeep",
+    # EA documentation renderer assets (CSS + pixel-art SVG icons). Loaded at
+    # runtime via ea_docs_render.ASSETS_DIR (Path(__file__).parent /
+    # "ea_docs_assets"); must ship inside the wheel or the docs stage fails
+    # after `pip install` with "No such file or directory: .../ea_docs_assets/style.css".
+    "ea_docs_assets/**/*",
+]
+
+[tool.pytest.ini_options]
+# Make `pytest -q` work straight from the repo root after unzip, without
+# requiring `PYTHONPATH=scripts`. The package lives under scripts/.
+pythonpath = ["scripts", "tests"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

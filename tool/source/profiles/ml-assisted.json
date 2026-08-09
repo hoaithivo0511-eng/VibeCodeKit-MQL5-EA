@@ -1,0 +1,26 @@
+{
+  "profile": "ml-assisted",
+  "description": "ONNX/ML-assisted decisioning: model loading, feature pipeline, and an inference confidence gate before any trade.",
+  "required_modules": [
+    "OnnxModelLoader",
+    "FeaturePipeline",
+    "InferenceGuard",
+    "RiskGuard",
+    "StructuredLogger"
+  ],
+  "required_hooks": [
+    "OnTick"
+  ],
+  "forbidden_patterns": [
+    {
+      "id": "trade_without_inference_guard",
+      "description": "Raw CTrade without an InferenceGuard confidence gate defeats the ML-assisted profile",
+      "regex": "CTrade\\s+\\w+;"
+    }
+  ],
+  "required_terms": [
+    "Onnx",
+    "Inference",
+    "Confidence"
+  ]
+}

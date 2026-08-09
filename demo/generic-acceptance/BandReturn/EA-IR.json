@@ -1,0 +1,252 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "BandReturn",
+    "version": null,
+    "source_documents": [
+      "acceptance:BandReturn"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "netting",
+    "account_model_status": "confirmed",
+    "symbol_mode": "explicit_list",
+    "symbols": [
+      "GBPUSD"
+    ],
+    "timeframe_mode": "explicit_list",
+    "timeframes": [
+      "M30"
+    ]
+  },
+  "strategy": {
+    "topology": "single_engine",
+    "features": [
+      "strategy.entry.mean_reversion"
+    ],
+    "signals": [
+      "bollinger_bands"
+    ],
+    "signal_logic": "single",
+    "parameters": {}
+  },
+  "risk": {
+    "max_spread_pips": 2.0,
+    "max_open_positions": 3,
+    "base_lot": 0.01,
+    "max_lot": 1.0
+  },
+  "controls": {
+    "features": [],
+    "new_cycle_semantics": null,
+    "pending_command_transport": null,
+    "pending_commands": {}
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "strategy.entry.mean_reversion",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": 1,
+          "evidence": "EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0002",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": 1,
+          "evidence": "EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "risk.max_lot",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": 1,
+          "evidence": "EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": 1,
+          "evidence": "EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "strategy.entry.signals.bollinger_bands",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": 1,
+          "evidence": "EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "identity.name",
+      "value": "BandReturn",
+      "confidence": 0.92,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "BandReturn"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "runtime.account_model",
+      "value": "netting",
+      "confidence": 0.99,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "account model netting"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0008",
+      "path": "runtime.symbols.GBPUSD",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "GBPUSD"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0009",
+      "path": "runtime.timeframes.M30",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "M30"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0010",
+      "path": "risk.max_spread_pips",
+      "value": 2.0,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "max_spread_pips=2.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "risk.max_open_positions",
+      "value": 3,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "max_open_positions=3"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "risk.base_lot",
+      "value": 0.01,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "base_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0013",
+      "path": "risk.max_lot",
+      "value": 1.0,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:BandReturn",
+          "page": null,
+          "evidence": "max_lot=1.0"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 124,
+    "document_kind": "build_request",
+    "defaults_policy": "reject"
+  },
+  "ir_sha256": "e2c9b9d14c80940a9ccd7af112bc1748578385fdd2fc39a6fb3dfeb7c4389f2a"
+}

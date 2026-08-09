@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VibeCodeKit MQL5 EA v3.0.0-alpha.3 — E2E Audit Report</title>
+<style>
+:root{color-scheme:light dark;--bg:#0b1020;--card:#131a2e;--ink:#eef3ff;--muted:#a9b5d0;--ok:#48d597;--warn:#ffc857;--bad:#ff7272;--line:#2b3859}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#0b1020,#18213b);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1100px;margin:0 auto;padding:42px 22px 70px}h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.08;margin:.2rem 0 1rem}h2{margin-top:2.2rem;border-bottom:1px solid var(--line);padding-bottom:.35rem}h3{margin-bottom:.35rem}.subtitle{color:var(--muted);font-size:1.1rem}.badge{display:inline-block;border:1px solid var(--ok);color:var(--ok);border-radius:999px;padding:.18rem .7rem;font-weight:700;letter-spacing:.04em}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:22px 0}.card{background:rgba(19,26,46,.92);border:1px solid var(--line);border-radius:12px;padding:16px}.metric{font-size:2rem;font-weight:800}.label{color:var(--muted);font-size:.9rem}table{width:100%;border-collapse:collapse;background:rgba(19,26,46,.8);border-radius:10px;overflow:hidden}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{color:#cbd6f2;background:#1b2744}.ok{color:var(--ok);font-weight:700}.warn{color:var(--warn);font-weight:700}.bad{color:var(--bad);font-weight:700}code{background:#202b48;padding:.12rem .35rem;border-radius:4px}pre{white-space:pre-wrap;background:#080d1b;border:1px solid var(--line);padding:14px;border-radius:8px;color:#d7e1fb}.note{border-left:4px solid var(--warn);padding:10px 14px;background:rgba(255,200,87,.08)}footer{margin-top:40px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body><main>
+<span class="badge">AUDIT COMPLETE · PROVENANCE HARDENED</span>
+<h1>VibeCodeKit MQL5 EA<br>v3.0.0-alpha.3</h1>
+<p class="subtitle">External-shareable E2E audit report · generated 2026-08-02 · cross-check of the alpha.2 deep-review feedback</p>
+
+<div class="grid">
+  <div class="card"><div class="metric ok">106/106</div><div class="label">Python unit/regression tests</div></div>
+  <div class="card"><div class="metric ok">10/10</div><div class="label">Runtime selftest invariants</div></div>
+  <div class="card"><div class="metric ok">133</div><div class="label">Catalog tools imported</div></div>
+  <div class="card"><div class="metric ok">0</div><div class="label">Fake-evidence release passes</div></div>
+  <div class="card"><div class="metric">512</div><div class="label">Slim distribution entries</div></div>
+</div>
+
+<h2>Executive result</h2>
+<p>The alpha.2 report identified a valid P0 provenance weakness: realistic-looking files and a permissive manifest could make the standalone attestation command return <code>release_eligible=True</code>. The finding was reproduced, then fixed in alpha.3.</p>
+<p class="note"><strong>Scope limitation:</strong> this environment has no Windows-native MetaEditor or MT5 Strategy Tester. Compile, backtest, forward-test and live gates therefore remain <span class="warn">UNTESTABLE</span>. This report proves gate honesty and package behavior; it is not trading-performance or live-readiness evidence.</p>
+
+<h2>Feedback cross-check and disposition</h2>
+<table><thead><tr><th>Feedback item</th><th>Assessment</th><th>Alpha.3 disposition</th></tr></thead><tbody>
+<tr><td>P0: fake evidence can attest release</td><td class="ok">Confirmed</td><td>One canonical provenance validator is now called by <code>check_all</code>, evidence attestation and release-manifest validation. Trusted producer metadata, report metrics, artifact hashes and chain integrity are all required.</td></tr>
+<tr><td>P1: shipped tests/fixtures/evidence/Retro temp trees</td><td class="ok">Confirmed</td><td>Slim packager excludes <code>tests/</code>, <code>fixtures/</code>, <code>evidence/</code>, <code>vck-retro-*</code>, <code>.tmp-*</code> and <code>*.bak</code>.</td></tr>
+<tr><td>P1: Wine/native policy mismatch</td><td class="ok">Confirmed latent risk</td><td>Wine compile is explicitly development/CI evidence; Windows-native or trusted remote MetaEditor is release authority.</td></tr>
+<tr><td>P1: stale AGENTS/anti-pattern docs</td><td class="ok">Confirmed</td><td>Docs now distinguish source checkout fixtures from slim distribution and remove the false strict 200-LOC/runtime claims.</td></tr>
+<tr><td>P2: <code>ea_doc_claims</code> missing CLI</td><td>False alarm</td><td>It is a library helper; the executable documentation gate is <code>mql5-ea-doc-verify</code>/<code>contract_check</code>.</td></tr>
+<tr><td>P2: <code>mql5-rri</code> missing entrypoint</td><td>False alarm</td><td>Package includes the <code>rri</code> module and <code>__main__</code> entrypoint.</td></tr>
+<tr><td>1980 timestamps</td><td>Not a functional bug</td><td>Intentional reproducible ZIP epoch. It is documented as deterministic packaging behavior.</td></tr>
+</tbody></table>
+
+<h2>Release-provenance gate</h2>
+<p>Release-looking evidence must now satisfy all of the following:</p>
+<ul><li><code>evidence/manifest.json</code> schema 2.0 with <code>release_eligible=true</code> and a matching summary.</li><li>Compile and backtest blocks with <code>source</code>, <code>command</code>, <code>tool_version</code>, <code>host</code> and <code>recorded_at_utc</code>.</li><li>Trusted source classification: actual/remote MetaEditor and actual/remote MT5 Strategy Tester only.</li><li>SHA-256 records matching every core artifact; a non-trivial EX5 binary; parseable MT5 XML with trade/performance metrics; valid stress/review JSON.</li><li>Verified evidence hash chain.</li></ul>
+
+<h2>Test matrix</h2>
+<table><thead><tr><th>Check</th><th>Result</th><th>What it proves</th></tr></thead><tbody>
+<tr><td>Unit/regression discovery</td><td class="ok">106/106 PASS</td><td>Existing runtime behavior plus provenance and adversarial regressions.</td></tr>
+<tr><td>Python compileall</td><td class="ok">PASS</td><td>All runtime Python files compile.</td></tr>
+<tr><td>Catalog import sweep</td><td class="ok">133/133 PASS</td><td>Every catalog module imports successfully.</td></tr>
+<tr><td>Selftest</td><td class="ok">10/10 PASS</td><td>Version, catalog, package-safety and honest evidence invariants.</td></tr>
+<tr><td>Golden flow</td><td class="ok">PASS / honest blockers</td><td>Fresh spec → contract → task graph → Retro init/check → aggregate gate; no backend is faked.</td></tr>
+<tr><td>Adversarial fake evidence</td><td class="ok">BLOCKED</td><td>Imported log/report, fake EX5 and eligible-looking manifest cannot attest release.</td></tr>
+<tr><td>Slim package hygiene</td><td class="ok">PASS</td><td>512 entries; no tests/evidence/Retro temp/.bak/ONNX stubs.</td></tr>
+</tbody></table>
+
+<h2>Remaining production prerequisites</h2>
+<ul><li>Run a real Windows-native MetaEditor compile and MT5 Strategy Tester backtest for the target EA.</li><li>Attach broker/profile, stress, walk-forward and owner-approval evidence appropriate to the selected mode.</li><li>For ONNX, provide a real model manifest (source, license, hash, schema and action-label parity); the kit intentionally ships no fake model.</li><li>Do not interpret this HTML report as a profitability, safety or live-trading guarantee.</li></ul>
+
+<h2>Reproduction commands</h2>
+<pre>PYTHONPATH=scripts python3 -m unittest discover -s tests -q
+PYTHONPATH=scripts python3 -m compileall -q scripts
+PYTHONPATH=scripts python3 -m vibecodekit_mql5.selftest
+PYTHONPATH=scripts python3 -m vibecodekit_mql5.manifest --validate scripts/vibecodekit_mql5/tool-catalog.json
+PYTHONPATH=scripts python3 -m vibecodekit_mql5.agent_contract --validate agent-contract.json
+PYTHONPATH=scripts python3 -m vibecodekit_mql5.dist_package --repo-root . --flavor slim</pre>
+
+<footer>VibeCodeKit MQL5 EA · v3.0.0-alpha.3 · This report is self-contained and may be attached to a Notion review.</footer>
+</main></body></html>

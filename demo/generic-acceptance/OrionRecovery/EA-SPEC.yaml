@@ -1,0 +1,51 @@
+schema_version: '3.0'
+ir_sha256: 3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0
+project:
+  name: OrionRecovery
+  version: 0.1.0
+  status: DRAFT-NOT-VALIDATED
+strategy:
+  class: hybrid
+  symbols:
+  - EURUSD
+  timeframes:
+  - H1
+  entry_logic: Selectable signal engine with explicit trend filters and cycle admission
+    gates.
+  exit_logic: Single/basket/money exits, trailing, recovery, hedge and drawdown controls
+    composed from EA-IR.
+  forbidden_logic:
+  - unbounded_martingale
+risk:
+  max_lot: 1.0
+  risk_per_trade_pct: 0.5
+  max_daily_loss_pct: 5.0
+  max_drawdown_pct: 20.0
+  max_positions: 10
+  stop_loss_required: false
+execution:
+  account_modes:
+  - hedging
+  slippage_points_max: 30
+  spread_points_max: 20.0
+  magic_number_policy: required
+validation:
+  compile_required: true
+  backtest_required: true
+  stress_required: true
+  evidence_manifest_required: true
+governance:
+  mode: full
+  release_target: draft
+  semantic_approved: true
+  behavior_changed: true
+  trading_logic_changed: true
+  risk_changed: true
+  architecture_changed: true
+  porting_changed: false
+  derived_fields:
+  - project.version
+  - execution.spread_points_max
+release:
+  environment_authority: windows-native
+  owner_approval_required_for_live: true

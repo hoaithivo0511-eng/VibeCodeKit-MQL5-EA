@@ -1,0 +1,257 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "NorthTrend",
+    "version": null,
+    "source_documents": [
+      "acceptance:NorthTrend"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "netting",
+    "account_model_status": "confirmed",
+    "symbol_mode": "explicit_list",
+    "symbols": [
+      "EURUSD"
+    ],
+    "timeframe_mode": "explicit_list",
+    "timeframes": [
+      "H1"
+    ]
+  },
+  "strategy": {
+    "topology": "single_engine",
+    "features": [
+      "strategy.entry.trend_following"
+    ],
+    "signals": [
+      "ema_cross"
+    ],
+    "signal_logic": "single",
+    "parameters": {}
+  },
+  "risk": {
+    "max_spread_pips": 2.0,
+    "max_open_positions": 4,
+    "base_lot": 0.01,
+    "max_lot": 1.0
+  },
+  "controls": {
+    "features": [],
+    "new_cycle_semantics": null,
+    "pending_command_transport": null,
+    "pending_commands": {}
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "strategy.entry.trend_following",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0002",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "risk.max_lot",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "strategy.entry.signals.ema_cross",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        },
+        {
+          "source": "acceptance:NorthTrend",
+          "page": 1,
+          "evidence": "EA named NorthTrend account netting EURUSD H1 trend-following EMA cross base lot 0.01 max lot 1 max spread 2 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "identity.name",
+      "value": "NorthTrend",
+      "confidence": 0.92,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "NorthTrend"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "runtime.account_model",
+      "value": "netting",
+      "confidence": 0.99,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "account model netting"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0008",
+      "path": "runtime.symbols.EURUSD",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "EURUSD"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0009",
+      "path": "runtime.timeframes.H1",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "H1"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0010",
+      "path": "risk.max_spread_pips",
+      "value": 2.0,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "max_spread_pips=2.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "risk.max_open_positions",
+      "value": 4,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "max_open_positions=4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "risk.base_lot",
+      "value": 0.01,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "base_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0013",
+      "path": "risk.max_lot",
+      "value": 1.0,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:NorthTrend",
+          "page": null,
+          "evidence": "max_lot=1.0"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 124,
+    "document_kind": "build_request",
+    "defaults_policy": "reject"
+  },
+  "ir_sha256": "43b0cf5c9748c8637d5004b489401ed752ff864579204a3b7899b4bdb5f79dff"
+}

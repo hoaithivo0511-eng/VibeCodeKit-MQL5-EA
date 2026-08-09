@@ -1,0 +1,1037 @@
+Cần Cù Bù Siêng Năng
+Phiên bản v3.0.3
+
+Bo.Botfx
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+📘 Giới thiệu bot Can Cu Bu Sieng Nang
+CCBSN – EA giao dịch DCA + Martingale + Hedge thông minh
+
+🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín
+hiệu vào lệnh khác nhau.
+
+📌 Tổng quan
+Can Cu Bu Sieng Nang (CCBSN) là một Expert Advisor (EA) được phát triển bởi Bo.Botfx dành cho nền tảng MT5. EA này được thiết kế
+cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng
+thời hỗ trợ hedging (phòng hộ) khi thị trường đi ngược hướng mạnh.
+Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách
+giao dịch khác nhau. Đặc biệt, EA có cơ chế "tỉa lệnh" (sniper) giúp chốt lời từng phần, giảm rủi ro và tối ưu lợi nhuận.
+
+👤 Tác giả & Thương hiệu
+Bo.Botfx – người phát triển và chia sẻ miễn phí EA CCBSN. Tác giả khẳng định EA hoàn toàn miễn phí, không thương mại hóa, chỉ phục vụ
+cộng đồng người Việt sử dụng bot giao dịch. Mọi hành vi mua bán EA này đều là lừa đảo.
+
+Cộng đồng đóng góp ý tưởng:
+- Bo.Botfx
+- Cần Cù Bù Siêng Năng
+- VŨ TRỤ EAFOREX
+📢 Thông tin liên hệ chính thức:
+- Telegram: t.me/nguyenvanbo128
+- Số điện thoại: +84981061018
+- Channel cập nhật: t.me/BoBotfx_channel
+
+🛠️ Tính năng nổi bật
+Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC
+(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing.
+Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương
+theo Signal, Step+Đóng nến.
+Tự động tỉa lệnh (Sniper): tỉa cùng chuỗi, tỉa khác chuỗi (không quan tâm Magic/cặp tiền), tỉa 1 phần lots, tỉa lệnh âm lớn nhất, tỉa lệnh
+khác chuỗi kèm 1 phần lệnh cùng chuỗi.
+Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức
+tiền chốt lời tùy chỉnh theo số lệnh.
+Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc
+vào chuỗi).
+Điều khiển từ xa qua lệnh chờ (Mobile Control): dùng Buy Stop / Sell Limit với giá đặc biệt để bật/tắt EA, dừng New Cycle, stop
+buy/sell.
+Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng).
+Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số
+lots khi SL, delay sau SL/TP, hedge zone chốt lời theo số tiền hoặc pips.
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+Cần Cù Bù Siêng Năng
+Điều khiển từ xa
+
+Bo.Botfx
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+📱 Lệnh chờ điều khiển bot từ xa (Mobile Control)
+Bot CCBSN hỗ trợ điều khiển từ xa qua điện thoại bằng cách đặt lệnh chờ (Pending Order) với các mức giá đặc biệt. Đây là tính năng rất
+mạnh mẽ, cho phép bạn can thiệp vào bot mà không cần mở MT5 trên máy tính.
+
+⚠️ Lưu ý quan trọng: Các lệnh chờ này sẽ được bot tự động phát hiện, thực thi lệnh điều khiển tương ứng và tự động xóa lệnh chờ
+sau khi thực hiện.
+
+🎮 Danh sách lệnh chờ điều khiển
+Loại lệnh chờ
+
+Giá đặt
+
+Chức năng
+
+Ghi chú
+
+Buy Stop
+
+999999
+
+🚫 Dừng mọi hoạt động của EA
+
+Bot ngừng hoàn toàn, không mở lệnh mới, không DCA.
+
+Buy Stop
+
+666666
+
+✅ Cho phép EA hoạt động bình thường
+
+Bật lại EA sau khi đã dừng.
+
+Buy Stop
+
+888888
+
+🔴 Tắt New Cycle
+
+Ngăn không cho bot mở lệnh mới (chu kỳ mới).
+
+Sell Limit
+
+888888
+
+🟢 Bật New Cycle
+
+Cho phép bot mở lệnh mới trở lại.
+
+Buy Stop
+
+555555
+
+⛔ Stop Buy – Xóa lệnh cho phép Buy
+
+Bot sẽ không mở thêm bất kỳ lệnh Buy nào.
+
+Sell Limit
+
+555555
+
+⛔ Stop Sell – Xóa lệnh cho phép Sell
+
+Bot sẽ không mở thêm bất kỳ lệnh Sell nào.
+
+💡 Lưu ý về New Cycle:
+
+Trong các phiên bản cũ hơn 2.6, New Cycle = false mới cho phép mở lệnh. Từ phiên bản 2.6.1 trở đi, cơ chế đã được chuẩn hóa:
+- Buy Stop giá 888888 → Tắt New Cycle (không mở lệnh mới)
+- Sell Limit giá 888888 → Bật New Cycle (cho phép mở lệnh)
+
+📝 Hướng dẫn sử dụng
+1. Trên điện thoại: Đăng nhập MT5 mobile, mở biểu đồ cặp tiền đang chạy bot.
+2. Đặt lệnh chờ: Chọn Buy Stop hoặc Sell Limit tùy theo chức năng mong muốn.
+3. Nhập giá đặc biệt: Điền đúng mức giá (999999, 666666, 888888, 555555) vào ô Price.
+4. Khối lượng (Volume): Có thể đặt bất kỳ (bot sẽ không quan tâm).
+5. Gửi lệnh: Nhấn Sell/Buy. Bot sẽ tự động nhận diện, thực thi lệnh điều khiển và xóa lệnh chờ này.
+
+🔔 Cảnh báo: Không đặt nhầm các mức giá này vào lệnh thực tế (market order). Chỉ sử dụng lệnh chờ (Pending Order) với các giá trị
+đặc biệt này.
+
+🖥️ Điều khiển trực tiếp trên Chart
+Ngoài lệnh chờ từ xa, bot còn cung cấp các nút bấm trực tiếp trên biểu đồ (khi chạy EA):
+New Cycle – Bật/tắt chu kỳ mới (cho phép/dừng mở lệnh).
+Close Buy / Close Sell / Close All – Đóng lệnh theo chiều hoặc tất cả.
+Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới.
+Stop Sell / Stop Buy – Dừng mở lệnh theo chiều tương ứng.
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+Bo.Botfx
+
+Cần Cù Bù Siêng Năng
+Phân tích tham số
+
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+📊 Mô tả chi tiết tất cả các nhóm Input
+Danh sách dưới đây giải thích ý nghĩa của từng tham số cấu hình bot CCBSN.
+
+📍 Nhóm: Cài đặt chung
+Tên hiển thị
+
+Mô tả chi tiết
+
+Kết hợp EA cùng Magic?
+
+Cho phép bot hoạt động đồng thời với các EA khác dùng chung Magic Number. Nếu true, bot sẽ không kiểm tra Magic khi đếm
+lệnh.
+
+Magic Number
+
+Mã định danh riêng của bot. Giá trị 0 → bot chỉ hỗ trợ giao dịch thủ công (không tự động mở lệnh).
+
+Lots
+
+Khối lượng giao dịch cơ bản cho lệnh đầu tiên. Đơn vị: lot tiêu chuẩn.
+
+TP, pips
+
+Chốt lời cho lệnh đầu tiên (nếu không sử dụng DCA hoặc Single TP = 0).
+
+SL, pips
+
+Cắt lỗ cho lệnh đầu tiên. Giá trị 0 có nghĩa là không đặt SL.
+
+Kiểu mở lệnh Buy-Sell
+
+Các lựa chọn: Buy và Sell (cả hai), Buy hoặc Sell (chỉ một chiều, không đồng thời), Chỉ Buy, Chỉ Sell.
+
+Hiển thị TP?
+
+Nếu true, bot vẽ đường TP lên biểu đồ và hiển thị mức giá chốt lời.
+
+Số phút delay sau khi clear
+lệnh
+
+Sau khi đóng hết lệnh (do SL/TP hoặc thủ công), bot sẽ tạm nghỉ trong khoảng thời gian này (phút).
+
+⛔ Nhóm: Giới hạn
+Tên hiển thị
+
+Mô tả chi tiết
+
+Số lệnh buy tối đa
+
+Dừng mở thêm lệnh Buy nếu số lượng lệnh Buy hiện tại đã đạt giới hạn này.
+
+Số lệnh sell tối đa
+
+Tương tự cho lệnh Sell.
+
+Spread tối đa, pips
+
+Nếu spread hiện tại (tính bằng pips) lớn hơn giá trị này, bot sẽ không mở lệnh mới.
+
+Lots tối đa
+
+Khi nhồi lệnh DCA thì lots tối đa của lệnh đó không vượt quá giới hạn này.
+
+Bật New Cycle khi đạt Lots tối đa
+
+Nếu true, khi bất kỳ lệnh nào có lots ≥ Lots tối đa, bot tự động bật New Cycle (dừng mở lệnh mới).
+
+Thời gian delay mỗi lần mở lệnh, giây
+
+Khoảng thời gian tối thiểu giữa hai lần mở lệnh liên tiếp (giây). Tránh mở quá nhiều lệnh cùng lúc.
+
+🎲 Nhóm: Xổ số
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng chế độ xổ số?
+
+Bật chế độ Martingale kiểu "xổ số": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân.
+
+Hệ số nhân khi SL
+
+Lots mới = lots của lệnh vừa bị SL × hệ số này.
+
+Thời gian delay sau khi SL-TP,
+phút
+
+Sau khi có lệnh bị đóng (thắng hoặc thua), bot sẽ nghỉ trong khoảng thời gian này trước khi mở lệnh mới.
+
+Số tiền cắt lỗ và reset chuỗi xổ
+số
+
+Khi tổng thua lỗ (floating) đạt mức âm này (ví dụ -1000$), bot đóng hết lệnh và reset chuỗi xổ số về lots ban đầu. Giá trị 0 → tắt
+chức năng.
+
+📈 Nhóm: DCA (Nhồi lệnh)
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng DCA?
+
+Bật cơ chế nhồi lệnh trung bình giá (Dollar Cost Averaging).
+
+Sử dụng bộ lọc trend cho
+DCA
+
+Nếu true, chỉ nhồi lệnh khi xu hướng phù hợp (EMA, MACD, RSI).
+
+Số lệnh kích hoạt bộ lọc
+trend cho DCA
+
+Sau khi đạt số lệnh này, bộ lọc trend mới bắt đầu được áp dụng cho DCA.
+
+Chọn kiểu DCA
+
+Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),
+Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến.
+
+Số lệnh kích hoạt kiểu DCA
+mới
+
+Sau khi đạt số lệnh này, bot chuyển sang kiểu DCA mới. Giá trị 0 → tắt.
+
+Chọn kiểu DCA mới
+
+Kiểu DCA sẽ được kích hoạt sau khi đạt số lệnh ở trên.
+
+Chọn hệ số lots DCA
+
+Hệ số nhân (multiplier) hoặc hệ số cộng (plus).
+
+Hệ số nhân ban đầu
+
+Lots mới = lots đầu × (hệ số nhân)^(số lệnh) (nếu chọn hệ số nhân).
+
+Sử dụng thay đổi hệ số
+nhân mới?
+
+Cho phép thay đổi hệ số nhân sau khi đạt các mốc số lệnh nhất định.
+
+1.Số lệnh kích hoạt hệ số
+nhân mới
+
+Mốc số lệnh đầu tiên để thay đổi hệ số nhân (mặc định: 10).
+
+1.Hệ số nhân mới
+
+Lots mới sẽ được tính lại từ đầu = lots đầu × (hệ số nhân)^(số lệnh) (mặc định: 1.2).
+
+2.Số lệnh kích hoạt hệ số
+nhân mới
+
+Mốc thứ hai (mặc định: 20).
+
+2.Hệ số nhân mới
+
+Mặc định: 1.1
+
+3.Số lệnh kích hoạt hệ số
+nhân mới
+
+Mốc thứ ba (mặc định: 30).
+
+3.Hệ số nhân mới
+
+Mặc định: 1.05
+
+4.Số lệnh kích hoạt hệ số
+nhân mới
+
+Mốc thứ tư (mặc định: 40).
+
+4.Hệ số nhân mới
+
+Mặc định: 1.06
+
+5.Số lệnh kích hoạt hệ số
+nhân mới
+
+Mốc thứ năm (mặc định: 50).
+
+5.Hệ số nhân mới
+
+Mặc định: 1.03
+
+Hệ số cộng
+
+Nếu chọn hệ số cộng, lots mới = lots lệnh trước + giá trị này (mặc định 0.01).
+
+Hệ số nhân khoảng cách
+ban đầu
+
+Dùng cho kiểu Step Multiplier: khoảng cách = 0.Khoảng cách nhồi lệnh ban đầu × (Hệ số nhân khoảng cách)^(số lệnh).
+
+0.Khoảng cách nhồi lệnh
+ban đầu
+
+Khoảng cách tối thiểu (pips) giữa các lệnh DCA.
+
+TP đơn lệnh
+
+Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi.
+
+TP chuỗi DCA, pips
+
+Chốt lời chung cho toàn bộ chuỗi lệnh cùng chiều, tính trên giá trung bình + số pips TP chuỗi.
+
+1.Số lệnh tăng khoảng cách
+nhồi
+
+Sau số lệnh này, khoảng cách nhồi chuyển sang cấp 1.
+
+1.Khoảng cách nhồi lệnh
+
+Giá trị khoảng cách cấp 1 (pips).
+
+2.Số lệnh tăng khoảng cách
+nhồi
+
+Sau số lệnh này, chuyển cấp 2.
+
+2.Khoảng cách nhồi lệnh
+
+Cấp 2.
+
+3.Số lệnh tăng khoảng cách
+nhồi
+
+Sau số lệnh này, chuyển cấp 3.
+
+3.Khoảng cách nhồi lệnh
+
+Cấp 3.
+
+4.Số lệnh tăng khoảng cách
+nhồi
+
+Sau số lệnh này, chuyển cấp 4.
+
+4.Khoảng cách nhồi lệnh
+
+Cấp 4.
+
+📉 Nhóm: Điều chỉnh TP chuỗi khi âm
+Tên hiển thị
+
+Mô tả chi tiết
+
+Điều chỉnh TP chuỗi khi âm?
+
+Khi thua lỗ vượt ngưỡng, TP chuỗi sẽ được rút ngắn (đặt gần hơn) để dễ chốt lời.
+
+Phần trăm âm, -%
+
+Ngưỡng kích hoạt: nếu % thua lỗ của chiều Buy hoặc Sell so với Balance ≤ giá trị này (ví dụ -20%).
+
+Số tiền âm, -$
+
+Ngưỡng kích hoạt dạng số tiền (ví dụ -12000$). Giá trị 0 → tắt.
+
+TP chuỗi DCA sau khi điều chỉnh
+
+Giá trị TP mới (pips) sẽ được áp dụng sau khi kích hoạt.
+
+🔄 Nhóm: Mở lệnh ngược chiều
+Tên hiển thị
+
+Mô tả chi tiết
+
+Mở lệnh ngược chiều?
+
+Khi đủ số lệnh cùng chiều, bot sẽ mở một lệnh ngược hướng.
+
+Số lệnh kích hoạt mở lệnh ngược chiều
+
+Sau khi đạt số lệnh này (ví dụ 12 lệnh Buy), bot sẽ chờ tín hiệu Sell sau đó mới mở 1 lệnh Sell ngược.
+
+Phần trăm lots lệnh ngược chiều so với tổng lots
+
+Fix Lots của lệnh ngược chiều
+
+Nếu >0: lots ngược = tổng lots cùng chiều × phần trăm này
+Nếu =0: dùng lots cố định bên dưới
+Lots cố định dùng khi phần trăm = 0.
+
+✂️ Nhóm: Tỉa lệnh cùng chuỗi
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng tỉa lệnh
+
+Bật cơ chế tự động dùng lệnh dương mới mở để đóng các lệnh âm đầu tiên (Sniper).
+
+Tỉa lệnh cùng chuỗi không quan tâm Magic
+
+Nếu true, tỉa cả lệnh không cùng Magic Number (chỉ cùng cặp tiền).
+
+Số lệnh kích hoạt tỉa lần đầu
+
+Cần tối thiểu số lệnh này mới bắt đầu xét tỉa (lần đầu).
+
+Số lệnh kích hoạt tỉa từ lần 2
+
+Sau lần tỉa đầu tiên, số lệnh tối thiểu để kích hoạt tỉa lần tiếp theo.
+
+Số lệnh đầu cần tỉa
+
+Số lượng lệnh âm (ở đầu chuỗi) sẽ bị đóng.
+
+Số lệnh cuối tối đa dùng để tỉa
+
+Số lượng lệnh dương (ở cuối chuỗi) sẽ bị đóng cùng. 0 → auto (tự động dùng các lệnh dương cuối chuỗi).
+
+% tiền lời sau khi tỉa
+
+Mục tiêu lợi nhuận đạt được sau khi tỉa (tính theo % so với thua lỗ của các lệnh đầu).
+
+Số tiền lời sau khi tỉa
+
+Nếu %=0, dùng số tiền tuyệt đối này làm mục tiêu.
+
+TP chuỗi sau khi tỉa, pips
+
+TP mới cho chuỗi sau khi tỉa (dùng chung cho tỉa 1 phần).
+
+Hệ số nhân sau khi tỉa
+
+Sau khi tỉa, lots các lệnh tiếp theo được nhân với hệ số này.
+
+Sử dụng tỉa lệnh 1 phần
+
+Thay vì đóng hẳn lệnh đầu, chỉ cắt bớt một phần lots của lệnh đầu tiên.
+
+% âm kích hoạt tỉa lệnh 1 phần
+
+Khi % thua lỗ của chiều đó vượt ngưỡng này (ví dụ -30%) mới kích hoạt tỉa 1 phần.
+
+Số lệnh kích hoạt tỉa lệnh 1 phần
+
+Cần tối thiểu số lệnh này.
+
+Phần trăm lots lệnh đầu để tỉa
+
+Cắt bớt bao nhiêu phần trăm lot của lệnh đầu tiên (ví dụ 30%).
+
+Phần trăm tiền lời sau tỉa
+
+Mục tiêu lợi nhuận tính trên phần lot bị cắt.
+
+Số tiền lời sau khi tỉa
+
+Nếu %=0, dùng số tiền này.
+
+Số lệnh cuối tối đa dùng để tỉa
+
+Số lệnh cuối tối đa sẽ đóng cùng khi tỉa 1 phần.
+
+🔀 Nhóm: Tỉa lệnh khác chuỗi
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng tỉa lệnh khác chuỗi
+
+Bật cơ chế tỉa lệnh giữa 2 chiều Buy và Sell (dùng Buy tỉa sell, dùng Sell tỉa Buy).
+
+Lọc đúng Magic-Pair
+
+Nếu true, chỉ tỉa lệnh cùng Magic và cùng cặp tiền.
+
+Tổng lệnh kích hoạt tỉa
+
+Tổng số lệnh (Buy+Sell) tối thiểu để kích hoạt.
+
+Số lệnh đầu cần tỉa
+
+Số lệnh xa nhất (lệnh trên cùng đối với Buy, lệnh dưới cùng đối với Sell) sẽ bị đóng.
+
+Số lệnh cuối dùng để tỉa
+
+Số lệnh có lợi nhuận cao nhất sẽ đóng cùng. 0 → auto (dùng toàn bộ lệnh dương đủ để đóng lệnh).
+
+Số tiền lãi sau tỉa
+
+Mục tiêu lợi nhuận tối thiểu đạt được sau khi tỉa.
+
+Sử dụng lãi đã chốt trong ngày để tỉa lệnh
+
+Cộng dồn lợi nhuận đã đóng trong ngày vào mục tiêu tỉa.
+
+Sử dụng tỉa lệnh 1 phần lệnh cùng chiều
+
+Cắt một phần lot của lệnh cùng chiều xa nhất.
+
+Min lots kích hoạt tỉa 1 phần
+
+Chỉ tỉa 1 phần nếu lot của lệnh ≥ giá trị này.
+
+Phần trăm lots cần tỉa
+
+Tỉa bao nhiêu phần trăm lot của lệnh được chọn.
+
+⚖️ Nhóm: Cân Lots
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng cân lots?
+
+Tự động mở thêm lệnh ngược chiều để cân bằng khối lượng giữa Buy và Sell.
+
+Chế độ cân lots
+
+Thêm lots độc lập (magic=0) hoặc thêm lots vào chuỗi hiện tại.
+
+Số lots chênh lệch kích hoạt cân lots
+
+Khi chênh lệch giữa tổng lots buy và tổng lots sell ≥ ngưỡng này, bắt đầu cân.
+
+Số lots chênh lệch dừng cân lots
+
+Khi chênh lệch ≤ ngưỡng này, dừng cân.
+
+Lots mở thêm
+
+Mỗi lần cân, mở thêm một lệnh với lot này.
+
+Độ trễ mỗi lần thêm lots, giây
+
+Khoảng thời gian tối thiểu giữa các lần cân.
+
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+Bo.Botfx
+
+Cần Cù Bù Siêng Năng
+Hedging & Quản lý lệnh
+
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+🛡️ Nhóm: Hedging Zone
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng Hedging Zone?
+
+Bật vùng phòng hộ đặc biệt – khi đủ số lệnh, EA vẽ một vùng giá và mở lệnh lướt sóng 2 chiều với lots lớn.
+
+Số lệnh kích hoạt Hedging Zone
+
+Cần tối thiểu số lệnh cùng chiều này để bắt đầu Hedging Zone.
+
+Hệ số nhân tổng lots
+
+Lots lệnh hedging = tổng lots ngược chiều × hệ số này.
+
+Vùng mở lệnh hedging, pips
+
+Chờ giá cách biên vùng bao nhiêu pips thì mới mở lệnh hedging tiếp theo.
+
+Số tiền chốt tổng, $
+
+Khi tổng lợi nhuận (cả 2 chiều) đạt mức này, đóng hết lệnh trong Hedging Zone.
+
+Pips TP tổng lots chênh lệch
+
+Nếu số tiền = 0, dùng pips này để tính số tiền TP dựa trên số lots chênh lệch.
+
+Tổng lệnh kích hoạt số tiền chốt tổng mới
+
+Sau khi đạt số lệnh này, chuyển sang mức tiền chốt mới.
+
+Số tiền chốt tổng mới, $
+
+Mức tiền chốt mới.
+
+Max lots hedging zone
+
+Không mở lệnh hedging zone vượt quá lot này.
+
+🔄 Nhóm: Hedging (Phòng hộ thường)
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng hedging
+
+Mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh (mở lệnh cùng với lệnh DCA).
+
+Số lệnh kích hoạt hedging
+
+Sau khi đạt số lệnh này, bot sẽ mở lệnh hedge. Giá trị 0 → tắt.
+
+Phần trăm kích hoạt hedging
+
+Nếu % thua lỗ của chiều Buy/Sell ≥ giá trị này (ví dụ -25%), bot hedge. 0 → tắt.
+
+Sử dụng lots DCA mở lots hedging
+
+Nếu true, lot hedge = lot DCA mới (mở cùng lots với lệnh DCA). Nếu false, dùng % lots.
+
+Phần trăm lots hedging
+
+Nếu không dùng lots DCA, lot hedge = tổng lots chiều DCA × phần trăm này.
+
+TP hedging, pips
+
+TP riêng cho lệnh hedge (nếu muốn). 0 → không đặt TP.
+
+Số tiền TP tổng khi hedging, $
+
+Khi tổng lợi nhuận (cả 2 chiều) đạt mức này, đóng hết lệnh hedge. 0 → tắt.
+
+Dừng tỉa lệnh khi hedging?
+
+Nếu true, tạm dừng chức năng Sniper trong khi đang hedge.
+
+🔄 Nhóm: Reset lots (thủ công)
+Tên hiển thị
+
+Mô tả chi tiết
+
+Reset lots
+
+Giá trị lots mới sau khi reset thủ công (bằng nút bấm trên chart).
+
+Hệ số nhân sau khi reset
+
+Cấp số nhân mới cho các lệnh sau reset.
+
+TP chuỗi sau khi reset
+
+TP mới (pips) cho chuỗi sau reset.
+
+💰 Nhóm: Cài đặt đóng lệnh (TP điền số dương (500), SL điền số âm (-500)
+Tên hiển thị
+
+Mô tả chi tiết
+
+% lãi/lỗ giữa buy và sell để Close All
+
+Ví dụ: nếu Buy lời 10%, Sell lỗ 8%, chênh lệch 2% thì đóng hết. Công thức: (lợi nhuận chiều lời) + (lợi
+nhuận chiều lỗ × (1 + %)) ≥ 0.
+
+Money TP All account
+
+Đóng tất cả mọi lệnh trên toàn tài khoản (không quan tâm Magic) khi lợi nhuận đạt mức $.
+
+Money SL All account
+
+Đóng tất cả mọi lệnh khi thua lỗ đạt mức -$.
+
+Money TP All
+
+Đóng lệnh cùng Magic hiện tại khi lợi nhuận đạt mức $.
+
+Money SL All
+
+Đóng lệnh cùng Magic khi thua lỗ đạt mức -$.
+
+Money TP Buy
+
+Đóng riêng lệnh Buy khi lợi nhuận đạt mức $.
+
+Money SL Buy
+
+Đóng riêng lệnh Buy khi thua lỗ đạt mức -$.
+
+Money TP Sell
+
+Đóng riêng lệnh Sell khi lợi nhuận đạt mức $.
+
+Money SL Sell
+
+Đóng riêng lệnh Sell khi thua lỗ đạt mức -$.
+
+Money TP All khi mở lệnh DCA Signal âm hoặc xuất hiện
+cả buy và sell
+
+Đặc biệt cho kiểu DCA Nhồi âm dương theo Signal: khi có cả Buy và Sell hoặc giá đảo chiều, dùng TP
+tổng này để đóng hết.
+
+📅 Nhóm: Mục tiêu lợi nhuận ngày
+Tên hiển thị
+
+Mô tả chi tiết
+
+Số tiền Mục tiêu lợi nhuận hằng ngày, $
+
+Nếu lợi nhuận ròng trong ngày (floating + lịch sử) đạt mức này, bot đóng lệnh và dừng giao dịch đến ngày hôm sau.
+
+Số tiền Giới hạn thua lỗ hằng ngày, -$
+
+Nếu thua lỗ vượt ngưỡng, bot đóng lệnh và dừng giao dịch.
+
+Phần trăm Mục tiêu lợi nhuận hằng ngày, %
+
+Tính theo % so với số dư đầu ngày.
+
+Phần trăm Giới hạn thua lỗ hằng ngày, -%
+
+Tương tự cho thua lỗ.
+
+Số phút delay ngày mới
+
+Sau khi đạt target ngày, bot sẽ nghỉ trong X phút đầu của ngày mới.
+
+📊 Nhóm: Mục tiêu lợi nhuận Bậc thang
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng mục tiêu lợi nhuận bậc thang?
+
+Bật chế độ chốt lời từng bậc.
+
+Số tiền Mục tiêu lợi nhuận bậc thang, $
+
+Khi lợi nhuận tích lũy (lịch sử + floating) đạt mức này, đóng hết lệnh và delay.
+
+Lọc đúng Magic-Pair?
+
+Chỉ tính lệnh cùng Magic và cặp tiền hiện tại.
+
+Số phút delay sau khi đóng lệnh
+
+Delay trước khi bắt đầu chu kỳ mới.
+
+🏃 Nhóm: Trailing
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng trailing chuỗi DCA?
+
+Kéo SL tự động theo giá khi có lợi nhuận.
+
+Pips bắt đầu trailing
+
+Khi lợi nhuận của chuỗi (tính từ giá trung bình) đạt mức pips này, bắt đầu trailing.
+
+Bước trailing, pips
+
+Mỗi lần giá chạy thêm bao nhiêu pips thì kéo SL lên bấy nhiêu pips.
+
+Điểm đặt SL cho lần đầu trailing, pips
+
+SL ban đầu cách giá trung bình bao nhiêu pips.
+
+Hiển thị line bắt đầu trailing?
+
+Vẽ đường ngang trên chart đánh dấu mức bắt đầu trailing.
+
+⏰ Nhóm: Giới hạn thời gian theo giờ PC/Laptop
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng giới hạn thời gian?
+
+Bật lịch giao dịch theo khung giờ.
+
+Sử dụng giới hạn thời gian 1,2,3,4
+
+Bật/tắt từng khung giờ.
+
+1.Giờ bắt đầu
+
+Định dạng "HH:MM" (giờ PC/Local).
+
+1.Giờ kết thúc
+
+Định dạng "HH:MM" (giờ PC/Local).
+
+DCA ngoài thời gian?
+
+Nếu true, vẫn cho phép nhồi lệnh DCA ngay cả ngoài khung giờ giao dịch.
+
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+Bo.Botfx
+
+Cần Cù Bù Siêng Năng
+Tín hiệu & Bộ lọc
+
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+🎯 Nhóm: Điều kiện mở lệnh
+Tên hiển thị
+
+Mô tả chi tiết
+
+Chọn tín hiệu
+mở lệnh
+
+Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,
+UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,
+Pinbar, Engulfing, Pinbar/Engulfing.
+
+Chọn TF mở
+lệnh
+
+Khung thời gian lấy tín hiệu từ chỉ báo.
+
+Đóng lệnh khi
+đảo trend?
+
+Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ.
+
+📊 Bộ lọc RSI
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng bộ lọc RSI
+
+Chỉ cho phép Buy khi RSI > RSI Up Level, chỉ Sell khi RSI < RSI Down Level.
+
+RSI TF, RSI Price, RSI Period
+
+Cấu hình chỉ báo RSI cho bộ lọc.
+
+RSI Up Level / RSI Down Level
+
+Ngưỡng trên và dưới (mặc định 50/50).
+
+📈 Bộ lọc EMA
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng bộ lọc EMA
+
+Xác định xu hướng dựa trên 2 đường EMA (chỉ cho phép Buy khi EMA 1 > EMA 2, chỉ cho phép Sell khi EMA 1 < EMA 2).
+
+Chọn TF cho EMA
+
+Khung thời gian lấy EMA.
+
+EMA 1 / EMA 2
+
+Chu kỳ EMA (mặc định 34 và 89).
+
+Max khoảng cách giá và EMA 1, pips
+
+Giá hiện tại không được xa EMA1 quá ngưỡng này (0 → bỏ qua).
+
+Min khoảng cách EMA 1 và EMA 2, pips
+
+2 đường EMA phải cách nhau tối thiểu ngưỡng này mới xác định xu hướng.
+
+📉 Bộ lọc MACD
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng bộ lọc MACD
+
+Dùng histogram MACD để xác định xu hướng (dương → up, âm → down).
+
+TF MACD, Fast EMA, Slow EMA, SMA, Applied price
+
+Cấu hình chỉ báo MACD.
+
+🔄 Bộ lọc Zone Cycle
+Tên hiển thị
+
+Mô tả chi tiết
+
+Sử dụng Zone Cycle?
+
+Khi giá vượt ra ngoài vùng (trên 'Vùng giá trên' hoặc dưới 'Vùng giá trên'), bot tự động bật New Cycle (dừng mở lệnh mới).
+
+Vùng giá trên / Vùng giá dưới
+
+Mức giá xác định vùng an toàn.
+
+📊 Các chỉ báo tín hiệu cụ thể
+Mỗi tín hiệu có bộ tham số riêng (tự cài đặt thông số theo chiến lược riêng của từng người). Dưới đây là các tham số chính:
+
+🔵 Indi CCI
+CCI Period (14), CCI Price (Close), CCI Quá mua (100), CCI Quá bán (-100)
+
+🟢 Indi Stoch
+Stoch K Period (5), Stoch D Period (3), Stoch Slowing (3), Stoch Quá mua (80), Stoch Quá bán (20)
+
+🟡 Indi Momentum
+Momentum Period (14), Momentum Quá mua (100.45), Momentum Quá bán (99.45)
+
+🔴 Supertrend Indicator
+Periods Supertrend (21), Multiplier Supertrend (3.0)
+
+🟠 UTBOT Indicator
+Nbr_Periods (10), Multiplier (1.0), ShowArrows, ArrowDist
+
+📦 Indicator ngoài
+Tên indi, Buy buffer (0), Sell buffer (1), Nến check tín hiệu (1)
+
+📈 RSI Indicator
+RSI Period (14), Quá mua (75), Quá bán (25)
+
+🍃 Ichimoku Indicator
+Tenkan (9), Kijun (26), Senkou (52)
+
+📊 BB Indicator
+BB Period (20), BB Deviations (2.0)
+
+🕯️ Pinbar
+Tỉ lệ râu nến dài so với thân nến (5.0), tỉ lệ râu dài so với râu ngắn (6.0), số pips tối thiểu của râu dài (50 pips)
+
+🕯️ Engulfing
+Bao trùm toàn bộ râu nến? (true), số pips tối thiểu của thân nến bao trùm (50 pips)
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+Bo.Botfx
+
+Cần Cù Bù Siêng Năng
+Logic vào/ra lệnh
+
+📞 +84981061018 | 📱 t.me/nguyenvanbo128
+
+🎯 Điều kiện vào lệnh & thoát lệnh
+🟢 Điều kiện mở lệnh đầu tiên (lệnh khởi tạo chuỗi)
+Tín hiệu: Có tín hiệu từ chỉ báo được chọn (CCI, Stoch, RSI, Pinbar, SMC, v.v.)
+Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép.
+Không có lệnh cùng chiều đang mở (số lệnh Buy = 0 hoặc số lệnh Sell = 0).
+Spread ≤ Spread tối đa (mặc định 5 pips).
+Trong khung giờ giao dịch (hoặc được phép DCA ngoài giờ).
+Chưa đạt target ngày
+New Cycle = true (cho phép mở lệnh mới).
+Không bị Stop Buy / Stop Sell (từ lệnh chờ 555555 hoặc nút bấm).
+Đủ thời gian delay sau lần clear lệnh trước (nếu có).
+Nếu dùng chế độ xổ số: đủ thời gian delay sau SL/TP và không nằm trong chuỗi xổ số đang chờ.
+
+🟡 Điều kiện nhồi lệnh DCA (mở thêm lệnh cùng chiều)
+Đã có ít nhất 1 lệnh cùng chiều (số lệnh Buy > 0 hoặc số lệnh Sell > 0).
+Chưa vượt quá số lệnh tối đa (Số lệnh buy tối đa / Số lệnh sell tối đa).
+Khoảng cách giá hiện tại so với lệnh cuối ≥ khoảng cách nhồi quy định (có thể thay đổi theo số lệnh).
+Điều kiện theo kiểu DCA:
+Step+TF: Mỗi nến chỉ nhồi 1 lần.
+Signal DCA: Có tín hiệu mua/bán mới.
+Step+Đóng nến: Đợi đóng nến và nhồi ở đầu nến mới.
+Nhồi dương / âm dương: Cho phép nhồi cả khi giá đi cùng chiều/cùng chiều và ngược chiều.
+Bộ lọc trend cho DCA (nếu bật): Chỉ nhồi khi xu hướng đúng (sau khi đủ số lệnh kích hoạt).
+Không bị Stop Buy / Stop Sell và không trong Hedging Zone đang chờ.
+Đủ thời gian delay giữa các lệnh (mặc định 2 giây).
+
+🔴 Điều kiện thoát lệnh (đóng vị thế)
+Chạm TP chuỗi (tính trên giá trung bình tính theo số lots) hoặc TP đơn lệnh (nếu bật).
+Chạm SL (nếu được đặt).
+Kích hoạt tỉa lệnh (Sniper):
+Tỉa cùng chuỗi: đóng X lệnh đầu (lỗ) và Y lệnh cuối (lời) để đạt mục tiêu lợi nhuận.
+Tỉa 1 phần: cắt bớt % lots của lệnh đầu.
+Tỉa khác chuỗi: đóng lệnh giữa các Magic/cặp tiền khác nhau.
+Đạt các mức Money TP/SL: toàn tài khoản, theo Magic, riêng Buy/Sell.
+Đảo trend (nếu bật Đóng lệnh khi đảo trend): khi RSI+EMA+MACD đảo chiều hoàn toàn, đóng hết lệnh cùng hướng cũ.
+Hedging / Hedging Zone đạt TP tổng.
+Target ngày hoặc target bậc thang đạt mục tiêu.
+Trailing kích hoạt và SL kéo lên chạm giá.
+% chênh lệch lãi/lỗ giữa Buy và Sell đủ nhỏ.
+
+📌 Lưu ý quan trọng về New Cycle
+⚠️ Lưu ý lịch sử phiên bản:
+
+- Các phiên bản cũ hơn 2.6: New Cycle = false mới cho phép mở lệnh (chu kỳ mới).
+- Từ phiên bản 2.6.1 trở đi: New Cycle = true là CHO PHÉP mở lệnh (chu kỳ mới).
+- Nút bấm trên chart hiển thị "New Cycle: true" nghĩa là đang ở chế độ CHO PHÉP mở lệnh.
+
+📱 Điều khiển New Cycle từ xa:
+
+- Buy Stop giá 888888 → Tắt New Cycle (dừng mở lệnh)
+- Sell Limit giá 888888 → Bật New Cycle (cho phép mở lệnh)
+
+📝 Tóm tắt luồng hoạt động chính
+1. Kiểm tra giới hạn (spread, thời gian, target ngày).
+2. Nếu chưa có lệnh → chờ tín hiệu từ chỉ báo → mở lệnh đầu tiên.
+3. Nếu đã có lệnh → tính khoảng cách nhồi → nếu đủ điều kiện → mở thêm lệnh DCA (tính lots theo hệ số nhân/ cộng).
+4. Liên tục kiểm tra TP chuỗi, trailing, điều kiện đóng lệnh, tỉa lệnh.
+5. Nếu kích hoạt hedging/hedging zone → mở lệnh ngược chiều, theo dõi TP tổng để đóng.
+6. Nếu đạt target ngày hoặc bậc thang → đóng hết lệnh, delay, chờ ngày mới.
+© Bo.Botfx | t.me/nguyenvanbo128 | +84981061018
+
+

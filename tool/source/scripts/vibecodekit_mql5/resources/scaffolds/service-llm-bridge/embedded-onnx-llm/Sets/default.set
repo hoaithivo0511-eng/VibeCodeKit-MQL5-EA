@@ -1,0 +1,7 @@
+; {{NAME}} embedded ONNX LLM bridge default set
+InpMagic=81400
+InpRiskMoney=100.0
+InpSlPips=30
+InpTpPips=60
+InpDailyLossPct=0.05
+InpMaxPositions=3

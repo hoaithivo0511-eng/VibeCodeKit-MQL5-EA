@@ -1,0 +1,8 @@
+; {{NAME}} default parameter set
+; Symbol: {{SYMBOL}}, TF: {{TF}}
+InpMagic={{MAGIC}}
+InpRiskMoney={{RISK_MONEY}}
+InpSlPips={{SL_PIPS}}
+InpTpPips={{TP_PIPS}}
+InpDailyLossPct={{DAILY_LOSS_FRAC}}
+InpMaxPositions={{MAX_POSITIONS}}

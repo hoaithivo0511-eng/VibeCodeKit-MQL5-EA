@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "tool": "mql5-lint",
+  "ok": true,
+  "exit_code": 0,
+  "summary": "0 finding(s): 0 ERROR, 0 WARN",
+  "data": {
+    "finding_count": 0,
+    "error_count": 0,
+    "warn_count": 0,
+    "findings": []
+  },
+  "evidence": [
+    "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture/Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+  ],
+  "matrix": {
+    "dim": "d_correctness",
+    "axis": "implement",
+    "status": "PASS"
+  }
+}

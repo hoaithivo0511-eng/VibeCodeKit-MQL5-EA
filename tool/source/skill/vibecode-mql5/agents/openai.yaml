@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vibecode MQL5"
+  short_description: "Plan, build, verify, and govern MQL5 EAs safely"
+  default_prompt: "Use @vibecode-mql5 to choose the right workflow mode and safely plan, build, or review this MQL5 EA task."

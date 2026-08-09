@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "tool": "vkmql-check-contract",
+  "ok": true,
+  "exit_code": 0,
+  "summary": "contract check passed: 0 error(s), 0 warning(s)",
+  "data": {
+    "ok": true,
+    "project_dir": "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture",
+    "errors": [],
+    "warnings": [],
+    "checked": [
+      "EA-SPEC.yaml",
+      "AI-BUILD-CONTRACT.md",
+      "AI-BUILD-CONTRACT.json",
+      "RISK-CONTRACT.yaml",
+      "BROKER-CONTRACT.yaml",
+      "EVIDENCE-CONTRACT.yaml",
+      "RELEASE-TRUST.yaml",
+      "AGENTS.md"
+    ]
+  },
+  "evidence": [
+    "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture"
+  ],
+  "matrix": {
+    "dim": "governance",
+    "axis": "contract",
+    "status": "PASS"
+  }
+}

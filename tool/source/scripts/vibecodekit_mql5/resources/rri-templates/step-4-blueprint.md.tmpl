@@ -1,0 +1,20 @@
+# Step 4 / 8 — BLUEPRINT
+
+Capture the architecture diagram, state machine, and invariants the EA must obey.
+
+## Inputs
+- `step-3-vision.md`
+
+## Activities
+- [ ] Module diagram (Include / scripts / external)
+- [ ] State machine (idle → entry-armed → in-trade → exit → idle)
+- [ ] Invariants list (e.g. `magic` reserved, pip math via CPipNormalizer)
+
+## Outputs
+- `step-4-blueprint.md` — ASCII diagram + invariants
+
+## Exit criteria
+- Each invariant is testable (will appear in the 64-cell matrix)
+- No undefined transitions in the state machine
+
+> Sentinel: `touch .rri-state/blueprint.done`.

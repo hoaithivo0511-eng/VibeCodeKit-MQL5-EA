@@ -1,0 +1,49 @@
+{
+  "project": "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture",
+  "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b",
+  "ok": true,
+  "status": {
+    "static_verified": true,
+    "compile_verified": false,
+    "tester_verified": false,
+    "release_eligible": false
+  },
+  "errors": [],
+  "warnings": [
+    "compile evidence not supplied",
+    "tester evidence not supplied"
+  ],
+  "checked_artifacts": [
+    "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5",
+    "Include/CCBSN_GoldenFixture/Config.mqh",
+    "requirements-matrix.csv",
+    "ACCEPTANCE-SCOPE.md",
+    "AGENTS.md",
+    "AI-BUILD-CONTRACT.json",
+    "AI-BUILD-CONTRACT.md",
+    "BROKER-CONTRACT.yaml",
+    "BUILD-PLAN.json",
+    "EA-IR.json",
+    "EA-SPEC.yaml",
+    "EVIDENCE-CONTRACT.yaml",
+    "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5",
+    "Include/CCBSN_GoldenFixture/Config.mqh",
+    "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh",
+    "Include/CCBSN_GoldenFixture/Core/PositionBook.mqh",
+    "Include/CCBSN_GoldenFixture/Core/TradeEventReducer.mqh",
+    "Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh",
+    "Include/CCBSN_GoldenFixture/Exit/BasketCloseEngine.mqh",
+    "Include/CCBSN_GoldenFixture/Risk/GridRiskGuard.mqh",
+    "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh",
+    "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh",
+    "Include/CCBSN_GoldenFixture/Telemetry/MfeMaeLogger.mqh",
+    "Include/CCBSN_GoldenFixture/Telemetry/StructuredLogger.mqh",
+    "README.md",
+    "RELEASE-TRUST.yaml",
+    "RISK-CONTRACT.yaml",
+    "docs/docs-context.json",
+    "docs/docs-prompt.md",
+    "docs/guide.md",
+    "requirements-matrix.csv"
+  ]
+}

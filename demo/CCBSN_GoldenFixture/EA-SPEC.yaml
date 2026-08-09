@@ -1,0 +1,51 @@
+schema_version: '3.0'
+ir_sha256: 940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b
+project:
+  name: CCBSN_GoldenFixture
+  version: 3.0.3
+  status: DRAFT-NOT-VALIDATED
+strategy:
+  class: hybrid
+  symbols:
+  - _Symbol
+  timeframes:
+  - CURRENT
+  entry_logic: Selectable signal engine with explicit trend filters and cycle admission
+    gates.
+  exit_logic: Single/basket/money exits, trailing, recovery, hedge and drawdown controls
+    composed from EA-IR.
+  forbidden_logic:
+  - unbounded_martingale
+risk:
+  max_lot: 1.0
+  risk_per_trade_pct: 0.5
+  max_daily_loss_pct: 5.0
+  max_drawdown_pct: 20.0
+  max_positions: 50
+  stop_loss_required: true
+execution:
+  account_modes:
+  - hedging
+  slippage_points_max: 30
+  spread_points_max: 30.0
+  magic_number_policy: required
+validation:
+  compile_required: true
+  backtest_required: true
+  stress_required: true
+  evidence_manifest_required: true
+governance:
+  mode: full
+  release_target: draft
+  semantic_approved: true
+  behavior_changed: true
+  trading_logic_changed: true
+  risk_changed: true
+  architecture_changed: true
+  porting_changed: false
+  derived_fields:
+  - project.version
+  - execution.spread_points_max
+release:
+  environment_authority: windows-native
+  owner_approval_required_for_live: true

@@ -1,0 +1,11 @@
+schema_version: '1.0'
+ir_sha256: 1a01be363f859c1526944a2dfbd4e64adfd8e1f7b7a280a48b512f5748b21a3c
+account_model: netting
+symbols:
+- XAUUSD
+digits_tested:
+- 5
+- 4
+- 3
+- 2
+native_validation_required: true

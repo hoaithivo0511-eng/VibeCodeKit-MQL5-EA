@@ -1,0 +1,26 @@
+{
+  "profile": "complex-portfolio",
+  "description": "Multi-symbol basket portfolio: exposure + correlation control with centralized basket close.",
+  "required_modules": [
+    "PortfolioManager",
+    "BasketCloseEngine",
+    "CorrelationGuard",
+    "RiskGuard",
+    "StructuredLogger"
+  ],
+  "required_hooks": [
+    "OnTradeTransaction"
+  ],
+  "forbidden_patterns": [
+    {
+      "id": "raw_position_close_loop",
+      "description": "Raw CTrade.PositionClose inside basket/portfolio loops bypasses BasketCloseEngine",
+      "regex": "for\\s*\\([^)]*PositionsTotal\\s*\\([^)]*\\)[\\s\\S]{0,1500}?\\.PositionClose\\s*\\("
+    }
+  ],
+  "required_terms": [
+    "MaxExposure",
+    "Correlation",
+    "Basket"
+  ]
+}

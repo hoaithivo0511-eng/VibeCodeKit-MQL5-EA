@@ -1,0 +1,97 @@
+{
+  "ir_sha256": "3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0",
+  "account_model": "hedging",
+  "ok": true,
+  "features": [
+    {
+      "path": "controls.pending_order_remote",
+      "maturity": "beta",
+      "generator": "pending_command_bus",
+      "implementation": "CDataDrivenCommandBus",
+      "tests": [
+        "model:test_pending_commands"
+      ],
+      "requirement_ids": []
+    },
+    {
+      "path": "risk.max_lot",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::NormalizeVolume",
+      "tests": [
+        "model:test_max_lot"
+      ],
+      "requirement_ids": [
+        "CFG-0028"
+      ]
+    },
+    {
+      "path": "risk.max_positions",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::PositionGate",
+      "tests": [
+        "model:test_position_cap"
+      ],
+      "requirement_ids": [
+        "REQ-0003"
+      ]
+    },
+    {
+      "path": "risk.max_spread",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::SpreadGate",
+      "tests": [
+        "model:test_spread_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0001"
+      ]
+    },
+    {
+      "path": "strategy.entry.signal_selectable",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine",
+      "tests": [
+        "model:test_signal_dispatch"
+      ],
+      "requirement_ids": []
+    },
+    {
+      "path": "strategy.entry.signals.rsi",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::RSI",
+      "tests": [
+        "model:test_signal_rsi"
+      ],
+      "requirement_ids": [
+        "REQ-0004"
+      ]
+    },
+    {
+      "path": "strategy.hedge.zone",
+      "maturity": "beta",
+      "generator": "hedge_zone",
+      "implementation": "ManageHedgeZone",
+      "tests": [
+        "model:test_hedge_zone_state"
+      ],
+      "requirement_ids": []
+    },
+    {
+      "path": "strategy.lot_balance",
+      "maturity": "beta",
+      "generator": "lot_balance",
+      "implementation": "ManageLotBalance",
+      "tests": [
+        "model:test_lot_balance"
+      ],
+      "requirement_ids": []
+    }
+  ],
+  "blockers": [],
+  "warnings": []
+}

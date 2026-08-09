@@ -1,0 +1,30 @@
+schema_version: 1
+ui_contract:
+  surface: chart_objects
+  hero_metric: current_drawdown_pct
+  hero_source: account_equity_peak
+  hero_refresh: on_position_change
+  tokens:
+    colors: [panel_bg, text_primary, text_muted, status_ok, status_warn]
+    type_roles: [metric, label, status]
+    spacing_base: 4
+  layout:
+    anchor: CORNER_RIGHT_UPPER
+    width_mode: fixed
+    dpi_strategy: scale
+    resize_strategy: preserve_anchor
+    survives_chart_theme: [dark, light]
+  performance:
+    update_policy: hybrid
+    timer_ms: 250
+    max_render_hz: 4
+    dirty_only: true
+    chart_redraw_policy: on_change_only
+    budgets: {max_render_us_p95: 2000, max_render_us_p99: 5000, max_ontick_extra_us_p95: 100, max_ontick_overhead_pct: 5}
+    limits: {max_dynamic_objects: 32, max_rows: 16, max_canvas_pixels: 500000}
+    tester: {skip_ui_when_non_visual: true, visual_mode_required_for_full_panel: true}
+  rows:
+    - {id: drawdown, label: Drawdown, source: account_equity_peak, refresh: on_position_change, stale_after_ms: 1000}
+  controls:
+    - {id: emergency_stop, label: Emergency stop, destructive: true, confirm_required: true}
+  forbidden: [render_from_ontick, trade_from_renderer, per_tick_chart_redraw]

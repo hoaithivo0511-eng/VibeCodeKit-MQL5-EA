@@ -1,0 +1,5459 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "CCBSN_GoldenFixture",
+    "version": "3.0.3",
+    "source_documents": [
+      "/mnt/data/CCBSN Manual by Bo.Botfx.pdf"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "hedging",
+    "account_model_status": "confirmed",
+    "symbol_mode": "chart_symbol",
+    "symbols": [],
+    "timeframe_mode": "chart_timeframe",
+    "timeframes": [],
+    "time_policy": {
+      "daily_basis": "server",
+      "session_basis": "server",
+      "history_sync_required": true,
+      "cashflow_policy": "exclude",
+      "dst_policy": "platform_clock",
+      "day_boundary_minutes": 0
+    }
+  },
+  "strategy": {
+    "topology": "multi_engine",
+    "features": [
+      "strategy.dca.bidirectional",
+      "strategy.dca.closed_bar",
+      "strategy.dca.enabled",
+      "strategy.dca.positive",
+      "strategy.dca.signal",
+      "strategy.dca.step",
+      "strategy.dca.step_multiplier",
+      "strategy.dca.step_timeframe",
+      "strategy.entry.signal_selectable",
+      "strategy.exit.account_money",
+      "strategy.exit.adaptive_basket_tp",
+      "strategy.exit.balance_difference",
+      "strategy.exit.basket_tp",
+      "strategy.exit.daily_target",
+      "strategy.exit.money",
+      "strategy.exit.side_money",
+      "strategy.exit.single_tp",
+      "strategy.exit.stepped_target",
+      "strategy.exit.trailing",
+      "strategy.exit.trend_reversal",
+      "strategy.filter.ema",
+      "strategy.filter.macd",
+      "strategy.filter.rsi",
+      "strategy.filter.trend",
+      "strategy.filter.zone_cycle",
+      "strategy.hedge.standard",
+      "strategy.hedge.zone",
+      "strategy.lot_balance",
+      "strategy.lottery.after_sl",
+      "strategy.reverse_entry",
+      "strategy.sizing.additive",
+      "strategy.sizing.martingale",
+      "strategy.sniper.cross_chain",
+      "strategy.sniper.partial",
+      "strategy.sniper.same_chain",
+      "strategy.time.sessions"
+    ],
+    "signals": [
+      "cci_reversal",
+      "stochastic_reversal",
+      "rsi_reversal",
+      "pinbar_engulfing",
+      "candle_color",
+      "no_condition",
+      "random",
+      "external_indicator",
+      "smc_all_with",
+      "smc_all_against",
+      "smc_internal_with",
+      "smc_internal_against",
+      "smc_swing_with",
+      "smc_swing_against",
+      "cci",
+      "stochastic",
+      "momentum",
+      "supertrend",
+      "utbot",
+      "rsi",
+      "ichimoku_kumo_break",
+      "smc",
+      "bollinger_bands",
+      "pinbar",
+      "engulfing"
+    ],
+    "signal_logic": "selectable",
+    "parameters": {
+      "allow_buy": true,
+      "allow_sell": true,
+      "min_seconds_between_entries": 2,
+      "async_execution": false,
+      "minutes_delay_after_clear": 5,
+      "max_buy_positions": 50,
+      "max_sell_positions": 50,
+      "dca_mode": "step_multiplier",
+      "dca_switch_count": 10,
+      "dca_secondary_mode": "signal",
+      "dca_step_pips": 25.0,
+      "dca_step_multiplier": 1.2,
+      "dca_trend_filter_after_positions": 3,
+      "dca_outside_session": true,
+      "lot_mode": "multiply",
+      "lot_multiplier": 1.2,
+      "lot_additive": 0.01,
+      "lot_stage_1_count": 10,
+      "lot_stage_1_multiplier": 1.2,
+      "lot_stage_2_count": 20,
+      "lot_stage_2_multiplier": 1.1,
+      "lot_stage_3_count": 30,
+      "lot_stage_3_multiplier": 1.05,
+      "lot_stage_4_count": 40,
+      "lot_stage_4_multiplier": 1.06,
+      "lot_stage_5_count": 50,
+      "lot_stage_5_multiplier": 1.03,
+      "distance_stage_1_count": 10,
+      "distance_stage_1_pips": 35.0,
+      "distance_stage_2_count": 20,
+      "distance_stage_2_pips": 50.0,
+      "distance_stage_3_count": 30,
+      "distance_stage_3_pips": 70.0,
+      "distance_stage_4_count": 40,
+      "distance_stage_4_pips": 100.0,
+      "basket_target_money": 20.0,
+      "basket_stop_money": -1000.0,
+      "basket_tp_pips": 10.0,
+      "adaptive_tp_loss_pct": -20.0,
+      "adaptive_tp_loss_money": -12000.0,
+      "adaptive_basket_tp_pips": 3.0,
+      "account_tp_money": 500.0,
+      "account_sl_money": -1000.0,
+      "allow_account_wide_close": false,
+      "buy_tp_money": 100.0,
+      "buy_sl_money": -500.0,
+      "sell_tp_money": 100.0,
+      "sell_sl_money": -500.0,
+      "daily_target_pct": 2.0,
+      "daily_target_money": 0.0,
+      "daily_loss_money": -500.0,
+      "new_day_delay_minutes": 30,
+      "stepped_target_money": 200.0,
+      "stepped_target_delay_minutes": 30,
+      "balance_difference_pct": 2.0,
+      "trailing_start_pips": 20.0,
+      "trailing_distance_pips": 10.0,
+      "sniper_trigger_positions": 5,
+      "sniper_head_count": 1,
+      "sniper_tail_max_count": 2,
+      "sniper_target_money": 1.0,
+      "partial_close_pct": 30.0,
+      "cross_sniper_trigger_positions": 8,
+      "cross_sniper_target_money": 2.0,
+      "cross_sniper_magic_pair_only": true,
+      "hedge_trigger_positions": 12,
+      "hedge_trigger_loss_pct": -25.0,
+      "hedge_use_dca_lot": false,
+      "hedge_lot_pct": 50.0,
+      "hedge_tp_pips": 10.0,
+      "hedge_exit_money": 10.0,
+      "stop_sniper_during_hedge": true,
+      "hedge_zone_trigger_positions": 15,
+      "hedge_zone_lot_multiplier": 1.0,
+      "hedge_zone_distance_pips": 30.0,
+      "hedge_zone_target_money": 20.0,
+      "hedge_zone_target_pips": 5.0,
+      "hedge_zone_new_target_count": 25,
+      "hedge_zone_new_target_money": 10.0,
+      "hedge_zone_max_lot": 1.0,
+      "reverse_trigger_positions": 12,
+      "reverse_lot_pct": 25.0,
+      "reverse_fixed_lot": 0.01,
+      "balance_trigger_lots": 0.2,
+      "balance_stop_lots": 0.05,
+      "balance_add_lot": 0.01,
+      "balance_delay_seconds": 30,
+      "lottery_sl_multiplier": 1.5,
+      "lottery_delay_minutes": 5,
+      "lottery_reset_loss_money": -1000.0,
+      "reset_lot": 0.01,
+      "reset_multiplier": 1.0,
+      "reset_basket_tp_pips": 10.0,
+      "rsi_period": 14,
+      "rsi_oversold": 25.0,
+      "rsi_overbought": 75.0,
+      "cci_period": 14,
+      "cci_oversold": -100.0,
+      "cci_overbought": 100.0,
+      "stoch_k": 5,
+      "stoch_d": 3,
+      "stoch_slowing": 3,
+      "momentum_period": 14,
+      "momentum_buy_level": 100.45,
+      "momentum_sell_level": 99.45,
+      "ema_fast": 34,
+      "ema_slow": 89,
+      "bb_period": 20,
+      "bb_deviation": 2.0,
+      "atr_period": 10,
+      "atr_break_multiplier": 1.0,
+      "supertrend_period": 21,
+      "supertrend_multiplier": 3.0,
+      "utbot_period": 10,
+      "utbot_sensitivity": 1.0,
+      "ichimoku_tenkan": 9,
+      "ichimoku_kijun": 26,
+      "ichimoku_senkou": 52,
+      "smc_internal_lookback": 5,
+      "smc_swing_lookback": 20,
+      "pinbar_wick_ratio": 5.0,
+      "pinbar_opposite_ratio": 6.0,
+      "min_candle_pips": 5.0,
+      "engulf_full_wick": true,
+      "unconditional_direction": 1,
+      "external_indicator_name": "",
+      "external_buy_buffer": 0,
+      "external_sell_buffer": 1,
+      "ema_max_price_distance_pips": 0.0,
+      "ema_min_separation_pips": 0.0,
+      "zone_cycle_upper": 999999.0,
+      "zone_cycle_lower": 1e-05,
+      "sessions": [
+        {
+          "enabled": true,
+          "start": "00:00",
+          "end": "23:59"
+        }
+      ],
+      "hedge_variant": "single_opposite_leg_v1",
+      "hedge_zone_variant": "alternating_boundaries_v1",
+      "same_chain_sniper_variant": "oldest_best_pair_v1",
+      "cross_sniper_variant": "pair_loss_profit_v1",
+      "lot_balance_variant": "managed_chain_v1",
+      "reverse_entry_variant": "signal_confirmed_v1",
+      "lottery_variant": "per_closed_position_v1",
+      "hedge_zone_concurrency_policy": "exclusive",
+      "sniper_hedge_pause_scope": "hedge_origin_only",
+      "execution_idempotency_policy": "reconcile_before_retry",
+      "unknown_outcome_policy": "block_until_reconciled",
+      "intent_unknown_timeout_seconds": 30,
+      "intent_history_lookback_seconds": 86400,
+      "ownership_scope": "account",
+      "risk_precedence_policy": "daily_halt_preempts_exposure",
+      "recovery_session_policy": "allow_recovery_outside_sessions"
+    }
+  },
+  "risk": {
+    "base_lot": 0.01,
+    "max_lot": 1.0,
+    "max_spread_pips": 3.0,
+    "max_open_positions": 50,
+    "max_levels_buy": 50,
+    "max_levels_sell": 50,
+    "freeze_drawdown_pct": 15.0,
+    "max_drawdown_pct": 20.0,
+    "risk_per_trade_pct": 0.5,
+    "daily_loss_pct": 5.0,
+    "sl_pips": 100,
+    "tp_pips": 20
+  },
+  "controls": {
+    "features": [
+      "controls.chart_panel",
+      "controls.new_cycle",
+      "controls.pending_order_remote",
+      "controls.reset_lots"
+    ],
+    "new_cycle_semantics": "true_means_allow_new_cycle",
+    "pending_command_transport": "pending_order_v1",
+    "pending_commands": {
+      "stop_ea": {
+        "order_type": "buy_stop",
+        "price": 999999.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": false
+        }
+      },
+      "start_ea": {
+        "order_type": "buy_stop",
+        "price": 666666.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": true
+        }
+      },
+      "disable_new_cycle": {
+        "order_type": "buy_stop",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": false
+        }
+      },
+      "enable_new_cycle": {
+        "order_type": "sell_limit",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": true
+        }
+      },
+      "stop_buy": {
+        "order_type": "buy_stop",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.buy_enabled",
+          "value": false
+        }
+      },
+      "stop_sell": {
+        "order_type": "sell_limit",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.sell_enabled",
+          "value": false
+        }
+      }
+    },
+    "account_wide_close_approved": true
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "strategy.entry.signal_selectable",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Chọn tín hiệu mở lệnh"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0002",
+      "path": "strategy.dca.enabled",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "CCBSN – EA giao dịch DCA + Martingale + Hedge thông minh"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "strategy.dca.step",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "strategy.dca.step_timeframe",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Step+TF: Mỗi nến chỉ nhồi 1 lần."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "strategy.dca.step_multiplier",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Dùng cho kiểu Step Multiplier: khoảng cách = 0.Khoảng cách nhồi lệnh ban đầu × (Hệ số nhân khoảng cách)^(số lệnh)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "strategy.dca.signal",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Signal DCA: Có tín hiệu mua/bán mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "strategy.dca.positive",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Nhồi dương / âm dương: Cho phép nhồi cả khi giá đi cùng chiều/cùng chiều và ngược chiều."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0008",
+      "path": "strategy.dca.bidirectional",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Đặc biệt cho kiểu DCA Nhồi âm dương theo Signal: khi có cả Buy và Sell hoặc giá đảo chiều, dùng TP"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0009",
+      "path": "strategy.dca.closed_bar",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Step+Đóng nến: Đợi đóng nến và nhồi ở đầu nến mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0010",
+      "path": "strategy.sizing.martingale",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "CCBSN – EA giao dịch DCA + Martingale + Hedge thông minh"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "strategy.sizing.additive",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn hệ số lots DCA Hệ số nhân (multiplier) hoặc hệ số cộng (plus)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Hệ số cộng Nếu chọn hệ số cộng, lots mới = lots lệnh trước + giá trị này (mặc định 0.01)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Hệ số cộng Nếu chọn hệ số cộng, lots mới = lots lệnh trước + giá trị này (mặc định 0.01)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "strategy.sniper.same_chain",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "✂ Nhóm: Tỉa lệnh cùng chuỗi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Tỉa lệnh cùng chuỗi không quan tâm MagicNếu true, tỉa cả lệnh không cùng Magic Number (chỉ cùng cặp tiền)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0013",
+      "path": "strategy.sniper.cross_chain",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "🔀 Nhóm: Tỉa lệnh khác chuỗi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Sử dụng tỉa lệnh khác chuỗi Bật cơ chế tỉa lệnh giữa 2 chiều Buy và Sell (dùng Buy tỉa sell, dùng Sell tỉa Buy)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0014",
+      "path": "strategy.sniper.partial",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Sử dụng tỉa lệnh 1 phần Thay vì đóng hẳn lệnh đầu, chỉ cắt bớt một phần lots của lệnh đầu tiên."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "% âm kích hoạt tỉa lệnh 1 phần Khi % thua lỗ của chiều đó vượt ngưỡng này (ví dụ -30%) mới kích hoạt tỉa 1 phần."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Số lệnh kích hoạt tỉa lệnh 1 phần Cần tối thiểu số lệnh này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Sử dụng tỉa lệnh 1 phần lệnh cùng chiềuCắt một phần lot của lệnh cùng chiều xa nhất."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0015",
+      "path": "strategy.hedge.standard",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "Sử dụng Hedging Zone? Bật vùng phòng hộ đặc biệt – khi đủ số lệnh, EA vẽ một vùng giá và mở lệnh lướt sóng 2 chiều với lots lớn."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 15,
+          "evidence": "🔄 Nhóm: Hedging (Phòng hộ thường)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 15,
+          "evidence": "Sử dụng hedging Mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh (mở lệnh cùng với lệnh DCA)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0016",
+      "path": "strategy.hedge.zone",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "🛡 Nhóm: Hedging Zone"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "Sử dụng Hedging Zone? Bật vùng phòng hộ đặc biệt – khi đủ số lệnh, EA vẽ một vùng giá và mở lệnh lướt sóng 2 chiều với lots lớn."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0017",
+      "path": "strategy.reverse_entry",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "🔄 Nhóm: Mở lệnh ngược chiều"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Mở lệnh ngược chiều? Khi đủ số lệnh cùng chiều, bot sẽ mở một lệnh ngược hướng."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Số lệnh kích hoạt mở lệnh ngược chiều Sau khi đạt số lệnh này (ví dụ 12 lệnh Buy), bot sẽ chờ tín hiệu Sell sau đó mới mở 1 lệnh Sell ngược."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0018",
+      "path": "strategy.lot_balance",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "⚖ Nhóm: Cân Lots"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Sử dụng cân lots? Tự động mở thêm lệnh ngược chiều để cân bằng khối lượng giữa Buy và Sell."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Chế độ cân lots Thêm lots độc lập (magic=0) hoặc thêm lots vào chuỗi hiện tại."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Số lots chênh lệch kích hoạt cân lots Khi chênh lệch giữa tổng lots buy và tổng lots sell ≥ ngưỡng này, bắt đầu cân."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0019",
+      "path": "strategy.lottery.after_sl",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Nếu dùng chế độ xổ số: đủ thời gian delay sau SL/TP và không nằm trong chuỗi xổ số đang chờ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0020",
+      "path": "strategy.exit.basket_tp",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP chuỗi DCA, pips Chốt lời chung cho toàn bộ chuỗi lệnh cùng chiều, tính trên giá trung bình + số pips TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP chuỗi DCA, pips Chốt lời chung cho toàn bộ chuỗi lệnh cùng chiều, tính trên giá trung bình + số pips TP chuỗi."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0021",
+      "path": "strategy.exit.money",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All account Đóng tất cả mọi lệnh trên toàn tài khoản (không quan tâm Magic) khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All Đóng lệnh cùng Magic hiện tại khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Buy Đóng riêng lệnh Buy khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Sell Đóng riêng lệnh Sell khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All khi mở lệnh DCA Signal âm hoặc xuất hiện"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0022",
+      "path": "strategy.exit.daily_target",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0023",
+      "path": "strategy.exit.trailing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "🏃 Nhóm: Trailing"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng trailing chuỗi DCA? Kéo SL tự động theo giá khi có lợi nhuận."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Pips bắt đầu trailing Khi lợi nhuận của chuỗi (tính từ giá trung bình) đạt mức pips này, bắt đầu trailing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Pips bắt đầu trailing Khi lợi nhuận của chuỗi (tính từ giá trung bình) đạt mức pips này, bắt đầu trailing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0024",
+      "path": "strategy.exit.single_tp",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 6,
+          "evidence": "TP, pips Chốt lời cho lệnh đầu tiên (nếu không sử dụng DCA hoặc Single TP = 0)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 25,
+          "evidence": "Chạm TP chuỗi (tính trên giá trung bình tính theo số lots) hoặc TP đơn lệnh (nếu bật)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0025",
+      "path": "strategy.exit.adaptive_basket_tp",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "📉 Nhóm: Điều chỉnh TP chuỗi khi âm"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Điều chỉnh TP chuỗi khi âm? Khi thua lỗ vượt ngưỡng, TP chuỗi sẽ được rút ngắn (đặt gần hơn) để dễ chốt lời."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0026",
+      "path": "strategy.exit.account_money",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All account Đóng tất cả mọi lệnh trên toàn tài khoản (không quan tâm Magic) khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL All account Đóng tất cả mọi lệnh khi thua lỗ đạt mức -$."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0027",
+      "path": "strategy.exit.side_money",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Buy Đóng riêng lệnh Buy khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL Buy Đóng riêng lệnh Buy khi thua lỗ đạt mức -$."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Sell Đóng riêng lệnh Sell khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL Sell Đóng riêng lệnh Sell khi thua lỗ đạt mức -$."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0028",
+      "path": "strategy.exit.stepped_target",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "📊 Nhóm: Mục tiêu lợi nhuận Bậc thang"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Sử dụng mục tiêu lợi nhuận bậc thang? Bật chế độ chốt lời từng bậc."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Mục tiêu lợi nhuận bậc thang, $ Khi lợi nhuận tích lũy (lịch sử + floating) đạt mức này, đóng hết lệnh và delay."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0029",
+      "path": "strategy.exit.trend_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 25,
+          "evidence": "Đảo trend (nếu bật Đóng lệnh khi đảo trend): khi RSI+EMA+MACD đảo chiều hoàn toàn, đóng hết lệnh cùng hướng cũ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0030",
+      "path": "strategy.exit.balance_difference",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Close Buy / Close Sell / Close All – Đóng lệnh theo chiều hoặc tất cả."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "% lãi/lỗ giữa buy và sell để Close All Ví dụ: nếu Buy lời 10%, Sell lỗ 8%, chênh lệch 2% thì đóng hết. Công thức: (lợi nhuận chiều lời) + (lợi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "% lãi/lỗ giữa buy và sell để Close All Ví dụ: nếu Buy lời 10%, Sell lỗ 8%, chênh lệch 2% thì đóng hết. Công thức: (lợi nhuận chiều lời) + (lợi"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0031",
+      "path": "strategy.time.sessions",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "⏰ Nhóm: Giới hạn thời gian theo giờ PC/Laptop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng giới hạn thời gian? Bật lịch giao dịch theo khung giờ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng giới hạn thời gian 1,2,3,4 Bật/tắt từng khung giờ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "DCA ngoài thời gian? Nếu true, vẫn cho phép nhồi lệnh DCA ngay cả ngoài khung giờ giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Trong khung giờ giao dịch (hoặc được phép DCA ngoài giờ)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0032",
+      "path": "strategy.filter.trend",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0033",
+      "path": "strategy.filter.ema",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "📈 Bộ lọc EMA"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng bộ lọc EMA Xác định xu hướng dựa trên 2 đường EMA (chỉ cho phép Buy khi EMA 1 > EMA 2, chỉ cho phép Sell khi EMA 1 < EMA 2)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0034",
+      "path": "strategy.filter.macd",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "📉 Bộ lọc MACD"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng bộ lọc MACD Dùng histogram MACD để xác định xu hướng (dương → up, âm → down)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0035",
+      "path": "strategy.filter.zone_cycle",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "🔄 Bộ lọc Zone Cycle"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng Zone Cycle? Khi giá vượt ra ngoài vùng (trên 'Vùng giá trên' hoặc dưới 'Vùng giá trên'), bot tự động bật New Cycle (dừng mở lệnh mới)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0036",
+      "path": "strategy.filter.rsi",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "📊 Bộ lọc RSI"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Sử dụng bộ lọc RSI Chỉ cho phép Buy khi RSI > RSI Up Level, chỉ Sell khi RSI < RSI Down Level."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "RSI TF, RSI Price, RSI Period Cấu hình chỉ báo RSI cho bộ lọc."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0037",
+      "path": "controls.pending_order_remote",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Điều khiển từ xa qua lệnh chờ (Mobile Control): dùng Buy Stop / Sell Limit với giá đặc biệt để bật/tắt EA, dừng New Cycle, stop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 3,
+          "evidence": "📱 Lệnh chờ điều khiển bot từ xa (Mobile Control)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 3,
+          "evidence": "📱 Lệnh chờ điều khiển bot từ xa (Mobile Control)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "🎮 Danh sách lệnh chờ điều khiển"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0038",
+      "path": "controls.chart_panel",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Ngoài lệnh chờ từ xa, bot còn cung cấp các nút bấm trực tiếp trên biểu đồ (khi chạy EA):"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0039",
+      "path": "controls.new_cycle",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Điều khiển từ xa qua lệnh chờ (Mobile Control): dùng Buy Stop / Sell Limit với giá đặc biệt để bật/tắt EA, dừng New Cycle, stop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "Buy Stop 888888 🔴 Tắt New Cycle Ngăn không cho bot mở lệnh mới (chu kỳ mới)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "Sell Limit 888888 🟢 Bật New Cycle Cho phép bot mở lệnh mới trở lại."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "💡 Lưu ý về New Cycle:"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0040",
+      "path": "controls.reset_lots",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0041",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Spread tối đa, pips Nếu spread hiện tại (tính bằng pips) lớn hơn giá trị này, bot sẽ không mở lệnh mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Spread ≤ Spread tối đa (mặc định 5 pips)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0043",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Số lệnh buy tối đa Dừng mở thêm lệnh Buy nếu số lượng lệnh Buy hiện tại đã đạt giới hạn này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Số lệnh sell tối đa Tương tự cho lệnh Sell."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Số lệnh cuối tối đa dùng để tỉa Số lượng lệnh dương (ở cuối chuỗi) sẽ bị đóng cùng. 0 → auto (tự động dùng các lệnh dương cuối chuỗi)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Số lệnh cuối tối đa dùng để tỉa Số lệnh cuối tối đa sẽ đóng cùng khi tỉa 1 phần."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Chưa vượt quá số lệnh tối đa (Số lệnh buy tối đa / Số lệnh sell tối đa)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0044",
+      "path": "risk.daily_loss",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Giới hạn thua lỗ hằng ngày, -$Nếu thua lỗ vượt ngưỡng, bot đóng lệnh và dừng giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Phần trăm Giới hạn thua lỗ hằng ngày, -%Tương tự cho thua lỗ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Giới hạn thua lỗ hằng ngày, -$Nếu thua lỗ vượt ngưỡng, bot đóng lệnh và dừng giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Phần trăm Giới hạn thua lỗ hằng ngày, -%Tương tự cho thua lỗ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0045",
+      "path": "strategy.entry.signals.cci_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0046",
+      "path": "strategy.entry.signals.stochastic_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0047",
+      "path": "strategy.entry.signals.rsi_reversal",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0048",
+      "path": "strategy.entry.signals.pinbar_engulfing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0049",
+      "path": "strategy.entry.signals.candle_color",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0050",
+      "path": "strategy.entry.signals.no_condition",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0051",
+      "path": "strategy.entry.signals.random",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0052",
+      "path": "strategy.entry.signals.external_indicator",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "📦 Indicator ngoài"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0053",
+      "path": "strategy.entry.signals.smc_all_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0054",
+      "path": "strategy.entry.signals.smc_all_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0055",
+      "path": "strategy.entry.signals.smc_internal_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0056",
+      "path": "strategy.entry.signals.smc_internal_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0057",
+      "path": "strategy.entry.signals.smc_swing_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0058",
+      "path": "strategy.entry.signals.smc_swing_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0059",
+      "path": "strategy.entry.signals.cci",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🔵 Indi CCI"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0060",
+      "path": "strategy.entry.signals.stochastic",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟢 Indi Stoch"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0061",
+      "path": "strategy.entry.signals.momentum",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟡 Indi Momentum"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Momentum Period (14), Momentum Quá mua (100.45), Momentum Quá bán (99.45)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Momentum Period (14), Momentum Quá mua (100.45), Momentum Quá bán (99.45)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0062",
+      "path": "strategy.entry.signals.supertrend",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🔴 Supertrend Indicator"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Periods Supertrend (21), Multiplier Supertrend (3.0)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Periods Supertrend (21), Multiplier Supertrend (3.0)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0063",
+      "path": "strategy.entry.signals.utbot",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟠 UTBOT Indicator"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0064",
+      "path": "strategy.entry.signals.rsi",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nếu true, chỉ nhồi lệnh khi xu hướng phù hợp (EMA, MACD, RSI)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0065",
+      "path": "strategy.entry.signals.ichimoku_kumo_break",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0066",
+      "path": "strategy.entry.signals.smc",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Tín hiệu: Có tín hiệu từ chỉ báo được chọn (CCI, Stoch, RSI, Pinbar, SMC, v.v.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0067",
+      "path": "strategy.entry.signals.bollinger_bands",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "📊 BB Indicator"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "BB Period (20), BB Deviations (2.0)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "BB Period (20), BB Deviations (2.0)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0068",
+      "path": "strategy.entry.signals.pinbar",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0069",
+      "path": "strategy.entry.signals.engulfing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "CFG-0069",
+      "path": "identity.name",
+      "value": "CCBSN_GoldenFixture",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "identity.name='CCBSN_GoldenFixture'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0070",
+      "path": "identity.version",
+      "value": "3.0.3",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "identity.version='3.0.3'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0071",
+      "path": "runtime.platform",
+      "value": "MT5",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.platform='MT5'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0072",
+      "path": "runtime.account_model",
+      "value": "hedging",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.account_model='hedging'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0073",
+      "path": "runtime.account_model_status",
+      "value": "confirmed",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.account_model_status='confirmed'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0074",
+      "path": "runtime.symbol_mode",
+      "value": "chart_symbol",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.symbol_mode='chart_symbol'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0075",
+      "path": "runtime.symbols",
+      "value": [],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.symbols=[]"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0076",
+      "path": "runtime.timeframe_mode",
+      "value": "chart_timeframe",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.timeframe_mode='chart_timeframe'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0077",
+      "path": "runtime.timeframes",
+      "value": [],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.timeframes=[]"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0078",
+      "path": "runtime.time_policy.daily_basis",
+      "value": "server",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.daily_basis='server'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0079",
+      "path": "runtime.time_policy.session_basis",
+      "value": "server",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.session_basis='server'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0080",
+      "path": "runtime.time_policy.history_sync_required",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.history_sync_required=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0081",
+      "path": "runtime.time_policy.cashflow_policy",
+      "value": "exclude",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.cashflow_policy='exclude'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0082",
+      "path": "runtime.time_policy.dst_policy",
+      "value": "platform_clock",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.dst_policy='platform_clock'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0083",
+      "path": "runtime.time_policy.day_boundary_minutes",
+      "value": 0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "runtime.time_policy.day_boundary_minutes=0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0084",
+      "path": "strategy.topology",
+      "value": "multi_engine",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.topology='multi_engine'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0085",
+      "path": "strategy.features",
+      "value": [
+        "strategy.dca.bidirectional",
+        "strategy.dca.closed_bar",
+        "strategy.dca.enabled",
+        "strategy.dca.positive",
+        "strategy.dca.signal",
+        "strategy.dca.step",
+        "strategy.dca.step_multiplier",
+        "strategy.dca.step_timeframe",
+        "strategy.entry.signal_selectable",
+        "strategy.exit.account_money",
+        "strategy.exit.adaptive_basket_tp",
+        "strategy.exit.balance_difference",
+        "strategy.exit.basket_tp",
+        "strategy.exit.daily_target",
+        "strategy.exit.money",
+        "strategy.exit.side_money",
+        "strategy.exit.single_tp",
+        "strategy.exit.stepped_target",
+        "strategy.exit.trailing",
+        "strategy.exit.trend_reversal",
+        "strategy.filter.ema",
+        "strategy.filter.macd",
+        "strategy.filter.rsi",
+        "strategy.filter.trend",
+        "strategy.filter.zone_cycle",
+        "strategy.hedge.standard",
+        "strategy.hedge.zone",
+        "strategy.lot_balance",
+        "strategy.lottery.after_sl",
+        "strategy.reverse_entry",
+        "strategy.sizing.additive",
+        "strategy.sizing.martingale",
+        "strategy.sniper.cross_chain",
+        "strategy.sniper.partial",
+        "strategy.sniper.same_chain",
+        "strategy.time.sessions"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.features=['strategy.dca.bidirectional', 'strategy.dca.closed_bar', 'strategy.dca.enabled', 'strategy.dca.positive', 'strategy.dca.signal', 'strategy.dca.step', 'strategy.dca.step_multiplier', 'strategy.dca.step_timeframe', 'strategy.entry.signal_selectable', 'strategy.exit.account_money', 'strategy.exit.adaptive_basket_tp', 'strategy.exit.balance_difference', 'strategy.exit.basket_tp', 'strategy.exit.daily_target', 'strategy.exit.money', 'strategy.exit.side_money', 'strategy.exit.single_tp', 'strategy.exit.stepped_target', 'strategy.exit.trailing', 'strategy.exit.trend_reversal', 'strategy.filter.ema', 'strategy.filter.macd', 'strategy.filter.rsi', 'strategy.filter.trend', 'strategy.filter.zone_cycle', 'strategy.hedge.standard', 'strategy.hedge.zone', 'strategy.lot_balance', 'strategy.lottery.after_sl', 'strategy.reverse_entry', 'strategy.sizing.additive', 'strategy.sizing.martingale', 'strategy.sniper.cross_chain', 'strategy.sniper.partial', 'strategy.sniper.same_chain', 'strategy.time.sessions']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0086",
+      "path": "strategy.signals",
+      "value": [
+        "cci_reversal",
+        "stochastic_reversal",
+        "rsi_reversal",
+        "pinbar_engulfing",
+        "candle_color",
+        "no_condition",
+        "random",
+        "external_indicator",
+        "smc_all_with",
+        "smc_all_against",
+        "smc_internal_with",
+        "smc_internal_against",
+        "smc_swing_with",
+        "smc_swing_against",
+        "cci",
+        "stochastic",
+        "momentum",
+        "supertrend",
+        "utbot",
+        "rsi",
+        "ichimoku_kumo_break",
+        "smc",
+        "bollinger_bands",
+        "pinbar",
+        "engulfing"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.signals=['cci_reversal', 'stochastic_reversal', 'rsi_reversal', 'pinbar_engulfing', 'candle_color', 'no_condition', 'random', 'external_indicator', 'smc_all_with', 'smc_all_against', 'smc_internal_with', 'smc_internal_against', 'smc_swing_with', 'smc_swing_against', 'cci', 'stochastic', 'momentum', 'supertrend', 'utbot', 'rsi', 'ichimoku_kumo_break', 'smc', 'bollinger_bands', 'pinbar', 'engulfing']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0087",
+      "path": "strategy.signal_logic",
+      "value": "selectable",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.signal_logic='selectable'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0088",
+      "path": "strategy.parameters.allow_buy",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.allow_buy=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0089",
+      "path": "strategy.parameters.allow_sell",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.allow_sell=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0090",
+      "path": "strategy.parameters.min_seconds_between_entries",
+      "value": 2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.min_seconds_between_entries=2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0091",
+      "path": "strategy.parameters.async_execution",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.async_execution=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0092",
+      "path": "strategy.parameters.minutes_delay_after_clear",
+      "value": 5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.minutes_delay_after_clear=5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0093",
+      "path": "strategy.parameters.max_buy_positions",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.max_buy_positions=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0094",
+      "path": "strategy.parameters.max_sell_positions",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.max_sell_positions=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0095",
+      "path": "strategy.parameters.dca_mode",
+      "value": "step_multiplier",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_mode='step_multiplier'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0096",
+      "path": "strategy.parameters.dca_switch_count",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_switch_count=10"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0097",
+      "path": "strategy.parameters.dca_secondary_mode",
+      "value": "signal",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_secondary_mode='signal'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0098",
+      "path": "strategy.parameters.dca_step_pips",
+      "value": 25.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_step_pips=25.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0099",
+      "path": "strategy.parameters.dca_step_multiplier",
+      "value": 1.2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_step_multiplier=1.2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0100",
+      "path": "strategy.parameters.dca_trend_filter_after_positions",
+      "value": 3,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_trend_filter_after_positions=3"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0101",
+      "path": "strategy.parameters.dca_outside_session",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.dca_outside_session=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0102",
+      "path": "strategy.parameters.lot_mode",
+      "value": "multiply",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_mode='multiply'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0103",
+      "path": "strategy.parameters.lot_multiplier",
+      "value": 1.2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_multiplier=1.2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0104",
+      "path": "strategy.parameters.lot_additive",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_additive=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0105",
+      "path": "strategy.parameters.lot_stage_1_count",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_1_count=10"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0106",
+      "path": "strategy.parameters.lot_stage_1_multiplier",
+      "value": 1.2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_1_multiplier=1.2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0107",
+      "path": "strategy.parameters.lot_stage_2_count",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_2_count=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0108",
+      "path": "strategy.parameters.lot_stage_2_multiplier",
+      "value": 1.1,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_2_multiplier=1.1"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0109",
+      "path": "strategy.parameters.lot_stage_3_count",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_3_count=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0110",
+      "path": "strategy.parameters.lot_stage_3_multiplier",
+      "value": 1.05,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_3_multiplier=1.05"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0111",
+      "path": "strategy.parameters.lot_stage_4_count",
+      "value": 40,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_4_count=40"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0112",
+      "path": "strategy.parameters.lot_stage_4_multiplier",
+      "value": 1.06,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_4_multiplier=1.06"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0113",
+      "path": "strategy.parameters.lot_stage_5_count",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_5_count=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0114",
+      "path": "strategy.parameters.lot_stage_5_multiplier",
+      "value": 1.03,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_stage_5_multiplier=1.03"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0115",
+      "path": "strategy.parameters.distance_stage_1_count",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_1_count=10"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0116",
+      "path": "strategy.parameters.distance_stage_1_pips",
+      "value": 35.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_1_pips=35.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0117",
+      "path": "strategy.parameters.distance_stage_2_count",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_2_count=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0118",
+      "path": "strategy.parameters.distance_stage_2_pips",
+      "value": 50.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_2_pips=50.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0119",
+      "path": "strategy.parameters.distance_stage_3_count",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_3_count=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0120",
+      "path": "strategy.parameters.distance_stage_3_pips",
+      "value": 70.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_3_pips=70.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0121",
+      "path": "strategy.parameters.distance_stage_4_count",
+      "value": 40,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_4_count=40"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0122",
+      "path": "strategy.parameters.distance_stage_4_pips",
+      "value": 100.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.distance_stage_4_pips=100.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0123",
+      "path": "strategy.parameters.basket_target_money",
+      "value": 20.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.basket_target_money=20.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0124",
+      "path": "strategy.parameters.basket_stop_money",
+      "value": -1000.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.basket_stop_money=-1000.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0125",
+      "path": "strategy.parameters.basket_tp_pips",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.basket_tp_pips=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0126",
+      "path": "strategy.parameters.adaptive_tp_loss_pct",
+      "value": -20.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.adaptive_tp_loss_pct=-20.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0127",
+      "path": "strategy.parameters.adaptive_tp_loss_money",
+      "value": -12000.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.adaptive_tp_loss_money=-12000.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0128",
+      "path": "strategy.parameters.adaptive_basket_tp_pips",
+      "value": 3.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.adaptive_basket_tp_pips=3.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0129",
+      "path": "strategy.parameters.account_tp_money",
+      "value": 500.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.account_tp_money=500.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0130",
+      "path": "strategy.parameters.account_sl_money",
+      "value": -1000.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.account_sl_money=-1000.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0131",
+      "path": "strategy.parameters.allow_account_wide_close",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.allow_account_wide_close=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0132",
+      "path": "strategy.parameters.buy_tp_money",
+      "value": 100.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.buy_tp_money=100.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0133",
+      "path": "strategy.parameters.buy_sl_money",
+      "value": -500.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.buy_sl_money=-500.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0134",
+      "path": "strategy.parameters.sell_tp_money",
+      "value": 100.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sell_tp_money=100.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0135",
+      "path": "strategy.parameters.sell_sl_money",
+      "value": -500.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sell_sl_money=-500.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0136",
+      "path": "strategy.parameters.daily_target_pct",
+      "value": 2.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.daily_target_pct=2.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0137",
+      "path": "strategy.parameters.daily_target_money",
+      "value": 0.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.daily_target_money=0.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0138",
+      "path": "strategy.parameters.daily_loss_money",
+      "value": -500.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.daily_loss_money=-500.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0139",
+      "path": "strategy.parameters.new_day_delay_minutes",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.new_day_delay_minutes=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0140",
+      "path": "strategy.parameters.stepped_target_money",
+      "value": 200.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stepped_target_money=200.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0141",
+      "path": "strategy.parameters.stepped_target_delay_minutes",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stepped_target_delay_minutes=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0142",
+      "path": "strategy.parameters.balance_difference_pct",
+      "value": 2.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.balance_difference_pct=2.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0143",
+      "path": "strategy.parameters.trailing_start_pips",
+      "value": 20.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.trailing_start_pips=20.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0144",
+      "path": "strategy.parameters.trailing_distance_pips",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.trailing_distance_pips=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0145",
+      "path": "strategy.parameters.sniper_trigger_positions",
+      "value": 5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sniper_trigger_positions=5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0146",
+      "path": "strategy.parameters.sniper_head_count",
+      "value": 1,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sniper_head_count=1"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0147",
+      "path": "strategy.parameters.sniper_tail_max_count",
+      "value": 2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sniper_tail_max_count=2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0148",
+      "path": "strategy.parameters.sniper_target_money",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sniper_target_money=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0149",
+      "path": "strategy.parameters.partial_close_pct",
+      "value": 30.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.partial_close_pct=30.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0150",
+      "path": "strategy.parameters.cross_sniper_trigger_positions",
+      "value": 8,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cross_sniper_trigger_positions=8"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0151",
+      "path": "strategy.parameters.cross_sniper_target_money",
+      "value": 2.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cross_sniper_target_money=2.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0152",
+      "path": "strategy.parameters.cross_sniper_magic_pair_only",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cross_sniper_magic_pair_only=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0153",
+      "path": "strategy.parameters.hedge_trigger_positions",
+      "value": 12,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_trigger_positions=12"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0154",
+      "path": "strategy.parameters.hedge_trigger_loss_pct",
+      "value": -25.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_trigger_loss_pct=-25.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0155",
+      "path": "strategy.parameters.hedge_use_dca_lot",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_use_dca_lot=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0156",
+      "path": "strategy.parameters.hedge_lot_pct",
+      "value": 50.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_lot_pct=50.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0157",
+      "path": "strategy.parameters.hedge_tp_pips",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_tp_pips=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0158",
+      "path": "strategy.parameters.hedge_exit_money",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_exit_money=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0159",
+      "path": "strategy.parameters.stop_sniper_during_hedge",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stop_sniper_during_hedge=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0160",
+      "path": "strategy.parameters.hedge_zone_trigger_positions",
+      "value": 15,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_trigger_positions=15"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0161",
+      "path": "strategy.parameters.hedge_zone_lot_multiplier",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_lot_multiplier=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0162",
+      "path": "strategy.parameters.hedge_zone_distance_pips",
+      "value": 30.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_distance_pips=30.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0163",
+      "path": "strategy.parameters.hedge_zone_target_money",
+      "value": 20.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_target_money=20.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0164",
+      "path": "strategy.parameters.hedge_zone_target_pips",
+      "value": 5.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_target_pips=5.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0165",
+      "path": "strategy.parameters.hedge_zone_new_target_count",
+      "value": 25,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_new_target_count=25"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0166",
+      "path": "strategy.parameters.hedge_zone_new_target_money",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_new_target_money=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0167",
+      "path": "strategy.parameters.hedge_zone_max_lot",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_max_lot=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0168",
+      "path": "strategy.parameters.reverse_trigger_positions",
+      "value": 12,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reverse_trigger_positions=12"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0169",
+      "path": "strategy.parameters.reverse_lot_pct",
+      "value": 25.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reverse_lot_pct=25.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0170",
+      "path": "strategy.parameters.reverse_fixed_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reverse_fixed_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0171",
+      "path": "strategy.parameters.balance_trigger_lots",
+      "value": 0.2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.balance_trigger_lots=0.2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0172",
+      "path": "strategy.parameters.balance_stop_lots",
+      "value": 0.05,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.balance_stop_lots=0.05"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0173",
+      "path": "strategy.parameters.balance_add_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.balance_add_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0174",
+      "path": "strategy.parameters.balance_delay_seconds",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.balance_delay_seconds=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0175",
+      "path": "strategy.parameters.lottery_sl_multiplier",
+      "value": 1.5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lottery_sl_multiplier=1.5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0176",
+      "path": "strategy.parameters.lottery_delay_minutes",
+      "value": 5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lottery_delay_minutes=5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0177",
+      "path": "strategy.parameters.lottery_reset_loss_money",
+      "value": -1000.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lottery_reset_loss_money=-1000.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0178",
+      "path": "strategy.parameters.reset_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reset_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0179",
+      "path": "strategy.parameters.reset_multiplier",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reset_multiplier=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0180",
+      "path": "strategy.parameters.reset_basket_tp_pips",
+      "value": 10.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reset_basket_tp_pips=10.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0181",
+      "path": "strategy.parameters.rsi_period",
+      "value": 14,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.rsi_period=14"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0182",
+      "path": "strategy.parameters.rsi_oversold",
+      "value": 25.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.rsi_oversold=25.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0183",
+      "path": "strategy.parameters.rsi_overbought",
+      "value": 75.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.rsi_overbought=75.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0184",
+      "path": "strategy.parameters.cci_period",
+      "value": 14,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cci_period=14"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0185",
+      "path": "strategy.parameters.cci_oversold",
+      "value": -100.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cci_oversold=-100.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0186",
+      "path": "strategy.parameters.cci_overbought",
+      "value": 100.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cci_overbought=100.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0187",
+      "path": "strategy.parameters.stoch_k",
+      "value": 5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stoch_k=5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0188",
+      "path": "strategy.parameters.stoch_d",
+      "value": 3,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stoch_d=3"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0189",
+      "path": "strategy.parameters.stoch_slowing",
+      "value": 3,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.stoch_slowing=3"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0190",
+      "path": "strategy.parameters.momentum_period",
+      "value": 14,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.momentum_period=14"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0191",
+      "path": "strategy.parameters.momentum_buy_level",
+      "value": 100.45,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.momentum_buy_level=100.45"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0192",
+      "path": "strategy.parameters.momentum_sell_level",
+      "value": 99.45,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.momentum_sell_level=99.45"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0193",
+      "path": "strategy.parameters.ema_fast",
+      "value": 34,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ema_fast=34"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0194",
+      "path": "strategy.parameters.ema_slow",
+      "value": 89,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ema_slow=89"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0195",
+      "path": "strategy.parameters.bb_period",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.bb_period=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0196",
+      "path": "strategy.parameters.bb_deviation",
+      "value": 2.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.bb_deviation=2.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0197",
+      "path": "strategy.parameters.atr_period",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.atr_period=10"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0198",
+      "path": "strategy.parameters.atr_break_multiplier",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.atr_break_multiplier=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0199",
+      "path": "strategy.parameters.supertrend_period",
+      "value": 21,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.supertrend_period=21"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0200",
+      "path": "strategy.parameters.supertrend_multiplier",
+      "value": 3.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.supertrend_multiplier=3.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0201",
+      "path": "strategy.parameters.utbot_period",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.utbot_period=10"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0202",
+      "path": "strategy.parameters.utbot_sensitivity",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.utbot_sensitivity=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0203",
+      "path": "strategy.parameters.ichimoku_tenkan",
+      "value": 9,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ichimoku_tenkan=9"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0204",
+      "path": "strategy.parameters.ichimoku_kijun",
+      "value": 26,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ichimoku_kijun=26"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0205",
+      "path": "strategy.parameters.ichimoku_senkou",
+      "value": 52,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ichimoku_senkou=52"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0206",
+      "path": "strategy.parameters.smc_internal_lookback",
+      "value": 5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.smc_internal_lookback=5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0207",
+      "path": "strategy.parameters.smc_swing_lookback",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.smc_swing_lookback=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0208",
+      "path": "strategy.parameters.pinbar_wick_ratio",
+      "value": 5.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.pinbar_wick_ratio=5.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0209",
+      "path": "strategy.parameters.pinbar_opposite_ratio",
+      "value": 6.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.pinbar_opposite_ratio=6.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0210",
+      "path": "strategy.parameters.min_candle_pips",
+      "value": 5.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.min_candle_pips=5.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0211",
+      "path": "strategy.parameters.engulf_full_wick",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.engulf_full_wick=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0212",
+      "path": "strategy.parameters.unconditional_direction",
+      "value": 1,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.unconditional_direction=1"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0213",
+      "path": "strategy.parameters.external_indicator_name",
+      "value": "",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.external_indicator_name=''"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0214",
+      "path": "strategy.parameters.external_buy_buffer",
+      "value": 0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.external_buy_buffer=0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0215",
+      "path": "strategy.parameters.external_sell_buffer",
+      "value": 1,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.external_sell_buffer=1"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0216",
+      "path": "strategy.parameters.ema_max_price_distance_pips",
+      "value": 0.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ema_max_price_distance_pips=0.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0217",
+      "path": "strategy.parameters.ema_min_separation_pips",
+      "value": 0.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ema_min_separation_pips=0.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0218",
+      "path": "strategy.parameters.zone_cycle_upper",
+      "value": 999999.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.zone_cycle_upper=999999.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0219",
+      "path": "strategy.parameters.zone_cycle_lower",
+      "value": 1e-05,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.zone_cycle_lower=1e-05"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0220",
+      "path": "strategy.parameters.sessions",
+      "value": [
+        {
+          "enabled": true,
+          "start": "00:00",
+          "end": "23:59"
+        }
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sessions=[{'enabled': True, 'start': '00:00', 'end': '23:59'}]"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0221",
+      "path": "strategy.parameters.hedge_variant",
+      "value": "single_opposite_leg_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_variant='single_opposite_leg_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0222",
+      "path": "strategy.parameters.hedge_zone_variant",
+      "value": "alternating_boundaries_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_variant='alternating_boundaries_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0223",
+      "path": "strategy.parameters.same_chain_sniper_variant",
+      "value": "oldest_best_pair_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.same_chain_sniper_variant='oldest_best_pair_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0224",
+      "path": "strategy.parameters.cross_sniper_variant",
+      "value": "pair_loss_profit_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.cross_sniper_variant='pair_loss_profit_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0225",
+      "path": "strategy.parameters.lot_balance_variant",
+      "value": "managed_chain_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lot_balance_variant='managed_chain_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0226",
+      "path": "strategy.parameters.reverse_entry_variant",
+      "value": "signal_confirmed_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.reverse_entry_variant='signal_confirmed_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0227",
+      "path": "strategy.parameters.lottery_variant",
+      "value": "per_closed_position_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.lottery_variant='per_closed_position_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0228",
+      "path": "strategy.parameters.hedge_zone_concurrency_policy",
+      "value": "exclusive",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_concurrency_policy='exclusive'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0229",
+      "path": "strategy.parameters.sniper_hedge_pause_scope",
+      "value": "hedge_origin_only",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.sniper_hedge_pause_scope='hedge_origin_only'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0230",
+      "path": "strategy.parameters.execution_idempotency_policy",
+      "value": "reconcile_before_retry",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.execution_idempotency_policy='reconcile_before_retry'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0231",
+      "path": "strategy.parameters.unknown_outcome_policy",
+      "value": "block_until_reconciled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.unknown_outcome_policy='block_until_reconciled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0232",
+      "path": "strategy.parameters.intent_unknown_timeout_seconds",
+      "value": 30,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.intent_unknown_timeout_seconds=30"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0233",
+      "path": "strategy.parameters.intent_history_lookback_seconds",
+      "value": 86400,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.intent_history_lookback_seconds=86400"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0234",
+      "path": "strategy.parameters.ownership_scope",
+      "value": "account",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.ownership_scope='account'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0235",
+      "path": "strategy.parameters.risk_precedence_policy",
+      "value": "daily_halt_preempts_exposure",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.risk_precedence_policy='daily_halt_preempts_exposure'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0236",
+      "path": "strategy.parameters.recovery_session_policy",
+      "value": "allow_recovery_outside_sessions",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "strategy.parameters.recovery_session_policy='allow_recovery_outside_sessions'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0237",
+      "path": "risk.base_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.base_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0238",
+      "path": "risk.max_lot",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_lot=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0239",
+      "path": "risk.max_spread_pips",
+      "value": 3.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_spread_pips=3.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0240",
+      "path": "risk.max_open_positions",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_open_positions=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0241",
+      "path": "risk.max_levels_buy",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_levels_buy=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0242",
+      "path": "risk.max_levels_sell",
+      "value": 50,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_levels_sell=50"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0243",
+      "path": "risk.freeze_drawdown_pct",
+      "value": 15.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.freeze_drawdown_pct=15.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0244",
+      "path": "risk.max_drawdown_pct",
+      "value": 20.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.max_drawdown_pct=20.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0245",
+      "path": "risk.risk_per_trade_pct",
+      "value": 0.5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.risk_per_trade_pct=0.5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0246",
+      "path": "risk.daily_loss_pct",
+      "value": 5.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.daily_loss_pct=5.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0247",
+      "path": "risk.sl_pips",
+      "value": 100,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.sl_pips=100"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0248",
+      "path": "risk.tp_pips",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "risk.tp_pips=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0249",
+      "path": "controls.features",
+      "value": [
+        "controls.chart_panel",
+        "controls.new_cycle",
+        "controls.pending_order_remote",
+        "controls.reset_lots"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.features=['controls.chart_panel', 'controls.new_cycle', 'controls.pending_order_remote', 'controls.reset_lots']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0250",
+      "path": "controls.new_cycle_semantics",
+      "value": "true_means_allow_new_cycle",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.new_cycle_semantics='true_means_allow_new_cycle'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0251",
+      "path": "controls.pending_commands.stop_ea.order_type",
+      "value": "buy_stop",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_ea.order_type='buy_stop'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0252",
+      "path": "controls.pending_commands.stop_ea.price",
+      "value": 999999.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_ea.price=999999.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0253",
+      "path": "controls.pending_commands.stop_ea.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_ea.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0254",
+      "path": "controls.pending_commands.stop_ea.action.path",
+      "value": "ea.enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_ea.action.path='ea.enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0255",
+      "path": "controls.pending_commands.stop_ea.action.value",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_ea.action.value=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0256",
+      "path": "controls.pending_commands.start_ea.order_type",
+      "value": "buy_stop",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.start_ea.order_type='buy_stop'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0257",
+      "path": "controls.pending_commands.start_ea.price",
+      "value": 666666.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.start_ea.price=666666.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0258",
+      "path": "controls.pending_commands.start_ea.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.start_ea.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0259",
+      "path": "controls.pending_commands.start_ea.action.path",
+      "value": "ea.enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.start_ea.action.path='ea.enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0260",
+      "path": "controls.pending_commands.start_ea.action.value",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.start_ea.action.value=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0261",
+      "path": "controls.pending_commands.disable_new_cycle.order_type",
+      "value": "buy_stop",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.disable_new_cycle.order_type='buy_stop'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0262",
+      "path": "controls.pending_commands.disable_new_cycle.price",
+      "value": 888888.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.disable_new_cycle.price=888888.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0263",
+      "path": "controls.pending_commands.disable_new_cycle.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.disable_new_cycle.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0264",
+      "path": "controls.pending_commands.disable_new_cycle.action.path",
+      "value": "cycle.new_enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.disable_new_cycle.action.path='cycle.new_enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0265",
+      "path": "controls.pending_commands.disable_new_cycle.action.value",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.disable_new_cycle.action.value=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0266",
+      "path": "controls.pending_commands.enable_new_cycle.order_type",
+      "value": "sell_limit",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.enable_new_cycle.order_type='sell_limit'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0267",
+      "path": "controls.pending_commands.enable_new_cycle.price",
+      "value": 888888.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.enable_new_cycle.price=888888.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0268",
+      "path": "controls.pending_commands.enable_new_cycle.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.enable_new_cycle.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0269",
+      "path": "controls.pending_commands.enable_new_cycle.action.path",
+      "value": "cycle.new_enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.enable_new_cycle.action.path='cycle.new_enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0270",
+      "path": "controls.pending_commands.enable_new_cycle.action.value",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.enable_new_cycle.action.value=True"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0271",
+      "path": "controls.pending_commands.stop_buy.order_type",
+      "value": "buy_stop",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_buy.order_type='buy_stop'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0272",
+      "path": "controls.pending_commands.stop_buy.price",
+      "value": 555555.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_buy.price=555555.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0273",
+      "path": "controls.pending_commands.stop_buy.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_buy.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0274",
+      "path": "controls.pending_commands.stop_buy.action.path",
+      "value": "direction.buy_enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_buy.action.path='direction.buy_enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0275",
+      "path": "controls.pending_commands.stop_buy.action.value",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_buy.action.value=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0276",
+      "path": "controls.pending_commands.stop_sell.order_type",
+      "value": "sell_limit",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_sell.order_type='sell_limit'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0277",
+      "path": "controls.pending_commands.stop_sell.price",
+      "value": 555555.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_sell.price=555555.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0278",
+      "path": "controls.pending_commands.stop_sell.action.type",
+      "value": "set_state",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_sell.action.type='set_state'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0279",
+      "path": "controls.pending_commands.stop_sell.action.path",
+      "value": "direction.sell_enabled",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_sell.action.path='direction.sell_enabled'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0280",
+      "path": "controls.pending_commands.stop_sell.action.value",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_commands.stop_sell.action.value=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0281",
+      "path": "controls.pending_command_transport",
+      "value": "pending_order_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.pending_command_transport='pending_order_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0282",
+      "path": "controls.account_wide_close_approved",
+      "value": true,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+          "page": null,
+          "evidence": "controls.account_wide_close_approved=True"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 25122,
+    "document_kind": "manual",
+    "defaults_policy": "reject",
+    "document_format": "pdf",
+    "document_pages": 26,
+    "document_metadata": {
+      "Title": "Giới thiệu bot Can Cu Bu Sieng Nang - CCBSN",
+      "Creator": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "Producer": "Skia/PDF m148",
+      "CreationDate": "D:20260611103646+00'00'",
+      "ModDate": "D:20260611103646+00'00'"
+    },
+    "configuration_profile": "ccbsn-golden-fixture-v2",
+    "configuration_profile_source": "/mnt/data/vkmql_fix_work/tests/fixtures/ccbsn_demo_profile.yaml",
+    "configuration_profile_schema": "1",
+    "configuration_assumptions": [
+      "CCBSN is a golden acceptance fixture only; no values are generic defaults."
+    ]
+  },
+  "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b"
+}

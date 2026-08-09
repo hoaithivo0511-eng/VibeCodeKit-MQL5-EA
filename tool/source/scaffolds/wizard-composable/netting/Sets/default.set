@@ -1,0 +1,8 @@
+; {{NAME}} default parameter set
+; Symbol: {{SYMBOL}}, TF: {{TF}}
+InpMagic=70001
+InpRiskMoney=100.0
+InpSlPips=30
+InpTpPips=60
+InpDailyLossPct=0.05
+InpMaxPositions=3

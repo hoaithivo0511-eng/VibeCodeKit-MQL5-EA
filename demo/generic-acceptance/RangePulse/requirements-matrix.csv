@@ -1,0 +1,14 @@
+requirement_id,priority,path,value,confidence,source_refs,implementation,tests,status
+REQ-0001,must,strategy.entry.breakout,True,0.8400000000000001,acceptance:RangePulse:p1:EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4,CEntryEngine::BreakoutSignal,model:test_breakout,GENERATED
+REQ-0002,must,risk.max_spread,True,0.8400000000000001,acceptance:RangePulse:p1:EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4,CRiskEngine::SpreadGate,model:test_spread_gate,GENERATED
+REQ-0003,must,risk.max_lot,True,0.8400000000000001,acceptance:RangePulse:p1:EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4,CRiskEngine::NormalizeVolume,model:test_max_lot,GENERATED
+REQ-0004,must,risk.max_positions,True,0.8400000000000001,acceptance:RangePulse:p1:EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4,CRiskEngine::PositionGate,model:test_position_cap,GENERATED
+REQ-0005,should,strategy.entry.signals.atr_break,True,0.8400000000000001,acceptance:RangePulse:p1:EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4,CEntryEngine::ATRBreak,model:test_signal_atr_break,GENERATED
+REQ-0006,must,identity.name,RangePulse,0.92,acceptance:RangePulse:p-:RangePulse,,,EXTRACTED
+REQ-0007,must,runtime.account_model,netting,0.99,acceptance:RangePulse:p-:account model netting,,,EXTRACTED
+REQ-0008,must,runtime.symbols.XAUUSD,True,0.99,acceptance:RangePulse:p-:XAUUSD,,,EXTRACTED
+REQ-0009,must,runtime.timeframes.M15,True,0.99,acceptance:RangePulse:p-:M15,,,EXTRACTED
+REQ-0010,must,risk.max_spread_pips,2.5,0.93,acceptance:RangePulse:p-:max_spread_pips=2.5,,,EXTRACTED
+REQ-0011,must,risk.max_open_positions,4,0.93,acceptance:RangePulse:p-:max_open_positions=4,,,EXTRACTED
+REQ-0012,must,risk.base_lot,0.01,0.93,acceptance:RangePulse:p-:base_lot=0.01,,,EXTRACTED
+REQ-0013,must,risk.max_lot,1.0,0.93,acceptance:RangePulse:p-:max_lot=1.0,CRiskEngine::NormalizeVolume,model:test_max_lot,GENERATED

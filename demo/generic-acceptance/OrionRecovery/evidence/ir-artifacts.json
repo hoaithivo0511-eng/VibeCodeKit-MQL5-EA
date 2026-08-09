@@ -1,0 +1,148 @@
+{
+  "schema_version": "1",
+  "artifact_type": "ea_ir_generated_artifacts",
+  "ir_sha256": "3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0",
+  "artifacts": [
+    {
+      "path": "ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "AI-BUILD-CONTRACT.json",
+      "size": 8950,
+      "sha256": "901d8fc3039a830301676c89d88501c0f8fb869d8adff00d924c62b045c2b12e"
+    },
+    {
+      "path": "AI-BUILD-CONTRACT.md",
+      "size": 2537,
+      "sha256": "f42ced4e615a07133b6e76190f0925364232c388a227d4f4c3c8f921697f2c68"
+    },
+    {
+      "path": "BROKER-CONTRACT.yaml",
+      "size": 203,
+      "sha256": "ed6af2dca0ae3c5e3f6e164919d22c495744268551799748d9da1eb1314dfe45"
+    },
+    {
+      "path": "BUILD-PLAN.json",
+      "size": 2295,
+      "sha256": "1b600a84140b2c40adbe912b308cc6297e72d23b40133d994c7048e87fd09113"
+    },
+    {
+      "path": "EA-IR.json",
+      "size": 14532,
+      "sha256": "328639275da9e1879bc46c4764578370db9420f8a95fc6c5e355fb029663005d"
+    },
+    {
+      "path": "EA-SPEC.yaml",
+      "size": 1259,
+      "sha256": "2aa5c950751f4493a9bf62466c5304a35477c16103e27210130e8918c8ef3041"
+    },
+    {
+      "path": "EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "e3c8ad204da199b03dee64821fb986d77eb55d4d1a8c9a2f648288d0b07b7ba6"
+    },
+    {
+      "path": "Experts/OrionRecovery/OrionRecovery.mq5",
+      "size": 36465,
+      "sha256": "e01538014d1eab4410a13542493ec12b0439aa46af6944f73f25339d26a4ff6a"
+    },
+    {
+      "path": "Include/OrionRecovery/Config.mqh",
+      "size": 11308,
+      "sha256": "593a61beb6346d036890fca10ee16e5febb7e36b8fafdbb47bd422a4258ba3d0"
+    },
+    {
+      "path": "Include/OrionRecovery/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "Include/OrionRecovery/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "Include/OrionRecovery/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "Include/OrionRecovery/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "Include/OrionRecovery/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "Include/OrionRecovery/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "Include/OrionRecovery/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "Include/OrionRecovery/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "Include/OrionRecovery/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "Include/OrionRecovery/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "README.md",
+      "size": 242,
+      "sha256": "917c28bac44c54ecdc8a0f2eb5c52d66b790908dd369827a1f517cfb235bea2b"
+    },
+    {
+      "path": "RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "2054d8d7c15815da6fbaa2cb73071b5b9634bb60f89cf435acd0e92c2a44baeb"
+    },
+    {
+      "path": "RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "50fb0c3f1d625bd0ba8efbd1ffda34d3c4626a3754f46b980f25ba713b71959d"
+    },
+    {
+      "path": "docs/docs-context.json",
+      "size": 133,
+      "sha256": "3d274674c5434dbf6f13cf35a7de70d6179f184858bf322d9bb2691670dc8e96"
+    },
+    {
+      "path": "docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "requirements-matrix.csv",
+      "size": 4963,
+      "sha256": "96c50527dbb4384277d0212c2c276a029b8c79a46411b8c8a12bcee3c5bc2f1a"
+    }
+  ],
+  "release_eligible": false
+}

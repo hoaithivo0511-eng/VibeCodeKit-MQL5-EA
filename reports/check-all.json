@@ -1,0 +1,87 @@
+{
+  "schema_version": "1",
+  "tool": "vkmql-check-all",
+  "ok": false,
+  "exit_code": 1,
+  "summary": "gate FAILED; release_eligible=False",
+  "data": {
+    "ok": false,
+    "release_eligible": false,
+    "project_dir": "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture",
+    "stages": [
+      {
+        "name": "scan",
+        "status": "PASS",
+        "detail": "1 EA file(s), 4 behaviour(s), no high-risk smells"
+      },
+      {
+        "name": "contract",
+        "status": "PASS",
+        "detail": "contracts intact"
+      },
+      {
+        "name": "lint",
+        "status": "SKIPPED",
+        "detail": "not run in this environment"
+      },
+      {
+        "name": "compile",
+        "status": "UNTESTABLE",
+        "detail": "requires a real MT5/Wine environment"
+      },
+      {
+        "name": "backtest",
+        "status": "UNTESTABLE",
+        "detail": "requires a real MT5/Wine environment"
+      },
+      {
+        "name": "quality",
+        "status": "UNTESTABLE",
+        "detail": "no evidence/backtest/report.xml to grade"
+      },
+      {
+        "name": "forward",
+        "status": "UNTESTABLE",
+        "detail": "no evidence/walkforward/{is,oos}_report.xml present"
+      },
+      {
+        "name": "stress",
+        "status": "UNTESTABLE",
+        "detail": "8 scenario(s) need a real tester"
+      },
+      {
+        "name": "review",
+        "status": "SKIPPED",
+        "detail": "not run in this environment"
+      },
+      {
+        "name": "retro",
+        "status": "UNTESTABLE",
+        "detail": "missing evidence/retro/guards.yaml"
+      },
+      {
+        "name": "approval",
+        "status": "SKIPPED",
+        "detail": "not required for target=draft"
+      },
+      {
+        "name": "evidence",
+        "status": "FAIL",
+        "detail": "manifest release_eligible is not true; manifest summary.release_eligible is not true; compile source is not trusted for release; backtest source is not trusted for release"
+      },
+      {
+        "name": "release-policy",
+        "status": "PASS",
+        "detail": "policy evaluated"
+      }
+    ]
+  },
+  "evidence": [
+    "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture"
+  ],
+  "matrix": {
+    "dim": "governance",
+    "axis": "release-gate",
+    "status": "FAIL"
+  }
+}

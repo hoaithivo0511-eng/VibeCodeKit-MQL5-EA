@@ -1,0 +1,23 @@
+# Step 8 / 8 — REFINE
+
+Classify the delivered change against the v5 refine envelope and decide
+whether to ship, loop back to RRI, or escalate.
+
+## Inputs
+- `step-7-verify.md`
+- Live canary observation (if applicable)
+
+## Activities
+- [ ] Diff scope vs `step-3-vision.md` — are we still inside the envelope?
+- [ ] Capture any new pain points → seeds for next SCAN
+- [ ] If a gate failed: decide repair vs roll-back; document why
+
+## Outputs
+- `step-8-refine.md` — verdict (SHIP / LOOP-TO-RRI / ESCALATE), follow-up items
+
+## Exit criteria
+- Verdict recorded
+- If SHIP: `mql5-deploy-vps` invoked + MIGRATE-VPS.md produced
+- If LOOP-TO-RRI: open a new ticket pointing back to step 2
+
+> Sentinel: `touch .rri-state/refine.done`.

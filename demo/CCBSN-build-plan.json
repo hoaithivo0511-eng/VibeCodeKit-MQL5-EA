@@ -1,0 +1,837 @@
+{
+  "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b",
+  "account_model": "hedging",
+  "ok": true,
+  "features": [
+    {
+      "path": "controls.chart_panel",
+      "maturity": "beta",
+      "generator": "chart_panel",
+      "implementation": "OnChartEvent/OBJ_BUTTON",
+      "tests": [
+        "source:test_chart_events"
+      ],
+      "requirement_ids": [
+        "REQ-0038"
+      ]
+    },
+    {
+      "path": "controls.new_cycle",
+      "maturity": "stable",
+      "generator": "cycle_state",
+      "implementation": "CCycleState",
+      "tests": [
+        "model:test_new_cycle_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0039"
+      ]
+    },
+    {
+      "path": "controls.pending_order_remote",
+      "maturity": "beta",
+      "generator": "pending_command_bus",
+      "implementation": "CDataDrivenCommandBus",
+      "tests": [
+        "model:test_pending_commands"
+      ],
+      "requirement_ids": [
+        "REQ-0037"
+      ]
+    },
+    {
+      "path": "controls.reset_lots",
+      "maturity": "beta",
+      "generator": "reset_lots",
+      "implementation": "OnChartEvent::ResetLots",
+      "tests": [
+        "source:test_reset_lot_controls"
+      ],
+      "requirement_ids": [
+        "REQ-0040"
+      ]
+    },
+    {
+      "path": "risk.daily_loss",
+      "maturity": "stable",
+      "generator": "daily_guard",
+      "implementation": "CRiskEngine::DailyGate",
+      "tests": [
+        "model:test_daily_halt"
+      ],
+      "requirement_ids": [
+        "REQ-0044"
+      ]
+    },
+    {
+      "path": "risk.max_lot",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::NormalizeVolume",
+      "tests": [
+        "model:test_max_lot"
+      ],
+      "requirement_ids": [
+        "CFG-0238"
+      ]
+    },
+    {
+      "path": "risk.max_positions",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::PositionGate",
+      "tests": [
+        "model:test_position_cap"
+      ],
+      "requirement_ids": [
+        "REQ-0043"
+      ]
+    },
+    {
+      "path": "risk.max_spread",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::SpreadGate",
+      "tests": [
+        "model:test_spread_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0041"
+      ]
+    },
+    {
+      "path": "strategy.dca.enabled",
+      "maturity": "stable",
+      "generator": "dca_core",
+      "implementation": "CDCAEngine",
+      "tests": [
+        "model:test_dca_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0002"
+      ]
+    },
+    {
+      "path": "strategy.dca.bidirectional",
+      "maturity": "beta",
+      "generator": "dca_policy",
+      "implementation": "ManageDCA::Bidirectional",
+      "tests": [
+        "model:test_dca_bidirectional"
+      ],
+      "requirement_ids": [
+        "REQ-0008"
+      ]
+    },
+    {
+      "path": "strategy.dca.closed_bar",
+      "maturity": "beta",
+      "generator": "dca_policy",
+      "implementation": "ManageDCA::ClosedBar",
+      "tests": [
+        "model:test_dca_closed_bar"
+      ],
+      "requirement_ids": [
+        "REQ-0009"
+      ]
+    },
+    {
+      "path": "strategy.dca.positive",
+      "maturity": "beta",
+      "generator": "dca_policy",
+      "implementation": "ManageDCA::Positive",
+      "tests": [
+        "model:test_dca_positive"
+      ],
+      "requirement_ids": [
+        "REQ-0007"
+      ]
+    },
+    {
+      "path": "strategy.dca.signal",
+      "maturity": "beta",
+      "generator": "dca_policy",
+      "implementation": "ManageDCA::Signal",
+      "tests": [
+        "model:test_dca_signal_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0006"
+      ]
+    },
+    {
+      "path": "strategy.dca.step",
+      "maturity": "stable",
+      "generator": "dca_step",
+      "implementation": "CDCAEngine::RequiredDistance",
+      "tests": [
+        "model:test_dca_step"
+      ],
+      "requirement_ids": [
+        "REQ-0003"
+      ]
+    },
+    {
+      "path": "strategy.dca.step_multiplier",
+      "maturity": "stable",
+      "generator": "dca_step_multiplier",
+      "implementation": "CDCAEngine::RequiredDistance",
+      "tests": [
+        "model:test_dca_step_multiplier"
+      ],
+      "requirement_ids": [
+        "REQ-0005"
+      ]
+    },
+    {
+      "path": "strategy.dca.step_timeframe",
+      "maturity": "beta",
+      "generator": "dca_policy",
+      "implementation": "ManageDCA::StepTimeframe",
+      "tests": [
+        "model:test_dca_bar_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0004"
+      ]
+    },
+    {
+      "path": "strategy.entry.signal_selectable",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine",
+      "tests": [
+        "model:test_signal_dispatch"
+      ],
+      "requirement_ids": [
+        "REQ-0001"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.bollinger_bands",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Bollinger",
+      "tests": [
+        "model:test_signal_bollinger_bands"
+      ],
+      "requirement_ids": [
+        "REQ-0067"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.candle_color",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::CandleColor",
+      "tests": [
+        "model:test_signal_candle_color"
+      ],
+      "requirement_ids": [
+        "REQ-0049"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.cci",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::CCI",
+      "tests": [
+        "model:test_signal_cci"
+      ],
+      "requirement_ids": [
+        "REQ-0059"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.cci_reversal",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::CCI",
+      "tests": [
+        "model:test_signal_cci_reversal"
+      ],
+      "requirement_ids": [
+        "REQ-0045"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.engulfing",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Engulfing",
+      "tests": [
+        "model:test_signal_engulfing"
+      ],
+      "requirement_ids": [
+        "REQ-0069"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.external_indicator",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::ExternalIndicator",
+      "tests": [
+        "model:test_signal_external_indicator"
+      ],
+      "requirement_ids": [
+        "REQ-0052"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.ichimoku_kumo_break",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::IchimokuKumoBreak",
+      "tests": [
+        "model:test_signal_ichimoku_kumo_break"
+      ],
+      "requirement_ids": [
+        "REQ-0065"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.momentum",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Momentum",
+      "tests": [
+        "model:test_signal_momentum"
+      ],
+      "requirement_ids": [
+        "REQ-0061"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.no_condition",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Unconditional",
+      "tests": [
+        "model:test_signal_no_condition"
+      ],
+      "requirement_ids": [
+        "REQ-0050"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.pinbar",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Pinbar",
+      "tests": [
+        "model:test_signal_pinbar"
+      ],
+      "requirement_ids": [
+        "REQ-0068"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.pinbar_engulfing",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::PinbarOrEngulfing",
+      "tests": [
+        "model:test_signal_pinbar_engulfing"
+      ],
+      "requirement_ids": [
+        "REQ-0048"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.random",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Random",
+      "tests": [
+        "model:test_signal_random"
+      ],
+      "requirement_ids": [
+        "REQ-0051"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.rsi",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::RSI",
+      "tests": [
+        "model:test_signal_rsi"
+      ],
+      "requirement_ids": [
+        "REQ-0064"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.rsi_reversal",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::RSIReversal",
+      "tests": [
+        "model:test_signal_rsi_reversal"
+      ],
+      "requirement_ids": [
+        "REQ-0047"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc"
+      ],
+      "requirement_ids": [
+        "REQ-0066"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_all_against",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_all_against"
+      ],
+      "requirement_ids": [
+        "REQ-0054"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_all_with",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_all_with"
+      ],
+      "requirement_ids": [
+        "REQ-0053"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_internal_against",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_internal_against"
+      ],
+      "requirement_ids": [
+        "REQ-0056"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_internal_with",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_internal_with"
+      ],
+      "requirement_ids": [
+        "REQ-0055"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_swing_against",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_swing_against"
+      ],
+      "requirement_ids": [
+        "REQ-0058"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.smc_swing_with",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::MarketStructureBreak",
+      "tests": [
+        "model:test_signal_smc_swing_with"
+      ],
+      "requirement_ids": [
+        "REQ-0057"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.stochastic",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Stochastic",
+      "tests": [
+        "model:test_signal_stochastic"
+      ],
+      "requirement_ids": [
+        "REQ-0060"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.stochastic_reversal",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Stochastic",
+      "tests": [
+        "model:test_signal_stochastic_reversal"
+      ],
+      "requirement_ids": [
+        "REQ-0046"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.supertrend",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::Supertrend",
+      "tests": [
+        "model:test_signal_supertrend"
+      ],
+      "requirement_ids": [
+        "REQ-0062"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.utbot",
+      "maturity": "beta",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::UTBot",
+      "tests": [
+        "model:test_signal_utbot"
+      ],
+      "requirement_ids": [
+        "REQ-0063"
+      ]
+    },
+    {
+      "path": "strategy.exit.account_money",
+      "maturity": "beta",
+      "generator": "account_money_exit",
+      "implementation": "ManageAccountMoneyExit",
+      "tests": [
+        "model:test_account_money_exit"
+      ],
+      "requirement_ids": [
+        "REQ-0026"
+      ]
+    },
+    {
+      "path": "strategy.exit.adaptive_basket_tp",
+      "maturity": "beta",
+      "generator": "adaptive_basket_tp",
+      "implementation": "AdaptiveBasketTP",
+      "tests": [
+        "model:test_adaptive_basket_tp"
+      ],
+      "requirement_ids": [
+        "REQ-0025"
+      ]
+    },
+    {
+      "path": "strategy.exit.balance_difference",
+      "maturity": "beta",
+      "generator": "balance_difference_exit",
+      "implementation": "ManageBalanceDifferenceExit",
+      "tests": [
+        "model:test_balance_difference_exit"
+      ],
+      "requirement_ids": [
+        "REQ-0030"
+      ]
+    },
+    {
+      "path": "strategy.exit.basket_tp",
+      "maturity": "stable",
+      "generator": "basket_exit",
+      "implementation": "CExitEngine::ManageBasketTP",
+      "tests": [
+        "model:test_weighted_basket_tp"
+      ],
+      "requirement_ids": [
+        "REQ-0020"
+      ]
+    },
+    {
+      "path": "strategy.exit.daily_target",
+      "maturity": "stable",
+      "generator": "daily_guard",
+      "implementation": "CRiskEngine::DailyGate",
+      "tests": [
+        "model:test_daily_halt"
+      ],
+      "requirement_ids": [
+        "REQ-0022"
+      ]
+    },
+    {
+      "path": "strategy.exit.money",
+      "maturity": "stable",
+      "generator": "money_exit",
+      "implementation": "CExitEngine::ManageMoneyLimits",
+      "tests": [
+        "model:test_money_exit"
+      ],
+      "requirement_ids": [
+        "REQ-0021"
+      ]
+    },
+    {
+      "path": "strategy.exit.side_money",
+      "maturity": "stable",
+      "generator": "side_money_exit",
+      "implementation": "ManageSideMoneyExit",
+      "tests": [
+        "model:test_side_money_exit"
+      ],
+      "requirement_ids": [
+        "REQ-0027"
+      ]
+    },
+    {
+      "path": "strategy.exit.single_tp",
+      "maturity": "stable",
+      "generator": "single_tp",
+      "implementation": "OpenLeg",
+      "tests": [
+        "model:test_single_tp"
+      ],
+      "requirement_ids": [
+        "REQ-0024"
+      ]
+    },
+    {
+      "path": "strategy.exit.stepped_target",
+      "maturity": "beta",
+      "generator": "stepped_target",
+      "implementation": "ManageSteppedTarget",
+      "tests": [
+        "model:test_stepped_target"
+      ],
+      "requirement_ids": [
+        "REQ-0028"
+      ]
+    },
+    {
+      "path": "strategy.exit.trailing",
+      "maturity": "stable",
+      "generator": "trailing",
+      "implementation": "ManageTrailing",
+      "tests": [
+        "model:test_trailing"
+      ],
+      "requirement_ids": [
+        "REQ-0023"
+      ]
+    },
+    {
+      "path": "strategy.exit.trend_reversal",
+      "maturity": "beta",
+      "generator": "trend_reversal_exit",
+      "implementation": "ManageTrendReversalExit",
+      "tests": [
+        "model:test_trend_reversal_exit"
+      ],
+      "requirement_ids": [
+        "REQ-0029"
+      ]
+    },
+    {
+      "path": "strategy.filter.ema",
+      "maturity": "stable",
+      "generator": "filters",
+      "implementation": "CFilterEngine::EMA",
+      "tests": [
+        "model:test_ema_filter"
+      ],
+      "requirement_ids": [
+        "REQ-0033"
+      ]
+    },
+    {
+      "path": "strategy.filter.macd",
+      "maturity": "stable",
+      "generator": "filters",
+      "implementation": "CFilterEngine::MACD",
+      "tests": [
+        "model:test_macd_filter"
+      ],
+      "requirement_ids": [
+        "REQ-0034"
+      ]
+    },
+    {
+      "path": "strategy.filter.rsi",
+      "maturity": "stable",
+      "generator": "filters",
+      "implementation": "CFilterEngine::RSI",
+      "tests": [
+        "model:test_rsi_filter"
+      ],
+      "requirement_ids": [
+        "REQ-0036"
+      ]
+    },
+    {
+      "path": "strategy.filter.trend",
+      "maturity": "stable",
+      "generator": "filters",
+      "implementation": "CFilterEngine",
+      "tests": [
+        "model:test_filter_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0032"
+      ]
+    },
+    {
+      "path": "strategy.filter.zone_cycle",
+      "maturity": "beta",
+      "generator": "zone_cycle",
+      "implementation": "ManageZoneCycle",
+      "tests": [
+        "model:test_zone_cycle"
+      ],
+      "requirement_ids": [
+        "REQ-0035"
+      ]
+    },
+    {
+      "path": "strategy.hedge.standard",
+      "maturity": "stable",
+      "generator": "hedge_standard",
+      "implementation": "CHedgeEngine::Manage",
+      "tests": [
+        "model:test_hedge_trigger"
+      ],
+      "requirement_ids": [
+        "REQ-0015"
+      ]
+    },
+    {
+      "path": "strategy.hedge.zone",
+      "maturity": "beta",
+      "generator": "hedge_zone",
+      "implementation": "ManageHedgeZone",
+      "tests": [
+        "model:test_hedge_zone_state"
+      ],
+      "requirement_ids": [
+        "REQ-0016"
+      ]
+    },
+    {
+      "path": "strategy.lot_balance",
+      "maturity": "beta",
+      "generator": "lot_balance",
+      "implementation": "ManageLotBalance",
+      "tests": [
+        "model:test_lot_balance"
+      ],
+      "requirement_ids": [
+        "REQ-0018"
+      ]
+    },
+    {
+      "path": "strategy.lottery.after_sl",
+      "maturity": "beta",
+      "generator": "lottery_after_sl",
+      "implementation": "OnTradeTransaction::Lottery",
+      "tests": [
+        "model:test_lottery_after_sl"
+      ],
+      "requirement_ids": [
+        "REQ-0019"
+      ]
+    },
+    {
+      "path": "strategy.reverse_entry",
+      "maturity": "beta",
+      "generator": "reverse_entry",
+      "implementation": "ManageReverseEntry",
+      "tests": [
+        "model:test_reverse_entry"
+      ],
+      "requirement_ids": [
+        "REQ-0017"
+      ]
+    },
+    {
+      "path": "strategy.sizing.additive",
+      "maturity": "stable",
+      "generator": "lot_progression",
+      "implementation": "CLotProgression::NextLot",
+      "tests": [
+        "model:test_lot_additive"
+      ],
+      "requirement_ids": [
+        "REQ-0011"
+      ]
+    },
+    {
+      "path": "strategy.sizing.martingale",
+      "maturity": "stable",
+      "generator": "lot_progression",
+      "implementation": "CLotProgression::NextLot",
+      "tests": [
+        "model:test_lot_multiplier"
+      ],
+      "requirement_ids": [
+        "REQ-0010"
+      ]
+    },
+    {
+      "path": "strategy.sniper.cross_chain",
+      "maturity": "beta",
+      "generator": "sniper_cross_chain",
+      "implementation": "ManageCrossChainSniper",
+      "tests": [
+        "model:test_cross_chain_sniper"
+      ],
+      "requirement_ids": [
+        "REQ-0013"
+      ]
+    },
+    {
+      "path": "strategy.sniper.partial",
+      "maturity": "beta",
+      "generator": "sniper_partial",
+      "implementation": "CSniperEngine::PartialClose",
+      "tests": [
+        "model:test_partial_sniper"
+      ],
+      "requirement_ids": [
+        "REQ-0014"
+      ]
+    },
+    {
+      "path": "strategy.sniper.same_chain",
+      "maturity": "beta",
+      "generator": "sniper_same_chain",
+      "implementation": "CSniperEngine::ManageSameChain",
+      "tests": [
+        "model:test_same_chain_sniper"
+      ],
+      "requirement_ids": [
+        "REQ-0012"
+      ]
+    },
+    {
+      "path": "strategy.time.sessions",
+      "maturity": "stable",
+      "generator": "session_gate",
+      "implementation": "SessionAllowed",
+      "tests": [
+        "model:test_session_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0031"
+      ]
+    }
+  ],
+  "blockers": [],
+  "warnings": []
+}

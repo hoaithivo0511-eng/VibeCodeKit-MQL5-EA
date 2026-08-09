@@ -1,0 +1,71 @@
+{
+  "schema_version": "1",
+  "generated_by": "mql5-agent-contract",
+  "kit": {
+    "name": "vibecodekit-mql5-ea",
+    "version": "3.3.0rc4",
+    "flavor": "slim",
+    "canonical_layout": "mt5"
+  },
+  "entrypoints": {
+    "primary": [
+      "vkmql-new",
+      "vkmql-check",
+      "vkmql-ship"
+    ],
+    "count": 139,
+    "catalog": "tool-catalog.json"
+  },
+  "artifacts": {
+    "tool_catalog": "tool-catalog.json",
+    "evidence_manifest": "evidence/manifest.json"
+  },
+  "release_policy": {
+    "requires_evidence_manifest": true,
+    "evidence_manifest_path": "evidence/manifest.json",
+    "release_eligible_field": "release_eligible",
+    "accepted_compile_evidence": [
+      "actual_metaeditor",
+      "remote_worker_metaeditor"
+    ],
+    "accepted_backtest_evidence": [
+      "actual_mt5_strategy_tester",
+      "remote_worker_strategy_tester"
+    ],
+    "rejected_evidence": [
+      "stub",
+      "imported_log",
+      "sample_fixture",
+      "manual_unverified",
+      "unknown"
+    ],
+    "unsafe_flags": [
+      "--draft",
+      "--no-compile",
+      "--no-gate",
+      "--unsafe-allow-skips"
+    ]
+  },
+  "rule_namespaces": [
+    {
+      "namespace": "LINT-AP",
+      "rule_count": 8
+    },
+    {
+      "namespace": "BP",
+      "rule_count": 17
+    },
+    {
+      "namespace": "ARCH",
+      "rule_count": 10
+    },
+    {
+      "namespace": "UX",
+      "rule_count": 13
+    }
+  ],
+  "environments": [
+    "linux",
+    "windows"
+  ]
+}

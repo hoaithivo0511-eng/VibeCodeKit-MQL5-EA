@@ -1,0 +1,54 @@
+{
+  "schema_version": "2.0",
+  "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b",
+  "created_at_utc": "SOURCE_GENERATION_TIME",
+  "tool_policy": "No release claim is valid without native compile, tester, hashes and trusted runner attestation.",
+  "source_artifact_manifest_sha256": "e5877049ec15e01fec9c1252e277b9ef217e5038e677a63123ca56c274495450",
+  "compile": {
+    "ok": false,
+    "source": "unavailable",
+    "command": "pending Windows MetaEditor runner",
+    "tool_version": "pending",
+    "host": "pending",
+    "recorded_at_utc": "pending",
+    "returncode": null
+  },
+  "backtest": {
+    "ok": false,
+    "source": "unavailable",
+    "command": "pending MT5 Strategy Tester runner",
+    "tool_version": "pending",
+    "host": "pending",
+    "recorded_at_utc": "pending",
+    "returncode": null
+  },
+  "gates": {
+    "ok": false,
+    "reason": "native gates pending"
+  },
+  "matrix": {
+    "ok": false,
+    "reason": "native stress matrix pending"
+  },
+  "artifacts": [],
+  "unsafe_flags_used": [],
+  "skipped_stages": [
+    "native_compile",
+    "mt5_strategy_tester"
+  ],
+  "compile_ok": false,
+  "backtest_ok": false,
+  "native_compile_verified": false,
+  "mt5_tester_verified": false,
+  "release_eligible": false,
+  "summary": {
+    "compile_ok": false,
+    "backtest_ok": false,
+    "gate_ok": false,
+    "evidence_ok": false,
+    "matrix_ok": false,
+    "release_eligible": false
+  },
+  "status": "SOURCE-COMPLETE-NATIVE-EVIDENCE-PENDING",
+  "authority": "windows-native"
+}

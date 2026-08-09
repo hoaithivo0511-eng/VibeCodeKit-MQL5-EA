@@ -1,0 +1,468 @@
+/* =========================================================================
+ * Neo-Retro Dev Deck — EA Docs design system
+ * =========================================================================
+ * Aesthetic: cream grid paper + pixel-art icons + thick black-border color
+ * blocks + heavy sans-serif typography. Mirrors the "Builders explaining
+ * the future" editorial style from the reference deck.
+ *
+ * Used by render() to produce a self-contained .docs.html that headless
+ * Chrome converts to .docs.pdf via Page.printToPDF.
+ * ========================================================================= */
+
+/* --- design tokens ------------------------------------------------------ */
+
+:root {
+    --c-hot-pink:  #FF1493;   /* agent / brain / intelligence */
+    --c-yellow:    #FFD600;   /* editor / code / tools */
+    --c-cyan:      #00BFFF;   /* browser / web / execution */
+    --c-black:     #0A0A0A;
+    --c-cream:     #FAF5E6;
+    --c-grid:      #D8CFB8;
+
+    --border-thick: 4px solid var(--c-black);
+    --border-medium: 3px solid var(--c-black);
+
+    --font-display: "Archivo Black", "Anton", "Inter", "Helvetica Neue",
+                    "Segoe UI", system-ui, sans-serif;
+    --font-body:    "Inter", "Helvetica Neue", "Segoe UI", system-ui,
+                    sans-serif;
+    --font-mono:    "JetBrains Mono", "Fira Code", "Menlo", "Consolas",
+                    monospace;
+}
+
+/* --- base + cream grid paper background --------------------------------- */
+
+@page {
+    size: A4;
+    margin: 16mm 12mm;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--c-black);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.45;
+    background-color: var(--c-cream);
+    /* Engineering-notebook grid — subtle, never distracting. */
+    background-image:
+        linear-gradient(to right,  var(--c-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--c-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+}
+
+/* --- typography hierarchy ---------------------------------------------- */
+
+.h-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 64px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--c-black);
+    margin: 0;
+}
+
+.h-section {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin: 0 0 8px 0;
+}
+
+.h-card {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.t-sub-en {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--c-black);
+    opacity: 0.8;
+    margin: 4px 0 0 0;
+}
+
+.t-caption {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--c-black);
+}
+
+/* --- block primitive: thick-border color card --------------------------- */
+
+.block {
+    border: var(--border-thick);
+    background: var(--c-cream);
+    padding: 20px 22px;
+    position: relative;
+}
+
+.block.pink   { background: var(--c-hot-pink); color: var(--c-black); }
+.block.yellow { background: var(--c-yellow);   color: var(--c-black); }
+.block.cyan   { background: var(--c-cyan);     color: var(--c-black); }
+.block.black  { background: var(--c-black);    color: var(--c-cream); }
+
+/* Layered/overlap collage — slight offset shadow + sibling overlap. */
+.block + .block { margin-top: 14px; }
+.block.overlap-up { margin-top: -8px; }
+
+/* --- manifesto card (huge headline in boxed frame) --------------------- */
+
+.manifesto {
+    border: var(--border-thick);
+    background: var(--c-cream);
+    padding: 56px 48px;
+    margin: 32px 0;
+    position: relative;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.manifesto .title-jp {
+    font-family: var(--font-display);
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.manifesto .title-en {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    margin: 0 0 36px 0;
+}
+
+.manifesto .claim {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+/* Decorative pixel-art deco in corners — see manifesto template. */
+.manifesto .deco {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.manifesto .deco.tl { top: -32px;    left: -32px; }
+.manifesto .deco.tr { top: 16px;     right: -8px; }
+.manifesto .deco.br { bottom: -28px; right: -8px; }
+
+/* --- pixel icons -------------------------------------------------------- */
+
+.pixel-icon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.pixel-icon.lg { width: 56px;  height: 56px; }
+.pixel-icon.xl { width: 96px;  height: 96px; }
+
+/* --- layer-stack: stacked architecture layers --------------------------- */
+
+.layer-stack { margin: 24px 0; }
+
+.layer-stack .layer {
+    border: var(--border-thick);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 10px 0;
+}
+
+.layer-stack .layer .label {
+    flex: 1;
+}
+
+.layer-stack .layer .label .h-card { margin: 0; }
+.layer-stack .layer .label .t-caption { margin: 2px 0 0 0; }
+
+/* --- timeline: left → right progression -------------------------------- */
+
+.timeline {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+}
+
+.timeline .step {
+    border: var(--border-thick);
+    background: var(--c-cream);
+    padding: 12px 14px;
+    flex: 1 1 140px;
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+}
+
+.timeline .step.highlight {
+    background: var(--c-hot-pink);
+    flex: 1.4 1 180px;
+    min-width: 180px;
+}
+
+.timeline .step .h-card { font-size: 14px; margin: 6px 0 0 0; }
+
+.timeline .arrow {
+    align-self: center;
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* --- param-table: input parameters ------------------------------------- */
+
+.param-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: var(--c-cream);
+    border: var(--border-thick);
+}
+
+.param-table thead th {
+    background: var(--c-black);
+    color: var(--c-cream);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+}
+
+.param-table tbody td {
+    padding: 8px 12px;
+    border-top: 2px solid var(--c-black);
+    font-size: 13px;
+    vertical-align: top;
+}
+
+.param-table tbody tr:nth-child(even) td {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.param-table tbody td.name { font-family: var(--font-mono); font-weight: 700; }
+.param-table tbody td.type { font-family: var(--font-mono); }
+.param-table tbody td.default { font-family: var(--font-mono); }
+
+.param-table tbody tr.group-row td {
+    background: var(--c-yellow);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 12px;
+}
+
+/* --- take-note callouts ------------------------------------------------- */
+
+.take-note {
+    display: flex;
+    gap: 14px;
+    border: var(--border-thick);
+    background: var(--c-cream);
+    padding: 12px 16px;
+    margin: 10px 0;
+}
+
+.take-note .icon { flex: 0 0 32px; }
+.take-note .body { flex: 1; }
+.take-note .body .h-card { font-size: 13px; margin-bottom: 4px; }
+.take-note .body p { margin: 0; font-size: 13px; line-height: 1.4; }
+
+.take-note.warn  { background: var(--c-yellow); }
+.take-note.info  { background: var(--c-cyan); }
+.take-note.danger { background: var(--c-hot-pink); }
+
+/* --- frontmatter block (machine-readable header) ----------------------- */
+
+.frontmatter {
+    border: var(--border-medium);
+    background: var(--c-cream);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 14px 18px;
+    margin: 0 0 24px 0;
+    white-space: pre-wrap;
+}
+
+.frontmatter .key   { color: var(--c-black); font-weight: 700; }
+.frontmatter .value { color: var(--c-black); opacity: 0.9; }
+
+/* --- section header (horizontal bar) ----------------------------------- */
+
+.section-header {
+    background: var(--c-black);
+    color: var(--c-cream);
+    padding: 8px 18px;
+    margin: 32px 0 16px 0;
+    border: var(--border-thick);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-header .pixel-icon { filter: invert(1); }
+.section-header .h-section { color: var(--c-cream); margin: 0; }
+
+/* --- param-deep-dive: per-input operator manual ----------------------- */
+
+.param-deep-dive {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 18px 0;
+}
+
+.param-card {
+    background: var(--c-cream);
+    border: var(--border-thick);
+    box-shadow: 4px 4px 0 var(--c-black);
+    padding: 14px 18px;
+}
+
+.param-card .dd-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    border-bottom: 2px solid var(--c-black);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.param-card .dd-name {
+    font-size: 18px;
+    font-weight: 700;
+    background: var(--c-yellow);
+    padding: 2px 8px;
+    border: 2px solid var(--c-black);
+}
+
+.param-card .dd-type {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--c-black);
+    color: var(--c-cream);
+    padding: 2px 6px;
+}
+
+.param-card .dd-default {
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+
+.param-card .dd-group {
+    margin-left: auto;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--c-cyan);
+    padding: 2px 8px;
+    border: 2px solid var(--c-black);
+}
+
+.param-card .dd-fields {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 16px;
+    row-gap: 6px;
+    margin: 0;
+}
+
+.param-card .dd-fields dt {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.param-card .dd-fields dd {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.param-card .dd-tooltip {
+    font-style: italic;
+    margin: 0 0 8px 0;
+}
+
+.param-card .dd-missing {
+    color: #777;
+    font-style: italic;
+    margin: 0;
+}
+
+/* --- flow-narrative: how the EA runs ---------------------------------- */
+
+.flow-narrative {
+    background: var(--c-cream);
+    border: var(--border-thick);
+    box-shadow: 6px 6px 0 var(--c-black);
+    padding: 18px 22px;
+    margin: 18px 0 28px 0;
+    overflow-x: auto;
+}
+
+.flow-narrative .flow-body {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* --- print rules: ensure PDF output is identical ----------------------- */
+
+@media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .section-header, .manifesto, .block, .layer-stack .layer,
+    .timeline .step, .take-note, .param-table,
+    .param-card, .flow-narrative {
+        page-break-inside: avoid;
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "profile": "grid-safe",
+  "required_modules": [
+    "AsyncTradeExecutor",
+    "BasketCloseEngine",
+    "GridRiskGuard",
+    "PersistentStateStore",
+    "StructuredLogger"
+  ],
+  "required_hooks": [
+    "OnTradeTransaction"
+  ],
+  "forbidden_patterns": [
+    {
+      "id": "raw_position_close_loop",
+      "description": "Raw CTrade.PositionClose inside basket/grid loops",
+      "regex": "for\\s*\\([^)]*PositionsTotal\\s*\\([^)]*\\)[\\s\\S]{0,1500}?\\.PositionClose\\s*\\("
+    },
+    {
+      "id": "sync_trade_without_async_executor",
+      "description": "Grid-safe EA uses raw CTrade without AsyncTradeExecutor",
+      "regex": "CTrade\\s+\\w+;"
+    }
+  ],
+  "required_terms": [
+    "MaxLevels",
+    "DD",
+    "Freeze"
+  ]
+}

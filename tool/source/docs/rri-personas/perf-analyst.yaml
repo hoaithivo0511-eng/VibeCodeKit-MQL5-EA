@@ -1,0 +1,131 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — perf-analyst (backtest / tester analyst).
+persona: perf-analyst
+description: Backtest analyst evaluating tester reports and optimiser output.
+questions:
+  - id: perf-01
+    text: "Is the tester report (XML) parsed end-to-end without warnings?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: perf-02
+    text: "Is profit factor (PF) above the personal-mode minimum (≥ 1.3)?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: perf-03
+    text: "Is Sharpe ratio above the personal-mode minimum (≥ 0.5)?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: perf-04
+    text: "Is max relative drawdown within the strategy's stated limit?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: perf-05
+    text: "Is trade-count sample size ≥ 100 in the IS window?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: perf-06
+    text: "Is recovery factor (RF = profit / DD) acceptable for risk taken?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: perf-07
+    text: "Have winning / losing streak distributions been characterised?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: perf-08
+    text: "Are MFE / MAE distributions plotted and reviewed?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: perf-09
+    text: "Has the tester data quality (gaps, spread) been audited?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: perf-10
+    text: "Is the modelling mode (every-tick vs control) appropriate?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: perf-11
+    text: "Has the optimisation criterion produced a smooth landscape?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: perf-12
+    text: "Are robustness checks (perturbation of parameters) acceptable?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: perf-13
+    text: "Is the AHPR / GHPR consistent across the optimisation cloud?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: perf-14
+    text: "Is the equity curve free of pathological flat / spike behaviour?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-15
+    text: "Has MFE/MAE correlation been compared across regimes?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-16
+    text: "Are tester slippage / latency assumptions explicit?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: perf-17
+    text: "Has the EP (expected payoff) been compared to live canary?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-18
+    text: "Have outlier trades been audited for data / logic artefacts?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-19
+    text: "Is the tester input-set version-controlled with the .ex5?"
+    priority: standard
+    applicable_steps: [build, refine]
+    applicable_modes: [enterprise]
+  - id: perf-20
+    text: "Have multi-period rolling tests been compared for stability?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: perf-21
+    text: "Is the histogram of trade R-multiples documented?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-22
+    text: "Has selection bias (best-pass picking) been documented and avoided?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: perf-23
+    text: "Are trade-by-trade journals stored for off-line analysis?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-24
+    text: "Have execution-side metrics (slippage, requote) been mined?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: perf-25
+    text: "Is the methodology paper / write-up archived with the build?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]

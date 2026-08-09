@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>VibeCodeKit v3.1 UI E2E</title><style>body{font:15px system-ui;background:#10151c;color:#e8eef5;max-width:1200px;margin:32px auto;padding:0 20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #33404f;padding:10px;vertical-align:top}.pass{color:#61d095;font-weight:700}.fail{color:#ff7c86;font-weight:700}pre{white-space:pre-wrap;margin:0;color:#b9c7d6}code{color:#9bd1ff}</style><h1>VibeCodeKit MQL5 v3.1 — UI/Panel E2E Acceptance Report</h1><p><b>5/5 checks passed</b> · duration 0.275s · offline deterministic demonstration</p><p>This report validates the new contract, Retro A13/A14, hot-path boundary, and full regression suite. Native Windows visual screenshots and MetaEditor evidence remain separate release gates.</p><table><tr><th>Check</th><th>Status</th><th>Evidence</th></tr><tr><td>UI-CONTRACT validation</td><td class='pass'>PASS</td><td><pre>[]</pre></td></tr><tr><td>RETRO-A13</td><td class='pass'>PASS</td><td><pre>{
+  "status": "PASS",
+  "findings": [
+    "UI claim source, cadence and freshness are declared"
+  ],
+  "confidence": 0.9
+}</pre></td></tr><tr><td>RETRO-A14</td><td class='pass'>PASS</td><td><pre>{
+  "status": "PASS",
+  "findings": [
+    "UI render is bounded and hot-path evidence is present"
+  ],
+  "confidence": 0.9
+}</pre></td></tr><tr><td>Hot-path isolation static check</td><td class='pass'>PASS</td><td><pre>{
+  "ontick_has_chartredraw": false
+}</pre></td></tr><tr><td>Full Python unittest suite</td><td class='pass'>PASS</td><td><pre>{
+  "returncode": 0,
+  "tail": "json\n[PASS] docs_assets_resolvable: ea_docs_assets style.css resolvable and declared in package-data\n[PASS] no_dev_refs_in_user_docs: no dev refs in 5 user docs\n[PASS] public_surface_stable: 5 public commands stable and importable\n[PASS] maturity_labeled: 134 tools maturity-labeled; 5 placeholders honest\n[PASS] runner_key_pinning: self-signed unpinned runner key rejected (ADV-6 closed)\n[PASS] tests_shipped: 2 test module(s) shipped and runnable from the artifact\nselftest 12/12 invariants passed\n"
+}</pre></td></tr></table>

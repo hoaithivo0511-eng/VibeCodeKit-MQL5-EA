@@ -1,0 +1,26 @@
+{
+  "profile": "prop-firm-risk",
+  "description": "Prop-firm challenge risk rules: hard daily + total drawdown caps, equity protection, and persistent breach state.",
+  "required_modules": [
+    "DailyDrawdownGuard",
+    "EquityProtector",
+    "RiskGuard",
+    "PersistentStateStore",
+    "StructuredLogger"
+  ],
+  "required_hooks": [
+    "OnTradeTransaction"
+  ],
+  "forbidden_patterns": [
+    {
+      "id": "order_send_without_risk_guard",
+      "description": "Raw OrderSend/CTrade open without a RiskGuard gate is unsafe for prop-firm caps",
+      "regex": "CTrade\\s+\\w+;"
+    }
+  ],
+  "required_terms": [
+    "MaxDailyDD",
+    "MaxTotalDD",
+    "EquityStop"
+  ]
+}

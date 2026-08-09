@@ -1,0 +1,252 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "RangePulse",
+    "version": null,
+    "source_documents": [
+      "acceptance:RangePulse"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "netting",
+    "account_model_status": "confirmed",
+    "symbol_mode": "explicit_list",
+    "symbols": [
+      "XAUUSD"
+    ],
+    "timeframe_mode": "explicit_list",
+    "timeframes": [
+      "M15"
+    ]
+  },
+  "strategy": {
+    "topology": "single_engine",
+    "features": [
+      "strategy.entry.breakout"
+    ],
+    "signals": [
+      "atr_break"
+    ],
+    "signal_logic": "single",
+    "parameters": {}
+  },
+  "risk": {
+    "max_spread_pips": 2.5,
+    "max_open_positions": 4,
+    "base_lot": 0.01,
+    "max_lot": 1.0
+  },
+  "controls": {
+    "features": [],
+    "new_cycle_semantics": null,
+    "pending_command_transport": null,
+    "pending_commands": {}
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "strategy.entry.breakout",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": 1,
+          "evidence": "EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0002",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": 1,
+          "evidence": "EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "risk.max_lot",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": 1,
+          "evidence": "EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": 1,
+          "evidence": "EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "strategy.entry.signals.atr_break",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": 1,
+          "evidence": "EA named RangePulse account netting XAUUSD M15 breakout ATR break base lot 0.01 max lot 1 max spread 2.5 max positions 4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "identity.name",
+      "value": "RangePulse",
+      "confidence": 0.92,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "RangePulse"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "runtime.account_model",
+      "value": "netting",
+      "confidence": 0.99,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "account model netting"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0008",
+      "path": "runtime.symbols.XAUUSD",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "XAUUSD"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0009",
+      "path": "runtime.timeframes.M15",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "M15"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0010",
+      "path": "risk.max_spread_pips",
+      "value": 2.5,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "max_spread_pips=2.5"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "risk.max_open_positions",
+      "value": 4,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "max_open_positions=4"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "risk.base_lot",
+      "value": 0.01,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "base_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0013",
+      "path": "risk.max_lot",
+      "value": 1.0,
+      "confidence": 0.93,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:RangePulse",
+          "page": null,
+          "evidence": "max_lot=1.0"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 120,
+    "document_kind": "build_request",
+    "defaults_policy": "reject"
+  },
+  "ir_sha256": "1a01be363f859c1526944a2dfbd4e64adfd8e1f7b7a280a48b512f5748b21a3c"
+}

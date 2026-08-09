@@ -1,0 +1,14 @@
+requirement_id,priority,path,value,confidence,source_refs,implementation,tests,status
+REQ-0001,must,strategy.entry.mean_reversion,True,0.8400000000000001,acceptance:BandReturn:p1:EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3,CEntryEngine::MeanReversionSignal,model:test_mean_reversion,GENERATED
+REQ-0002,must,risk.max_spread,True,0.8400000000000001,acceptance:BandReturn:p1:EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3,CRiskEngine::SpreadGate,model:test_spread_gate,GENERATED
+REQ-0003,must,risk.max_lot,True,0.8400000000000001,acceptance:BandReturn:p1:EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3,CRiskEngine::NormalizeVolume,model:test_max_lot,GENERATED
+REQ-0004,must,risk.max_positions,True,0.8400000000000001,acceptance:BandReturn:p1:EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3,CRiskEngine::PositionGate,model:test_position_cap,GENERATED
+REQ-0005,should,strategy.entry.signals.bollinger_bands,True,0.8400000000000001,acceptance:BandReturn:p1:EA named BandReturn account netting GBPUSD M30 mean-reversion Bollinger base lot 0.01 max lot 1 max spread 2 max positions 3,CEntryEngine::Bollinger,model:test_signal_bollinger_bands,GENERATED
+REQ-0006,must,identity.name,BandReturn,0.92,acceptance:BandReturn:p-:BandReturn,,,EXTRACTED
+REQ-0007,must,runtime.account_model,netting,0.99,acceptance:BandReturn:p-:account model netting,,,EXTRACTED
+REQ-0008,must,runtime.symbols.GBPUSD,True,0.99,acceptance:BandReturn:p-:GBPUSD,,,EXTRACTED
+REQ-0009,must,runtime.timeframes.M30,True,0.99,acceptance:BandReturn:p-:M30,,,EXTRACTED
+REQ-0010,must,risk.max_spread_pips,2.0,0.93,acceptance:BandReturn:p-:max_spread_pips=2.0,,,EXTRACTED
+REQ-0011,must,risk.max_open_positions,3,0.93,acceptance:BandReturn:p-:max_open_positions=3,,,EXTRACTED
+REQ-0012,must,risk.base_lot,0.01,0.93,acceptance:BandReturn:p-:base_lot=0.01,,,EXTRACTED
+REQ-0013,must,risk.max_lot,1.0,0.93,acceptance:BandReturn:p-:max_lot=1.0,CRiskEngine::NormalizeVolume,model:test_max_lot,GENERATED

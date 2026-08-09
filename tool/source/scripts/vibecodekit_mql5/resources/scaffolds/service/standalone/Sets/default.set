@@ -1,0 +1,5 @@
+; {{NAME}} default parameter set
+; Symbol: {{SYMBOL}}, TF: {{TF}}
+; MQL5 Service program — runs from Navigator → Services, no chart.
+InpPollIntervalMs=1000
+InpServiceTag={{NAME}}

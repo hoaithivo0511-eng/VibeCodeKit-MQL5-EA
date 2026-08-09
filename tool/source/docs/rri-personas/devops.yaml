@@ -1,0 +1,131 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — devops (deployment / hosting / observability).
+persona: devops
+description: Deployment engineer running the EA on VPS / MetaQuotes hosting.
+questions:
+  - id: dev-01
+    text: "Has the EA been validated on the target VPS image at least once?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: dev-02
+    text: "Is the deploy procedure documented in MIGRATE-VPS.md?"
+    priority: critical
+    applicable_steps: [verify, refine]
+    applicable_modes: [personal, team, enterprise]
+  - id: dev-03
+    text: "Is journal output structured, parseable, and rotation-safe?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: dev-04
+    text: "Are MFE/MAE CSV traces written for every trade?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: dev-05
+    text: "Are restart, detach, and chart-change behaviours validated?"
+    priority: critical
+    applicable_steps: [verify, refine]
+    applicable_modes: [personal, team, enterprise]
+  - id: dev-06
+    text: "Is the rollback plan (stop EA, close positions, replace ex5) tested?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: dev-07
+    text: "Is monitoring (uptime + heartbeat) wired to an alert channel?"
+    priority: high
+    applicable_steps: [vision, refine]
+    applicable_modes: [team, enterprise]
+  - id: dev-08
+    text: "Does OnInit/OnDeinit emit a clear lifecycle log entry?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: dev-09
+    text: "Is the ex5 versioned (build hash in journal banner)?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: dev-10
+    text: "Are inputs / .set files version-controlled and tagged with the build?"
+    priority: high
+    applicable_steps: [build, refine]
+    applicable_modes: [team, enterprise]
+  - id: dev-11
+    text: "Is the EA tolerant to terminal restarts mid-position?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: dev-12
+    text: "Is the deployment artifact reproducible from a git tag?"
+    priority: high
+    applicable_steps: [build, refine]
+    applicable_modes: [team, enterprise]
+  - id: dev-13
+    text: "Are external resources (WebRequest URLs) allow-listed in MT5?"
+    priority: standard
+    applicable_steps: [vision, build]
+    applicable_modes: [enterprise]
+  - id: dev-14
+    text: "Is the canary plan (30-min observation) documented?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]
+  - id: dev-15
+    text: "Are log severities (info/warn/error) used consistently?"
+    priority: standard
+    applicable_steps: [build]
+    applicable_modes: [enterprise]
+  - id: dev-16
+    text: "Is the EA chart-template independent (works on any timeframe load)?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: dev-17
+    text: "Are MT5 file-resources cleaned on OnDeinit (no leaked handles)?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: dev-18
+    text: "Is timezone (server vs local vs broker) explicit in logs?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: dev-19
+    text: "Is the EA documented enough for a colleague to deploy without help?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]
+  - id: dev-20
+    text: "Has CPU / RAM footprint been measured under live tick rates?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: dev-21
+    text: "Is the disaster-recovery (DR) host pre-provisioned and tested?"
+    priority: standard
+    applicable_steps: [vision, refine]
+    applicable_modes: [enterprise]
+  - id: dev-22
+    text: "Does the EA degrade safely if the broker server is unreachable?"
+    priority: standard
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [enterprise]
+  - id: dev-23
+    text: "Are secrets (broker login, API keys) kept outside the EA binary?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: dev-24
+    text: "Has the journal output been audited for PII / account leakage?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: dev-25
+    text: "Is on-call ownership (who responds to alerts) documented?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]

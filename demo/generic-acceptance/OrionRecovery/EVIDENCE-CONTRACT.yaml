@@ -1,0 +1,9 @@
+schema_version: '1.0'
+ir_sha256: 3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0
+required:
+- MetaEditor compile log
+- EX5 SHA-256
+- MT5 Strategy Tester report
+- stress matrix
+- deep review
+authority: windows-native

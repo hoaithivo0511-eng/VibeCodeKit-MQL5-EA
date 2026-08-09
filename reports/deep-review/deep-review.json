@@ -1,0 +1,1237 @@
+{
+  "schema_version": "2.4",
+  "artifact_type": "ea_deep_review",
+  "tool": "mql5-ea-deep-review",
+  "project": "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture",
+  "files_scanned": [
+    "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5",
+    "Include/CCBSN_GoldenFixture/Config.mqh",
+    "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh",
+    "Include/CCBSN_GoldenFixture/Core/PositionBook.mqh",
+    "Include/CCBSN_GoldenFixture/Core/TradeEventReducer.mqh",
+    "Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh",
+    "Include/CCBSN_GoldenFixture/Exit/BasketCloseEngine.mqh",
+    "Include/CCBSN_GoldenFixture/Risk/GridRiskGuard.mqh",
+    "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh",
+    "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh",
+    "Include/CCBSN_GoldenFixture/Telemetry/MfeMaeLogger.mqh",
+    "Include/CCBSN_GoldenFixture/Telemetry/StructuredLogger.mqh"
+  ],
+  "strategy": {
+    "family": "grid-hedge",
+    "signals": [
+      "grid",
+      "hedge",
+      "dca/martingale-like sizing",
+      "indicator-driven"
+    ]
+  },
+  "score": 0,
+  "readiness": "release-blocked",
+  "issue_counts": {
+    "critical": 2,
+    "error": 0,
+    "warn": 22,
+    "info": 0
+  },
+  "issue_categories": {
+    "code_quality": 22,
+    "release": 2
+  },
+  "issues": [
+    {
+      "severity": "critical",
+      "category": "release",
+      "title": "No compile evidence",
+      "evidence": "Manifest does not prove a real compile (compile_ok missing/false).",
+      "recommendation": "Run the real compile pipeline and record compile_ok=true."
+    },
+    {
+      "severity": "critical",
+      "category": "release",
+      "title": "No backtest evidence",
+      "evidence": "Manifest does not prove a real backtest (backtest_ok missing/false).",
+      "recommendation": "Run the real backtest pipeline and record backtest_ok=true."
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: Collect()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Core/PositionBook.mqh] Collect has approx. complexity 12 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 6,
+      "file": "Include/CCBSN_GoldenFixture/Core/PositionBook.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: FindLive()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh] FindLive has approx. complexity 13 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 11,
+      "file": "Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: Engulfing()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh] Engulfing has approx. complexity 15 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 15,
+      "file": "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "Too many parameters: SaveExtended()",
+      "evidence": "[Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh] SaveExtended takes 11 parameters (>= 7).",
+      "recommendation": "Group related parameters into a struct/config object.",
+      "line": 16,
+      "file": "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: LoadExtended()",
+      "evidence": "[Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh] LoadExtended has approx. complexity 13 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 18,
+      "file": "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "Too many parameters: LoadExtended()",
+      "evidence": "[Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh] LoadExtended takes 11 parameters (>= 7).",
+      "recommendation": "Group related parameters into a struct/config object.",
+      "line": 18,
+      "file": "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: Open()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh] Open has approx. complexity 18 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 20,
+      "file": "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "Too many parameters: Open()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh] Open takes 8 parameters (>= 7).",
+      "recommendation": "Group related parameters into a struct/config object.",
+      "line": 20,
+      "file": "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: EMAFilterAllow()",
+      "evidence": "[Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh] EMAFilterAllow has approx. complexity 17 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 22,
+      "file": "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageBasketExit()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageBasketExit has approx. complexity 12 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 71,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageTrailing()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageTrailing has approx. complexity 19 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 72,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageSniper()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageSniper has approx. complexity 13 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 74,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageCrossChainSniper()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageCrossChainSniper has approx. complexity 19 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 75,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageHedge()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageHedge has approx. complexity 15 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 77,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "Unused function: ManagedPositionExists()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManagedPositionExists is defined at line 80 but never called.",
+      "recommendation": "Remove it or wire it into the call graph.",
+      "line": 80,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ReconcileHedgeZoneState()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ReconcileHedgeZoneState has approx. complexity 16 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 84,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageHedgeZone()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageHedgeZone has approx. complexity 23 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 85,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: DCACondition()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] DCACondition has approx. complexity 20 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 86,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageDCA()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageDCA has approx. complexity 23 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 87,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ManageInitialEntry()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ManageInitialEntry has approx. complexity 13 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 88,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: ProcessRemoteCommands()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] ProcessRemoteCommands has approx. complexity 19 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 91,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    },
+    {
+      "severity": "warn",
+      "category": "code_quality",
+      "title": "High cyclomatic complexity: OnChartEvent()",
+      "evidence": "[Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5] OnChartEvent has approx. complexity 12 (>= 12).",
+      "recommendation": "Reduce branching; extract decision logic into helpers.",
+      "line": 94,
+      "file": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5"
+    }
+  ],
+  "code_quality": {
+    "function_count": 181,
+    "total_loc": 359,
+    "max_complexity": 23,
+    "dead_findings": 1,
+    "suppressed_library_findings": 218
+  },
+  "line_review": {
+    "mode": "skipped",
+    "reason": "--fast",
+    "packets": 0
+  },
+  "scan": {
+    "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5": {
+      "source": "Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5",
+      "behaviours": [
+        "hedging",
+        "no-stop-loss",
+        "trend",
+        "event-handler"
+      ],
+      "risk_flags": [
+        {
+          "id": "hedging",
+          "severity": "warn",
+          "detail": "Opposite-direction (hedging) orders"
+        },
+        {
+          "id": "no-stop-loss",
+          "severity": "warn",
+          "detail": "OrderSend/trade with sl=0 (naked position)"
+        }
+      ],
+      "recommended_pattern": "grid-safe",
+      "rationale": "Grid/hedging behaviour -- adopt grid-safe rails (level cap + DD freeze)."
+    },
+    "Include/CCBSN_GoldenFixture/Config.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Config.mqh",
+      "behaviours": [
+        "hedging",
+        "trend",
+        "breakout",
+        "mean-reversion",
+        "risk-input"
+      ],
+      "risk_flags": [
+        {
+          "id": "hedging",
+          "severity": "warn",
+          "detail": "Opposite-direction (hedging) orders"
+        }
+      ],
+      "recommended_pattern": "grid-safe",
+      "rationale": "Grid/hedging behaviour -- adopt grid-safe rails (level cap + DD freeze)."
+    },
+    "Include/CCBSN_GoldenFixture/Exit/BasketCloseEngine.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Exit/BasketCloseEngine.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/Telemetry/MfeMaeLogger.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Telemetry/MfeMaeLogger.mqh",
+      "behaviours": [
+        "trend"
+      ],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "Trend filter present; enforce single-position + mandatory SL."
+    },
+    "Include/CCBSN_GoldenFixture/Telemetry/StructuredLogger.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Telemetry/StructuredLogger.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh",
+      "behaviours": [
+        "trend",
+        "breakout",
+        "mean-reversion"
+      ],
+      "risk_flags": [],
+      "recommended_pattern": "breakout",
+      "rationale": "Breakout signals dominate; enforce SL-inside-range rails."
+    },
+    "Include/CCBSN_GoldenFixture/Risk/GridRiskGuard.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Risk/GridRiskGuard.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh",
+      "behaviours": [
+        "no-stop-loss",
+        "trend",
+        "ctrade"
+      ],
+      "risk_flags": [
+        {
+          "id": "no-stop-loss",
+          "severity": "warn",
+          "detail": "OrderSend/trade with sl=0 (naked position)"
+        }
+      ],
+      "recommended_pattern": "trend-follow",
+      "rationale": "Trend filter present; enforce single-position + mandatory SL."
+    },
+    "Include/CCBSN_GoldenFixture/Core/TradeEventReducer.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Core/TradeEventReducer.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/Core/PositionBook.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/Core/PositionBook.mqh",
+      "behaviours": [],
+      "risk_flags": [],
+      "recommended_pattern": "trend-follow",
+      "rationale": "No decisive strategy signal; default to the safest archetype (trend-follow, single position, mandatory SL)."
+    },
+    "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh": {
+      "source": "Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh",
+      "behaviours": [
+        "hedging",
+        "trend"
+      ],
+      "risk_flags": [
+        {
+          "id": "hedging",
+          "severity": "warn",
+          "detail": "Opposite-direction (hedging) orders"
+        }
+      ],
+      "recommended_pattern": "grid-safe",
+      "rationale": "Grid/hedging behaviour -- adopt grid-safe rails (level cap + DD freeze)."
+    }
+  },
+  "graphs": {
+    "call_graph": {
+      "function_count": 181,
+      "edges": {
+        "PersistState": [
+          "Peak",
+          "Save",
+          "SaveExtended"
+        ],
+        "PipSize": [],
+        "ClockNow": [],
+        "DayKey": [],
+        "TradingDayStart": [
+          "ClockNow"
+        ],
+        "CurrentTradingDayKey": [
+          "ClockNow",
+          "DayKey"
+        ],
+        "EntryDelayPassed": [],
+        "NewBar": [],
+        "HHMM": [],
+        "InWindow": [
+          "ClockNow",
+          "HHMM"
+        ],
+        "SessionAllowed": [
+          "InWindow"
+        ],
+        "StageMultiplier": [],
+        "StageDistance": [],
+        "NextLot": [
+          "NormalizeVolume",
+          "StageMultiplier"
+        ],
+        "ActiveDCAMode": [],
+        "RequiredDistance": [
+          "ActiveDCAMode",
+          "StageDistance"
+        ],
+        "SpreadAllowed": [],
+        "ComputeDaySnapshot": [
+          "ClockNow",
+          "TradingDayStart"
+        ],
+        "ClosedProfitToday": [
+          "ComputeDaySnapshot"
+        ],
+        "AccountFloating": [],
+        "LiveDirectionCount": [
+          "Collect"
+        ],
+        "HedgeZoneAllowsSource": [],
+        "DirectionPermissionAllowed": [],
+        "SourceTimingAllowed": [
+          "SessionAllowed"
+        ],
+        "DirectionCapacityAllowed": [
+          "LiveDirectionCount"
+        ],
+        "ExposureAllowed": [
+          "CurrentTradingDayKey",
+          "DirectionCapacityAllowed",
+          "DirectionPermissionAllowed",
+          "HedgeZoneAllowsSource",
+          "SourceTimingAllowed"
+        ],
+        "OpenLeg": [
+          "ExposureAllowed",
+          "Open"
+        ],
+        "CloseTicket": [
+          "Close"
+        ],
+        "CloseMagicPositions": [
+          "CloseTicket"
+        ],
+        "CloseAccountPositions": [
+          "CloseTicket"
+        ],
+        "CloseSide": [
+          "CloseTicket"
+        ],
+        "AdaptiveBasketPips": [],
+        "RefreshDailySnapshot": [
+          "ComputeDaySnapshot"
+        ],
+        "UpdateTradingDay": [
+          "PersistState"
+        ],
+        "NewDayDelayActive": [
+          "ClockNow",
+          "TradingDayStart"
+        ],
+        "DailyThresholdHit": [],
+        "DailyAllowed": [
+          "CurrentTradingDayKey",
+          "DailyThresholdHit",
+          "Floating",
+          "NewDayDelayActive",
+          "PersistState",
+          "RefreshDailySnapshot",
+          "UpdateTradingDay"
+        ],
+        "ManageAccountMoneyExit": [
+          "AccountFloating",
+          "CloseAccountPositions",
+          "Event",
+          "MoneyHit"
+        ],
+        "ManageManagedMoneyExit": [
+          "CloseMagicPositions",
+          "Event",
+          "MoneyHit"
+        ],
+        "ManageSideMoneyExits": [
+          "CloseSide",
+          "MoneyHit"
+        ],
+        "ManageSteppedTarget": [
+          "CloseMagicPositions",
+          "ClosedProfitToday"
+        ],
+        "ManageBalanceDifferenceExit": [
+          "CloseMagicPositions"
+        ],
+        "ManageGlobalExits": [
+          "ManageAccountMoneyExit",
+          "ManageBalanceDifferenceExit",
+          "ManageManagedMoneyExit",
+          "ManageSideMoneyExits",
+          "ManageSteppedTarget"
+        ],
+        "ManageBasketExit": [
+          "AdaptiveBasketPips",
+          "CloseMagicPositions",
+          "CloseSide",
+          "Event",
+          "SidePipsHit"
+        ],
+        "ManageTrailing": [
+          "Modify"
+        ],
+        "ManageTrendReversal": [
+          "CloseSide",
+          "Direction",
+          "FiltersAllow"
+        ],
+        "ManageSniper": [
+          "ClosePartial",
+          "CloseTicket",
+          "NormalizeVolume"
+        ],
+        "ManageCrossChainSniper": [
+          "CloseTicket"
+        ],
+        "ManageHedge": [
+          "EntryDelayPassed",
+          "NextLot",
+          "OpenLeg"
+        ],
+        "ManageReverseEntry": [
+          "Direction",
+          "EntryDelayPassed",
+          "OpenLeg"
+        ],
+        "ManageLotBalance": [
+          "OpenLeg"
+        ],
+        "ManagedPositionExists": [],
+        "ManagedPositionIdentifierExists": [],
+        "PositionRealizedSummary": [],
+        "ResetHedgeZoneState": [
+          "Event",
+          "PersistState"
+        ],
+        "ReconcileHedgeZoneState": [
+          "Event",
+          "ManagedPositionIdentifierExists",
+          "PersistState",
+          "ResetHedgeZoneState"
+        ],
+        "ManageHedgeZone": [
+          "CloseMagicPositions",
+          "EntryDelayPassed",
+          "NormalizeVolume",
+          "OpenLeg",
+          "PersistState"
+        ],
+        "DCACondition": [
+          "ActiveDCAMode",
+          "Direction",
+          "NewBar",
+          "RequiredDistance"
+        ],
+        "ManageDCA": [
+          "DCACondition",
+          "EntryDelayPassed",
+          "FiltersAllow",
+          "LevelAllowed",
+          "NextLot",
+          "OpenLeg",
+          "SessionAllowed"
+        ],
+        "ManageInitialEntry": [
+          "Direction",
+          "EntryDelayPassed",
+          "FiltersAllow",
+          "NextLot",
+          "OpenLeg",
+          "SessionAllowed"
+        ],
+        "ManageZoneCycle": [],
+        "ProcessRemoteCommands": [
+          "DeleteOrder",
+          "PersistState"
+        ],
+        "CreateButton": [],
+        "CreatePanel": [
+          "CreateButton"
+        ],
+        "OnChartEvent": [
+          "CloseMagicPositions",
+          "CloseSide",
+          "PersistState"
+        ],
+        "OnInit": [
+          "Collect",
+          "Configure",
+          "CreatePanel",
+          "Event",
+          "Init",
+          "Load",
+          "LoadExtended",
+          "PipSize",
+          "Reconcile",
+          "ReconcileHedgeZoneState"
+        ],
+        "OnDeinit": [
+          "Event",
+          "PersistState",
+          "Release"
+        ],
+        "TickAdmissionGate": [
+          "ManageZoneCycle",
+          "ProcessRemoteCommands",
+          "Sample",
+          "SpreadAllowed"
+        ],
+        "RiskMutationGate": [
+          "CloseMagicPositions",
+          "DD",
+          "DailyAllowed",
+          "Event",
+          "MustStop",
+          "PersistState"
+        ],
+        "ExitMutationChain": [
+          "ManageBasketExit",
+          "ManageGlobalExits",
+          "ManageTrailing",
+          "ManageTrendReversal"
+        ],
+        "HedgeOriginExposureActive": [],
+        "SniperMutationChain": [
+          "HedgeOriginExposureActive",
+          "ManageCrossChainSniper",
+          "ManageSniper"
+        ],
+        "ExposureMutationChain": [
+          "DD",
+          "Event",
+          "FreezeDD",
+          "ManageDCA",
+          "ManageHedge",
+          "ManageHedgeZone",
+          "ManageInitialEntry",
+          "ManageLotBalance",
+          "ManageReverseEntry"
+        ],
+        "FinalizeCycleState": [
+          "PersistState"
+        ],
+        "ApplyTradeDeal": [
+          "AcceptClosedPosition",
+          "Event",
+          "Finalize",
+          "ManagedPositionIdentifierExists",
+          "MarkDealProcessed",
+          "ObserveDeal",
+          "PositionRealizedSummary"
+        ],
+        "ProcessPendingTradeEvents": [
+          "ApplyTradeDeal",
+          "Event",
+          "Overflowed",
+          "PendingDeal",
+          "Slots"
+        ],
+        "OnTick": [
+          "Collect",
+          "ExitMutationChain",
+          "ExposureMutationChain",
+          "FinalizeCycleState",
+          "ProcessPendingTradeEvents",
+          "Reconcile",
+          "ReconcileHedgeZoneState",
+          "RiskMutationGate",
+          "SniperMutationChain",
+          "TickAdmissionGate"
+        ],
+        "OnTradeTransaction": [
+          "Collect",
+          "EnqueueDeal",
+          "Event",
+          "OnTransaction",
+          "PersistState",
+          "ProcessPendingTradeEvents",
+          "ReconcileHedgeZoneState"
+        ],
+        "MoneyHit": [],
+        "SidePipsHit": [],
+        "Key": [],
+        "Configure": [],
+        "Sample": [
+          "Key"
+        ],
+        "Finalize": [
+          "Key"
+        ],
+        "Event": [],
+        "Value": [],
+        "Rates": [],
+        "Pip": [],
+        "Highest": [],
+        "Lowest": [],
+        "CandleColor": [
+          "Rates"
+        ],
+        "Pinbar": [
+          "Pip",
+          "Rates"
+        ],
+        "Engulfing": [
+          "Rates"
+        ],
+        "Structure": [
+          "Highest",
+          "Lowest",
+          "Rates"
+        ],
+        "CVCKEntryEngine": [],
+        "Init": [],
+        "Release": [],
+        "ReadyHandles": [],
+        "EMAFilterAllow": [
+          "Pip",
+          "Rates",
+          "Value"
+        ],
+        "MACDFilterAllow": [
+          "Value"
+        ],
+        "RSIFilterAllow": [
+          "Value"
+        ],
+        "FiltersAllow": [
+          "EMAFilterAllow",
+          "MACDFilterAllow",
+          "RSIFilterAllow"
+        ],
+        "SignalRSI": [
+          "Value"
+        ],
+        "SignalRSIReversal": [
+          "Value"
+        ],
+        "SignalCCIReversal": [
+          "Value"
+        ],
+        "SignalStochastic": [
+          "Value"
+        ],
+        "SignalEMACross": [
+          "Value"
+        ],
+        "SignalBands": [
+          "Rates",
+          "Value"
+        ],
+        "SignalMACD": [
+          "Value"
+        ],
+        "SignalMomentum": [
+          "Value"
+        ],
+        "SignalATRBreak": [
+          "Rates",
+          "Value"
+        ],
+        "SignalSupertrend": [
+          "Rates",
+          "Value"
+        ],
+        "SignalUTBot": [
+          "Rates",
+          "Value"
+        ],
+        "SignalIchimoku": [
+          "Rates",
+          "Value"
+        ],
+        "SignalExternal": [
+          "Value"
+        ],
+        "OscillatorDirection": [
+          "SignalCCIReversal",
+          "SignalRSI",
+          "SignalRSIReversal",
+          "SignalStochastic"
+        ],
+        "ClassicDirection": [
+          "Engulfing",
+          "Pinbar",
+          "SignalBands",
+          "SignalEMACross",
+          "SignalMACD"
+        ],
+        "TrendDirection": [
+          "SignalATRBreak",
+          "SignalIchimoku",
+          "SignalMomentum",
+          "SignalSupertrend",
+          "SignalUTBot"
+        ],
+        "SMCDirection": [
+          "Structure"
+        ],
+        "SpecialDirection": [
+          "CandleColor",
+          "SignalExternal"
+        ],
+        "Direction": [
+          "ClassicDirection",
+          "OscillatorDirection",
+          "SMCDirection",
+          "SpecialDirection",
+          "TrendDirection"
+        ],
+        "Allowed": [
+          "Pip"
+        ],
+        "Peak": [
+          "DD"
+        ],
+        "DD": [],
+        "FreezeDD": [
+          "DD"
+        ],
+        "MustStop": [
+          "DD"
+        ],
+        "LevelAllowed": [],
+        "MakeId": [],
+        "Prefix": [],
+        "CommentHas": [
+          "Prefix"
+        ],
+        "FindLive": [
+          "CommentHas"
+        ],
+        "FindHistory": [
+          "CommentHas"
+        ],
+        "Clear": [
+          "Key"
+        ],
+        "Prepare": [
+          "Clear",
+          "FindHistory",
+          "FindLive",
+          "Key",
+          "MakeId",
+          "Prefix"
+        ],
+        "MarkRejected": [
+          "Clear"
+        ],
+        "MarkAcknowledged": [
+          "Key"
+        ],
+        "ObserveComment": [
+          "Clear",
+          "Key"
+        ],
+        "Reconcile": [],
+        "GoodRetcode": [],
+        "DefinitelyRejected": [],
+        "ObserveDeal": [
+          "ObserveComment"
+        ],
+        "OnTransaction": [
+          "ObserveComment",
+          "ObserveDeal"
+        ],
+        "NormalizeVolume": [],
+        "MarginAvailable": [],
+        "Open": [
+          "Allowed",
+          "DefinitelyRejected",
+          "GoodRetcode",
+          "MarginAvailable",
+          "MarkAcknowledged",
+          "MarkRejected",
+          "NormalizeVolume",
+          "Prepare"
+        ],
+        "Modify": [
+          "GoodRetcode"
+        ],
+        "Close": [
+          "GoodRetcode"
+        ],
+        "ClosePartial": [
+          "GoodRetcode"
+        ],
+        "DeleteOrder": [
+          "GoodRetcode"
+        ],
+        "High": [],
+        "Low": [],
+        "Read": [
+          "Key"
+        ],
+        "Write": [
+          "High",
+          "Key",
+          "Low"
+        ],
+        "Seen": [
+          "Read"
+        ],
+        "Accept": [
+          "Seen",
+          "Write"
+        ],
+        "Slots": [],
+        "PendingDeal": [
+          "Read"
+        ],
+        "EnqueueDeal": [
+          "Read",
+          "Seen",
+          "Write"
+        ],
+        "MarkDealProcessed": [
+          "Accept",
+          "Read",
+          "Seen",
+          "Write"
+        ],
+        "Overflowed": [],
+        "AcceptClosedPosition": [
+          "Accept"
+        ],
+        "Collect": [],
+        "Floating": [],
+        "SaveUlong": [
+          "Key"
+        ],
+        "LoadUlong": [
+          "Key"
+        ],
+        "Save": [
+          "Key"
+        ],
+        "Load": [
+          "Key"
+        ],
+        "SaveExtended": [
+          "Key",
+          "SaveUlong"
+        ],
+        "LoadExtended": [
+          "Key",
+          "LoadUlong"
+        ]
+      },
+      "unreachable": [
+        "CVCKEntryEngine",
+        "ManagedPositionExists",
+        "ReadyHandles"
+      ]
+    },
+    "input_usage": {
+      "usage": {
+        "InpMagic": 20,
+        "InpTradeSymbol": 2,
+        "InpSignalTimeframe": 3,
+        "InpSignalMode": 6,
+        "InpDCAMode": 1,
+        "InpDCASwitchCount": 2,
+        "InpDCASecondaryMode": 1,
+        "InpAllowBuy": 1,
+        "InpAllowSell": 1,
+        "InpMinSecondsBetweenEntries": 1,
+        "InpMinutesDelayAfterClear": 1,
+        "InpAsyncExecution": 1,
+        "InpIntentUnknownTimeoutSeconds": 1,
+        "InpIntentHistoryLookbackSeconds": 2,
+        "InpBaseLot": 3,
+        "InpMaxLot": 2,
+        "InpMaxSpreadPips": 2,
+        "InpMaxBuyPositions": 2,
+        "InpMaxSellPositions": 2,
+        "InpMaxLevelsBuy": 1,
+        "InpMaxLevelsSell": 1,
+        "InpFreezeDDPct": 2,
+        "InpMaxDDPct": 2,
+        "InpSLPips": 2,
+        "InpTPPips": 1,
+        "InpDailyTargetPct": 2,
+        "InpDailyLossPct": 2,
+        "InpDailyTargetMoney": 2,
+        "InpDailyLossMoney": 2,
+        "InpNewDayDelayMinutes": 2,
+        "InpDCAStepPips": 1,
+        "InpDCAStepMultiplier": 1,
+        "InpLotMode": 1,
+        "InpLotMultiplier": 1,
+        "InpLotAdditive": 1,
+        "InpTrendFilterAfterPositions": 2,
+        "InpDCAOutsideSession": 2,
+        "InpLotStage1Count": 2,
+        "InpLotStage1Multiplier": 1,
+        "InpLotStage2Count": 2,
+        "InpLotStage2Multiplier": 1,
+        "InpLotStage3Count": 2,
+        "InpLotStage3Multiplier": 1,
+        "InpLotStage4Count": 2,
+        "InpLotStage4Multiplier": 1,
+        "InpLotStage5Count": 2,
+        "InpLotStage5Multiplier": 1,
+        "InpDistanceStage1Count": 2,
+        "InpDistanceStage1Pips": 1,
+        "InpDistanceStage2Count": 2,
+        "InpDistanceStage2Pips": 1,
+        "InpDistanceStage3Count": 2,
+        "InpDistanceStage3Pips": 1,
+        "InpDistanceStage4Count": 2,
+        "InpDistanceStage4Pips": 1,
+        "InpBasketTargetMoney": 1,
+        "InpBasketStopMoney": 1,
+        "InpBasketTPPips": 2,
+        "InpAdaptiveTPLossPct": 2,
+        "InpAdaptiveTPLossMoney": 2,
+        "InpAdaptiveBasketTPPips": 2,
+        "InpAccountTPMoney": 1,
+        "InpAccountSLMoney": 1,
+        "InpAllowAccountWideClose": 1,
+        "InpBuyTPMoney": 1,
+        "InpBuySLMoney": 1,
+        "InpSellTPMoney": 1,
+        "InpSellSLMoney": 1,
+        "InpSteppedTargetMoney": 2,
+        "InpSteppedTargetDelayMinutes": 1,
+        "InpBalanceDifferencePct": 2,
+        "InpTrailingStartPips": 2,
+        "InpTrailingDistancePips": 3,
+        "InpSniperTriggerPositions": 1,
+        "InpSniperHeadCount": 1,
+        "InpSniperTailMaxCount": 1,
+        "InpSniperTargetMoney": 1,
+        "InpPartialClosePct": 1,
+        "InpCrossSniperTriggerPositions": 1,
+        "InpCrossSniperTargetMoney": 2,
+        "InpCrossSniperMagicPairOnly": 1,
+        "InpHedgeTriggerPositions": 2,
+        "InpHedgeTriggerLossPct": 4,
+        "InpHedgeUseDCALot": 2,
+        "InpHedgeLotPct": 2,
+        "InpHedgeTPPips": 2,
+        "InpHedgeExitMoney": 2,
+        "InpStopSniperDuringHedge": 1,
+        "InpHedgeZoneTriggerPositions": 1,
+        "InpHedgeZoneLotMultiplier": 1,
+        "InpHedgeZoneDistancePips": 4,
+        "InpHedgeZoneTargetMoney": 1,
+        "InpHedgeZoneTargetPips": 2,
+        "InpHedgeZoneNewTargetCount": 2,
+        "InpHedgeZoneNewTargetMoney": 1,
+        "InpHedgeZoneMaxLot": 1,
+        "InpReverseTriggerPositions": 2,
+        "InpReverseLotPct": 4,
+        "InpReverseFixedLot": 2,
+        "InpBalanceTriggerLots": 1,
+        "InpBalanceStopLots": 1,
+        "InpBalanceAddLot": 1,
+        "InpBalanceDelaySeconds": 1,
+        "InpLotterySLMultiplier": 1,
+        "InpLotteryDelayMinutes": 1,
+        "InpLotteryResetLossMoney": 2,
+        "InpResetLot": 2,
+        "InpResetMultiplier": 1,
+        "InpResetBasketTPPips": 2,
+        "InpRSIPeriod": 1,
+        "InpRSIOversold": 3,
+        "InpRSIOverbought": 3,
+        "InpCCIPeriod": 1,
+        "InpCCIOversold": 2,
+        "InpCCIOverbought": 2,
+        "InpStochK": 1,
+        "InpStochD": 1,
+        "InpStochSlowing": 1,
+        "InpMomentumPeriod": 1,
+        "InpMomentumBuyLevel": 1,
+        "InpMomentumSellLevel": 1,
+        "InpEMAFast": 1,
+        "InpEMASlow": 1,
+        "InpBBPeriod": 1,
+        "InpBBDeviation": 1,
+        "InpATRPeriod": 1,
+        "InpATRBreakMultiplier": 2,
+        "InpSupertrendPeriod": 1,
+        "InpSupertrendMultiplier": 1,
+        "InpUTBotPeriod": 1,
+        "InpUTBotSensitivity": 2,
+        "InpIchimokuTenkan": 1,
+        "InpIchimokuKijun": 1,
+        "InpIchimokuSenkou": 1,
+        "InpSMCInternalLookback": 2,
+        "InpSMCSwingLookback": 4,
+        "InpPinbarWickRatio": 2,
+        "InpPinbarOppositeRatio": 2,
+        "InpMinCandlePips": 1,
+        "InpEngulfFullWick": 2,
+        "InpUnconditionalDirection": 1,
+        "InpExternalIndicator": 2,
+        "InpExternalBuyBuffer": 1,
+        "InpExternalSellBuffer": 1,
+        "InpUseEMAFilter": 3,
+        "InpUseMACDFilter": 1,
+        "InpUseRSIFilter": 1,
+        "InpEMAMaxPriceDistancePips": 3,
+        "InpEMAMinSeparationPips": 3,
+        "InpZoneCycleUpper": 2,
+        "InpZoneCycleLower": 2,
+        "InpSession1Enabled": 1,
+        "InpSession1Start": 1,
+        "InpSession1End": 1,
+        "InpSession2Enabled": 1,
+        "InpSession2Start": 1,
+        "InpSession2End": 1,
+        "InpSession3Enabled": 1,
+        "InpSession3Start": 1,
+        "InpSession3End": 1,
+        "InpSession4Enabled": 1,
+        "InpSession4Start": 1,
+        "InpSession4End": 1,
+        "InpCmd_DISABLE_NEW_CYCLE": 1,
+        "InpCmd_ENABLE_NEW_CYCLE": 1,
+        "InpCmd_START_EA": 1,
+        "InpCmd_STOP_BUY": 1,
+        "InpCmd_STOP_EA": 1,
+        "InpCmd_STOP_SELL": 1
+      },
+      "unused": []
+    },
+    "order_lifecycle": {
+      "stages": {
+        "send_detected": true,
+        "async": false,
+        "retcode_checked": true,
+        "transaction_hook": true
+      },
+      "issues": []
+    },
+    "risk_invariant": {
+      "invariants": {
+        "lot_scaling_detected": true,
+        "level_cap": true,
+        "volume_clamp": true,
+        "drawdown_stop": true,
+        "stop_loss": true
+      },
+      "issues": []
+    },
+    "basket_integrity": {
+      "invariants": {
+        "basket_close_loop": true,
+        "symbol_filter": false,
+        "magic_filter": true
+      },
+      "issues": []
+    },
+    "issues": [
+      {
+        "severity": "info",
+        "category": "code_quality",
+        "title": "Function unreachable from any event handler: CVCKEntryEngine",
+        "evidence": "call graph: no path from OnInit/OnTick/... reaches this function.",
+        "recommendation": "Wire it into the call graph or remove it.",
+        "source": "graph"
+      },
+      {
+        "severity": "info",
+        "category": "code_quality",
+        "title": "Function unreachable from any event handler: ManagedPositionExists",
+        "evidence": "call graph: no path from OnInit/OnTick/... reaches this function.",
+        "recommendation": "Wire it into the call graph or remove it.",
+        "source": "graph"
+      },
+      {
+        "severity": "info",
+        "category": "code_quality",
+        "title": "Function unreachable from any event handler: ReadyHandles",
+        "evidence": "call graph: no path from OnInit/OnTick/... reaches this function.",
+        "recommendation": "Wire it into the call graph or remove it.",
+        "source": "graph"
+      }
+    ]
+  },
+  "checked_categories": [
+    "strategy/signals (Stage 1)",
+    "anti-patterns (Stage 2)",
+    "structure & complexity (Stage 3)",
+    "dead-code / dead-logic (Stage 4)",
+    "risk / execution / state / release (Stage 5)",
+    "modernization (Stage 6)",
+    "grounded line review (Stage 7)"
+  ]
+}

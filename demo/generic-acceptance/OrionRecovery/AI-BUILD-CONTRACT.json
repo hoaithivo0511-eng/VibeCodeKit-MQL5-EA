@@ -1,0 +1,358 @@
+{
+  "schema_version": "3.0",
+  "generated_by": "ai_build_contract",
+  "generated_at_utc": "2026-08-06T17:00:54Z",
+  "project": {
+    "name": "OrionRecovery",
+    "version": "0.1.0",
+    "status": "DRAFT-NOT-VALIDATED"
+  },
+  "workflow": {
+    "requested_mode": "full",
+    "effective_mode": "full",
+    "promotion_reasons": [],
+    "release_target": "draft"
+  },
+  "allowed_paths": [
+    "Experts/",
+    "Include/",
+    "Presets/",
+    "Tester/",
+    "README.md"
+  ],
+  "forbidden_paths": [
+    "evidence/",
+    "release/",
+    "review/",
+    "AI-BUILD-CONTRACT.md",
+    "AI-BUILD-CONTRACT.json",
+    "EA-SPEC.yaml",
+    "DECISIONS.yaml",
+    "OWNER_APPROVAL.json"
+  ],
+  "forbidden_claims": [
+    "READY",
+    "LIVE-READY",
+    "LIVE READY",
+    "PRODUCTION-READY",
+    "PRODUCTION READY"
+  ],
+  "risk_contract": {
+    "max_drawdown_pct": 20.0,
+    "max_daily_loss_pct": 5.0,
+    "max_positions": 10,
+    "stop_loss_required": false,
+    "forbidden_logic": [
+      "unbounded_martingale"
+    ]
+  },
+  "decision_policy": {
+    "ledger": "DECISIONS.yaml",
+    "semantic_changes_require_owner_approval": true,
+    "auto_edit_allowed": [
+      "formatting",
+      "timestamps",
+      "generated identifiers",
+      "hashes",
+      "paths",
+      "fields explicitly marked derived"
+    ]
+  },
+  "guard_catalog_version": "1.2",
+  "behavioral_guards": [
+    {
+      "id": "A1",
+      "canonical_id": "RETRO-A1",
+      "name": "count-order-state-semantics",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "count",
+        "order",
+        "index",
+        "state",
+        "max_positions"
+      ],
+      "required_evidence": [
+        "numeric_example",
+        "boundary_test"
+      ],
+      "checker": "retro.count_semantics",
+      "remediation": "Restate semantics with numeric examples and boundary tests.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A2",
+      "canonical_id": "RETRO-A2",
+      "name": "runtime-error-policy",
+      "severity": "P0",
+      "class": "hard",
+      "trigger": [
+        "error",
+        "failure",
+        "retry",
+        "timeout",
+        "broker"
+      ],
+      "required_evidence": [
+        "failure_policy",
+        "negative_test"
+      ],
+      "checker": "retro.error_policy",
+      "remediation": "Choose fail-fast or explicit degradation with logging and tests.",
+      "waiver_allowed": false
+    },
+    {
+      "id": "A3",
+      "canonical_id": "RETRO-A3",
+      "name": "owner-decision-lock",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "decision",
+        "approved",
+        "semantic"
+      ],
+      "required_evidence": [
+        "decision_entry",
+        "locking_test"
+      ],
+      "checker": "retro.owner_decision",
+      "remediation": "Record semantic intent and require approval before changing it.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A4",
+      "canonical_id": "RETRO-A4",
+      "name": "independent-test-oracle",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "test",
+        "expected",
+        "validation"
+      ],
+      "required_evidence": [
+        "independent_expected_value"
+      ],
+      "checker": "retro.expected_value",
+      "remediation": "Compute expected results independently from the implementation.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A5",
+      "canonical_id": "RETRO-A5",
+      "name": "dynamic-cache-freshness",
+      "severity": "P0",
+      "class": "hard",
+      "trigger": [
+        "cache",
+        "pnl",
+        "spread",
+        "price",
+        "runtime_value"
+      ],
+      "required_evidence": [
+        "freshness_policy",
+        "stale_value_test"
+      ],
+      "checker": "retro.dynamic_cache",
+      "remediation": "Fresh-read dynamic values or define and test bounded freshness.",
+      "waiver_allowed": false
+    },
+    {
+      "id": "A7",
+      "canonical_id": "RETRO-A7",
+      "name": "test-environment-isolation",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "test_state",
+        "persist",
+        "fixture",
+        "environment"
+      ],
+      "required_evidence": [
+        "isolated_state",
+        "reset_proof"
+      ],
+      "checker": "retro.environment_isolation",
+      "remediation": "Isolate and reset persisted state between tests.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A9",
+      "canonical_id": "RETRO-A9",
+      "name": "single-unit-conversion",
+      "severity": "P0",
+      "class": "hard",
+      "trigger": [
+        "pip",
+        "point",
+        "lot",
+        "scale",
+        "timeframe",
+        "slippage",
+        "spread"
+      ],
+      "required_evidence": [
+        "unit_table",
+        "conversion_test"
+      ],
+      "checker": "retro.unit_scale",
+      "remediation": "Use one conversion boundary and test broker digits and units.",
+      "waiver_allowed": false
+    },
+    {
+      "id": "A10",
+      "canonical_id": "RETRO-A10",
+      "name": "port-parity",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "port",
+        "pine",
+        "mql4",
+        "broker",
+        "netting",
+        "hedging"
+      ],
+      "required_evidence": [
+        "parity_table",
+        "differential_test"
+      ],
+      "checker": "retro.port_parity",
+      "remediation": "Build a parity table and compare behavior across platforms/profiles.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A12",
+      "canonical_id": "RETRO-A12",
+      "name": "edit-target-discipline",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "multi_file",
+        "replace",
+        "edit",
+        "match"
+      ],
+      "required_evidence": [
+        "target_inventory",
+        "post_edit_validation"
+      ],
+      "checker": "retro.tool_discipline",
+      "remediation": "Resolve exact targets and validate every changed file.",
+      "waiver_allowed": true
+    },
+    {
+      "id": "A13",
+      "canonical_id": "RETRO-A13",
+      "name": "ui-claim-provenance",
+      "severity": "P1",
+      "class": "waivable",
+      "trigger": [
+        "panel",
+        "ui_contract",
+        "drawdown",
+        "pnl",
+        "stale",
+        "refresh"
+      ],
+      "required_evidence": [
+        "ui_contract",
+        "source_resolution",
+        "freshness_test"
+      ],
+      "checker": "retro.ui_claim_provenance",
+      "remediation": "Bind every visible claim to a source, cadence, scope and bounded freshness.",
+      "waiver_allowed": true
+    }
+  ],
+  "ui_contract": {
+    "surface": "chart_objects",
+    "hero_metric": "current_drawdown_pct",
+    "hero_source": "account_equity_peak",
+    "hero_refresh": "on_position_change",
+    "tokens": {
+      "colors": [
+        "panel_bg",
+        "text_primary",
+        "text_muted",
+        "status_ok",
+        "status_warn"
+      ],
+      "type_roles": [
+        "metric",
+        "label",
+        "status"
+      ],
+      "spacing_base": 4
+    },
+    "layout": {
+      "anchor": "CORNER_RIGHT_UPPER",
+      "width_mode": "fixed",
+      "dpi_strategy": "scale",
+      "resize_strategy": "preserve_anchor",
+      "survives_chart_theme": [
+        "dark",
+        "light"
+      ]
+    },
+    "performance": {
+      "update_policy": "hybrid",
+      "timer_ms": 250,
+      "max_render_hz": 4,
+      "dirty_only": true,
+      "chart_redraw_policy": "on_change_only",
+      "budgets": {
+        "max_render_us_p95": 2000,
+        "max_render_us_p99": 5000,
+        "max_ontick_extra_us_p95": 100,
+        "max_ontick_overhead_pct": 5
+      },
+      "limits": {
+        "max_dynamic_objects": 32,
+        "max_rows": 16,
+        "max_canvas_pixels": 500000
+      },
+      "tester": {
+        "skip_ui_when_non_visual": true,
+        "visual_mode_required_for_full_panel": true
+      }
+    },
+    "rows": [],
+    "controls": [],
+    "forbidden": [
+      "render_from_ontick",
+      "trade_from_renderer",
+      "per_tick_chart_redraw"
+    ]
+  },
+  "release_policy": {
+    "windows_native_is_release_authority": true,
+    "wine_role": "development-ci-only",
+    "onnx_mode": "optional-plugin",
+    "mcp_stability": "internal-experimental",
+    "telemetry": "off",
+    "evidence_store": "local",
+    "owner_approval_required_for_live": true
+  },
+  "release_evidence_required": [
+    "compile log + EX5 hash",
+    "evidence manifest",
+    "evidence hash chain",
+    "backtest report",
+    "stress matrix report",
+    "deep review report"
+  ],
+  "rules": [
+    "The AI coding tool MUST NOT edit any forbidden_paths.",
+    "The AI coding tool MUST NOT write forbidden_claims without evidence.",
+    "No status above DRAFT-NOT-VALIDATED without the required evidence.",
+    "Every change must stay within allowed_paths.",
+    "Unbounded martingale / unbounded lot scaling is forbidden.",
+    "The AI MUST propose semantic changes and wait for owner approval.",
+    "FAIL, UNTESTABLE, SKIPPED and WAIVED MUST remain distinct."
+  ]
+}

@@ -1,0 +1,311 @@
+schema_version: '1'
+profile_name: ccbsn-golden-fixture-v2
+resolve_ambiguities:
+- AMB-ACCOUNT-MODEL
+- AMB-SIGNAL-LOGIC
+- AMB-REMOTE-COMMAND-MAP
+assumptions:
+- CCBSN is a golden acceptance fixture only; no values are generic defaults.
+overrides:
+  identity:
+    name: CCBSN_GoldenFixture
+    version: 3.0.3
+  runtime:
+    platform: MT5
+    account_model: hedging
+    account_model_status: confirmed
+    symbol_mode: chart_symbol
+    symbols: []
+    timeframe_mode: chart_timeframe
+    timeframes: []
+    time_policy:
+      daily_basis: server
+      session_basis: server
+      history_sync_required: true
+      cashflow_policy: exclude
+      dst_policy: platform_clock
+      day_boundary_minutes: 0
+  strategy:
+    topology: multi_engine
+    features:
+    - strategy.dca.bidirectional
+    - strategy.dca.closed_bar
+    - strategy.dca.enabled
+    - strategy.dca.positive
+    - strategy.dca.signal
+    - strategy.dca.step
+    - strategy.dca.step_multiplier
+    - strategy.dca.step_timeframe
+    - strategy.entry.signal_selectable
+    - strategy.exit.account_money
+    - strategy.exit.adaptive_basket_tp
+    - strategy.exit.balance_difference
+    - strategy.exit.basket_tp
+    - strategy.exit.daily_target
+    - strategy.exit.money
+    - strategy.exit.side_money
+    - strategy.exit.single_tp
+    - strategy.exit.stepped_target
+    - strategy.exit.trailing
+    - strategy.exit.trend_reversal
+    - strategy.filter.ema
+    - strategy.filter.macd
+    - strategy.filter.rsi
+    - strategy.filter.trend
+    - strategy.filter.zone_cycle
+    - strategy.hedge.standard
+    - strategy.hedge.zone
+    - strategy.lot_balance
+    - strategy.lottery.after_sl
+    - strategy.reverse_entry
+    - strategy.sizing.additive
+    - strategy.sizing.martingale
+    - strategy.sniper.cross_chain
+    - strategy.sniper.partial
+    - strategy.sniper.same_chain
+    - strategy.time.sessions
+    signals:
+    - cci_reversal
+    - stochastic_reversal
+    - rsi_reversal
+    - pinbar_engulfing
+    - candle_color
+    - no_condition
+    - random
+    - external_indicator
+    - smc_all_with
+    - smc_all_against
+    - smc_internal_with
+    - smc_internal_against
+    - smc_swing_with
+    - smc_swing_against
+    - cci
+    - stochastic
+    - momentum
+    - supertrend
+    - utbot
+    - rsi
+    - ichimoku_kumo_break
+    - smc
+    - bollinger_bands
+    - pinbar
+    - engulfing
+    signal_logic: selectable
+    parameters:
+      allow_buy: true
+      allow_sell: true
+      min_seconds_between_entries: 2
+      async_execution: false
+      minutes_delay_after_clear: 5
+      max_buy_positions: 50
+      max_sell_positions: 50
+      dca_mode: step_multiplier
+      dca_switch_count: 10
+      dca_secondary_mode: signal
+      dca_step_pips: 25.0
+      dca_step_multiplier: 1.2
+      dca_trend_filter_after_positions: 3
+      dca_outside_session: true
+      lot_mode: multiply
+      lot_multiplier: 1.2
+      lot_additive: 0.01
+      lot_stage_1_count: 10
+      lot_stage_1_multiplier: 1.2
+      lot_stage_2_count: 20
+      lot_stage_2_multiplier: 1.1
+      lot_stage_3_count: 30
+      lot_stage_3_multiplier: 1.05
+      lot_stage_4_count: 40
+      lot_stage_4_multiplier: 1.06
+      lot_stage_5_count: 50
+      lot_stage_5_multiplier: 1.03
+      distance_stage_1_count: 10
+      distance_stage_1_pips: 35.0
+      distance_stage_2_count: 20
+      distance_stage_2_pips: 50.0
+      distance_stage_3_count: 30
+      distance_stage_3_pips: 70.0
+      distance_stage_4_count: 40
+      distance_stage_4_pips: 100.0
+      basket_target_money: 20.0
+      basket_stop_money: -1000.0
+      basket_tp_pips: 10.0
+      adaptive_tp_loss_pct: -20.0
+      adaptive_tp_loss_money: -12000.0
+      adaptive_basket_tp_pips: 3.0
+      account_tp_money: 500.0
+      account_sl_money: -1000.0
+      allow_account_wide_close: false
+      buy_tp_money: 100.0
+      buy_sl_money: -500.0
+      sell_tp_money: 100.0
+      sell_sl_money: -500.0
+      daily_target_pct: 2.0
+      daily_target_money: 0.0
+      daily_loss_money: -500.0
+      new_day_delay_minutes: 30
+      stepped_target_money: 200.0
+      stepped_target_delay_minutes: 30
+      balance_difference_pct: 2.0
+      trailing_start_pips: 20.0
+      trailing_distance_pips: 10.0
+      sniper_trigger_positions: 5
+      sniper_head_count: 1
+      sniper_tail_max_count: 2
+      sniper_target_money: 1.0
+      partial_close_pct: 30.0
+      cross_sniper_trigger_positions: 8
+      cross_sniper_target_money: 2.0
+      cross_sniper_magic_pair_only: true
+      hedge_trigger_positions: 12
+      hedge_trigger_loss_pct: -25.0
+      hedge_use_dca_lot: false
+      hedge_lot_pct: 50.0
+      hedge_tp_pips: 10.0
+      hedge_exit_money: 10.0
+      stop_sniper_during_hedge: true
+      hedge_zone_trigger_positions: 15
+      hedge_zone_lot_multiplier: 1.0
+      hedge_zone_distance_pips: 30.0
+      hedge_zone_target_money: 20.0
+      hedge_zone_target_pips: 5.0
+      hedge_zone_new_target_count: 25
+      hedge_zone_new_target_money: 10.0
+      hedge_zone_max_lot: 1.0
+      reverse_trigger_positions: 12
+      reverse_lot_pct: 25.0
+      reverse_fixed_lot: 0.01
+      balance_trigger_lots: 0.2
+      balance_stop_lots: 0.05
+      balance_add_lot: 0.01
+      balance_delay_seconds: 30
+      lottery_sl_multiplier: 1.5
+      lottery_delay_minutes: 5
+      lottery_reset_loss_money: -1000.0
+      reset_lot: 0.01
+      reset_multiplier: 1.0
+      reset_basket_tp_pips: 10.0
+      rsi_period: 14
+      rsi_oversold: 25.0
+      rsi_overbought: 75.0
+      cci_period: 14
+      cci_oversold: -100.0
+      cci_overbought: 100.0
+      stoch_k: 5
+      stoch_d: 3
+      stoch_slowing: 3
+      momentum_period: 14
+      momentum_buy_level: 100.45
+      momentum_sell_level: 99.45
+      ema_fast: 34
+      ema_slow: 89
+      bb_period: 20
+      bb_deviation: 2.0
+      atr_period: 10
+      atr_break_multiplier: 1.0
+      supertrend_period: 21
+      supertrend_multiplier: 3.0
+      utbot_period: 10
+      utbot_sensitivity: 1.0
+      ichimoku_tenkan: 9
+      ichimoku_kijun: 26
+      ichimoku_senkou: 52
+      smc_internal_lookback: 5
+      smc_swing_lookback: 20
+      pinbar_wick_ratio: 5.0
+      pinbar_opposite_ratio: 6.0
+      min_candle_pips: 5.0
+      engulf_full_wick: true
+      unconditional_direction: 1
+      external_indicator_name: ''
+      external_buy_buffer: 0
+      external_sell_buffer: 1
+      ema_max_price_distance_pips: 0.0
+      ema_min_separation_pips: 0.0
+      zone_cycle_upper: 999999.0
+      zone_cycle_lower: 1.0e-05
+      sessions:
+      - enabled: true
+        start: 00:00
+        end: '23:59'
+      hedge_variant: single_opposite_leg_v1
+      hedge_zone_variant: alternating_boundaries_v1
+      same_chain_sniper_variant: oldest_best_pair_v1
+      cross_sniper_variant: pair_loss_profit_v1
+      lot_balance_variant: managed_chain_v1
+      reverse_entry_variant: signal_confirmed_v1
+      lottery_variant: per_closed_position_v1
+      hedge_zone_concurrency_policy: exclusive
+      sniper_hedge_pause_scope: hedge_origin_only
+      execution_idempotency_policy: reconcile_before_retry
+      unknown_outcome_policy: block_until_reconciled
+      intent_unknown_timeout_seconds: 30
+      intent_history_lookback_seconds: 86400
+      ownership_scope: account
+      risk_precedence_policy: daily_halt_preempts_exposure
+      recovery_session_policy: allow_recovery_outside_sessions
+  risk:
+    base_lot: 0.01
+    max_lot: 1.0
+    max_spread_pips: 3.0
+    max_open_positions: 50
+    max_levels_buy: 50
+    max_levels_sell: 50
+    freeze_drawdown_pct: 15.0
+    max_drawdown_pct: 20.0
+    risk_per_trade_pct: 0.5
+    daily_loss_pct: 5.0
+    sl_pips: 100
+    tp_pips: 20
+  controls:
+    features:
+    - controls.chart_panel
+    - controls.new_cycle
+    - controls.pending_order_remote
+    - controls.reset_lots
+    new_cycle_semantics: true_means_allow_new_cycle
+    pending_commands:
+      stop_ea:
+        order_type: buy_stop
+        price: 999999.0
+        action:
+          type: set_state
+          path: ea.enabled
+          value: false
+      start_ea:
+        order_type: buy_stop
+        price: 666666.0
+        action:
+          type: set_state
+          path: ea.enabled
+          value: true
+      disable_new_cycle:
+        order_type: buy_stop
+        price: 888888.0
+        action:
+          type: set_state
+          path: cycle.new_enabled
+          value: false
+      enable_new_cycle:
+        order_type: sell_limit
+        price: 888888.0
+        action:
+          type: set_state
+          path: cycle.new_enabled
+          value: true
+      stop_buy:
+        order_type: buy_stop
+        price: 555555.0
+        action:
+          type: set_state
+          path: direction.buy_enabled
+          value: false
+      stop_sell:
+        order_type: sell_limit
+        price: 555555.0
+        action:
+          type: set_state
+          path: direction.sell_enabled
+          value: false
+    pending_command_transport: pending_order_v1
+    account_wide_close_approved: true

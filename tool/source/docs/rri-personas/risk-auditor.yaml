@@ -1,0 +1,131 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — risk-auditor (compliance / risk-officer perspective).
+persona: risk-auditor
+description: Risk officer signing off on the EA's exposure envelope.
+questions:
+  - id: risk-01
+    text: "Is the daily-loss cap implemented in code and journal-verifiable?"
+    priority: critical
+    applicable_steps: [rri, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: risk-02
+    text: "Does every OrderSend ship with a stop-loss attached (AP-1 check)?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: risk-03
+    text: "Is position sizing risk-based via CPipNormalizer.LotForRisk?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: risk-04
+    text: "Is maximum concurrent exposure (notional + margin) bounded?"
+    priority: critical
+    applicable_steps: [rri, blueprint, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: risk-05
+    text: "Are stress-scenario losses (gap, flash-crash) inside tolerance?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: risk-06
+    text: "Is VaR / Expected Shortfall computed against backtest equity?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-07
+    text: "Is the spread guard (AP-8) wired and threshold journal-logged?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-08
+    text: "Is correlation across simultaneously-open positions bounded?"
+    priority: high
+    applicable_steps: [rri, blueprint, verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-09
+    text: "Is the freeze-on-drawdown guard documented and tested?"
+    priority: high
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-10
+    text: "Does the EA reject trades when broker-side stops_level is violated?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-11
+    text: "Are martingale / grid behaviours explicitly bounded (AP-4)?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: risk-12
+    text: "Is the leverage limit aligned with broker margin tiers?"
+    priority: high
+    applicable_steps: [rri, blueprint]
+    applicable_modes: [team, enterprise]
+  - id: risk-13
+    text: "Are stop-loss distances validated against ATR / volatility regime?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: risk-14
+    text: "Is sequence-of-losses risk (kelly fraction cap) considered?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: risk-15
+    text: "Does the EA handle requote / slippage without doubling exposure?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: risk-16
+    text: "Are open positions reconciled with the journal on restart?"
+    priority: standard
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [enterprise]
+  - id: risk-17
+    text: "Is the worst-case latency budget priced into stop placement?"
+    priority: standard
+    applicable_steps: [blueprint]
+    applicable_modes: [enterprise]
+  - id: risk-18
+    text: "Are dependencies (DLL, WebRequest) failure-modes risk-classed?"
+    priority: standard
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [enterprise]
+  - id: risk-19
+    text: "Is there a documented kill-list of conditions that disable trading?"
+    priority: standard
+    applicable_steps: [rri, verify]
+    applicable_modes: [enterprise]
+  - id: risk-20
+    text: "How is overnight / swap-day exposure handled?"
+    priority: standard
+    applicable_steps: [rri, blueprint]
+    applicable_modes: [enterprise]
+  - id: risk-21
+    text: "Does the EA respect a regulatory leverage cap when present?"
+    priority: standard
+    applicable_steps: [rri]
+    applicable_modes: [enterprise]
+  - id: risk-22
+    text: "Is broker risk (default, insolvency) part of the runtime envelope?"
+    priority: standard
+    applicable_steps: [rri, vision]
+    applicable_modes: [enterprise]
+  - id: risk-23
+    text: "Is post-mortem template defined for stop-loss / margin-call events?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]
+  - id: risk-24
+    text: "Are inputs that change risk envelope flagged require-restart?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: risk-25
+    text: "Has a sign-off matrix (who approves what) been formalised?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]

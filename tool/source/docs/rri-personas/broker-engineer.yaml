@@ -1,0 +1,131 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — broker-engineer (liquidity / fill-quality engineering).
+persona: broker-engineer
+description: Broker liquidity engineer evaluating execution & fill quality.
+questions:
+  - id: broker-01
+    text: "Has the EA been verified across at least two broker digit classes?"
+    priority: critical
+    applicable_steps: [rri, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: broker-02
+    text: "Is CPipNormalizer initialised before any OrderSend / SL math?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: broker-03
+    text: "Are fill policies (IOC / FOK / Return) chosen per broker capability?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: broker-04
+    text: "Are stops_level + freeze_level + step_volume respected per broker?"
+    priority: critical
+    applicable_steps: [build, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: broker-05
+    text: "Is the [PipNorm] log line emitted once per symbol per broker?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: broker-06
+    text: "Has cross-broker stability been measured (PF CV, Sharpe stdev)?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-07
+    text: "Are slippage / requote rates within tolerance vs broker spec?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-08
+    text: "Has partial-fill behaviour been tested under low liquidity?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-09
+    text: "Does the magic-number range avoid broker-suite collisions?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-10
+    text: "Are netting vs hedging differences handled idiomatically?"
+    priority: high
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-11
+    text: "Has commission / swap modeling been validated against statements?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-12
+    text: "Is symbol-suffix variability tolerated (EURUSD vs EURUSD.r)?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: broker-13
+    text: "Are order-modify retries bounded and outcome-asserted?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-14
+    text: "Does ResultRetcode handling cover network and broker-side errors?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-15
+    text: "Has tick-data fidelity been compared to broker live ticks?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: broker-16
+    text: "Is round-trip latency budgeted vs your fill-quality assumptions?"
+    priority: standard
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [enterprise]
+  - id: broker-17
+    text: "Is the EA neutral to broker time zone (DST shifts)?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-18
+    text: "Does the EA tolerate broker-side connection drops gracefully?"
+    priority: standard
+    applicable_steps: [blueprint, verify]
+    applicable_modes: [enterprise]
+  - id: broker-19
+    text: "Have execution metrics been captured for live-tuning purposes?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: broker-20
+    text: "Is the EA prepared for tick-volume vs real-volume differences?"
+    priority: standard
+    applicable_steps: [rri, build]
+    applicable_modes: [enterprise]
+  - id: broker-21
+    text: "Does volume-based logic survive broker-specific contract sizes?"
+    priority: standard
+    applicable_steps: [rri, build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-22
+    text: "Has SymbolInfoSessionTrade been used vs hardcoded session hours?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-23
+    text: "Have multiple broker MT5 builds been smoke-tested against EA?"
+    priority: standard
+    applicable_steps: [verify, refine]
+    applicable_modes: [enterprise]
+  - id: broker-24
+    text: "Is the EA explicit about expected fill mode in journal?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: broker-25
+    text: "Are broker-side margin-stop policies considered for sizing?"
+    priority: standard
+    applicable_steps: [rri, build]
+    applicable_modes: [enterprise]

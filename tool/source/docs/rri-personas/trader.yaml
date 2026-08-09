@@ -1,0 +1,24 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — trader (end-user trading the EA).
+#
+# Plan v5 §9.4 — 25 questions × 3 modes. Personal mode uses the 5 questions
+# tagged `priority: critical`, Team mode the 12 with `priority: high|critical`,
+# Enterprise mode the full 25.
+persona: trader
+description: End-user trader running the EA on a live or demo account.
+questions:
+  - id: trader-01
+    text: "What is the maximum acceptable drawdown for this strategy?"
+    priority: critical
+    applicable_steps: [rri, vision, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: trader-02
+    text: "What instruments and timeframes is this EA approved to trade?"
+    priority: critical
+    applicable_steps: [rri, vision, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: trader-03
+    text: "What is the per-trade risk percentage and how is it enforced?"
+    priority: critical
+    

@@ -1,0 +1,573 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "OrionRecovery",
+    "version": null,
+    "source_documents": [
+      "acceptance:OrionRecovery"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "hedging",
+    "account_model_status": "unresolved",
+    "symbol_mode": "explicit_list",
+    "symbols": [
+      "EURUSD"
+    ],
+    "timeframe_mode": "explicit_list",
+    "timeframes": [
+      "H1"
+    ]
+  },
+  "strategy": {
+    "topology": "single_engine",
+    "features": [
+      "strategy.entry.signal_selectable",
+      "strategy.hedge.zone",
+      "strategy.lot_balance"
+    ],
+    "signals": [
+      "rsi"
+    ],
+    "signal_logic": "selectable",
+    "parameters": {
+      "hedge_zone_variant": "alternating_boundaries_v1",
+      "hedge_zone_trigger_positions": 6,
+      "hedge_zone_lot_multiplier": 0.5,
+      "hedge_zone_distance_pips": 20,
+      "hedge_zone_target_money": 15,
+      "lot_balance_variant": "managed_chain_v1",
+      "balance_trigger_lots": 0.2,
+      "balance_stop_lots": 0.05,
+      "balance_add_lot": 0.01,
+      "hedge_zone_concurrency_policy": "exclusive",
+      "async_execution": false,
+      "execution_idempotency_policy": "reconcile_before_retry"
+    }
+  },
+  "risk": {
+    "max_spread_pips": 2.0,
+    "base_lot": 0.01,
+    "max_lot": 1.0,
+    "max_open_positions": 10
+  },
+  "controls": {
+    "features": [
+      "controls.pending_order_remote"
+    ],
+    "new_cycle_semantics": null,
+    "pending_command_transport": "pending_order_v1",
+    "pending_commands": {
+      "pause_engine": {
+        "order_type": "buy_limit",
+        "price": 32123.25,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": false
+        }
+      },
+      "resume_engine": {
+        "order_type": "sell_stop",
+        "price": 32124.75,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": true
+        }
+      }
+    }
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": 1,
+          "evidence": "Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": 1,
+          "evidence": "Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "strategy.entry.signals.rsi",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": 1,
+          "evidence": "Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "identity.name",
+      "value": "OrionRecovery",
+      "confidence": 0.92,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": null,
+          "evidence": "OrionRecovery"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "runtime.symbols.EURUSD",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": null,
+          "evidence": "EURUSD"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "runtime.timeframes.H1",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": null,
+          "evidence": "H1"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "controls.pending_commands.pause_engine",
+      "value": {
+        "order_type": "buy_limit",
+        "price": 32123.25,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": false
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": null,
+          "evidence": "pause_engine=32123.25"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "controls.pending_commands.resume_engine",
+      "value": {
+        "order_type": "sell_stop",
+        "price": 32124.75,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": true
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery",
+          "page": null,
+          "evidence": "resume_engine=32124.75"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0009",
+      "path": "runtime.account_model",
+      "value": "hedging",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "runtime.account_model='hedging'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0010",
+      "path": "runtime.symbols",
+      "value": [
+        "EURUSD"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "runtime.symbols=['EURUSD']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0011",
+      "path": "runtime.timeframes",
+      "value": [
+        "H1"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "runtime.timeframes=['H1']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0012",
+      "path": "strategy.features",
+      "value": [
+        "strategy.entry.signal_selectable",
+        "strategy.hedge.zone",
+        "strategy.lot_balance"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.features=['strategy.entry.signal_selectable', 'strategy.hedge.zone', 'strategy.lot_balance']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0013",
+      "path": "strategy.signals",
+      "value": [
+        "rsi"
+      ],
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.signals=['rsi']"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0014",
+      "path": "strategy.signal_logic",
+      "value": "selectable",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.signal_logic='selectable'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0015",
+      "path": "strategy.parameters.hedge_zone_variant",
+      "value": "alternating_boundaries_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_variant='alternating_boundaries_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0016",
+      "path": "strategy.parameters.hedge_zone_trigger_positions",
+      "value": 6,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_trigger_positions=6"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0017",
+      "path": "strategy.parameters.hedge_zone_lot_multiplier",
+      "value": 0.5,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_lot_multiplier=0.5"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0018",
+      "path": "strategy.parameters.hedge_zone_distance_pips",
+      "value": 20,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_distance_pips=20"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0019",
+      "path": "strategy.parameters.hedge_zone_target_money",
+      "value": 15,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_target_money=15"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0020",
+      "path": "strategy.parameters.lot_balance_variant",
+      "value": "managed_chain_v1",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.lot_balance_variant='managed_chain_v1'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0021",
+      "path": "strategy.parameters.balance_trigger_lots",
+      "value": 0.2,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.balance_trigger_lots=0.2"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0022",
+      "path": "strategy.parameters.balance_stop_lots",
+      "value": 0.05,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.balance_stop_lots=0.05"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0023",
+      "path": "strategy.parameters.balance_add_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.balance_add_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0024",
+      "path": "strategy.parameters.hedge_zone_concurrency_policy",
+      "value": "exclusive",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.hedge_zone_concurrency_policy='exclusive'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0025",
+      "path": "strategy.parameters.async_execution",
+      "value": false,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.async_execution=False"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0026",
+      "path": "strategy.parameters.execution_idempotency_policy",
+      "value": "reconcile_before_retry",
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "strategy.parameters.execution_idempotency_policy='reconcile_before_retry'"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0027",
+      "path": "risk.base_lot",
+      "value": 0.01,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "risk.base_lot=0.01"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0028",
+      "path": "risk.max_lot",
+      "value": 1.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "risk.max_lot=1.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0029",
+      "path": "risk.max_spread_pips",
+      "value": 2.0,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "risk.max_spread_pips=2.0"
+        }
+      ]
+    },
+    {
+      "id": "CFG-0030",
+      "path": "risk.max_open_positions",
+      "value": 10,
+      "confidence": 1.0,
+      "status": "confirmed",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "acceptance:OrionRecovery-profile",
+          "page": null,
+          "evidence": "risk.max_open_positions=10"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 324,
+    "document_kind": "build_request",
+    "defaults_policy": "reject",
+    "configuration_profile": "orion-recovery-acceptance",
+    "configuration_profile_source": "acceptance:OrionRecovery-profile",
+    "configuration_profile_schema": "1",
+    "configuration_assumptions": []
+  },
+  "ir_sha256": "3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0"
+}

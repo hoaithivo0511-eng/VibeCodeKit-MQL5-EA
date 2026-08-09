@@ -1,0 +1,12 @@
+{
+  "tool_version": "3.3.0rc4",
+  "execution_surface": "clean-installed-wheel",
+  "ir_sha256": "940e5167d1b0b65655caefe1e2644896da6c2e67b6a4ed02bd3c25dce2dd2a5b",
+  "planned_capabilities": 69,
+  "blockers": [],
+  "warnings": [],
+  "project": "/mnt/data/vkmql_v330rc4_final/demo/CCBSN_GoldenFixture",
+  "static_verified": true,
+  "verification_errors": [],
+  "source_files": 12
+}

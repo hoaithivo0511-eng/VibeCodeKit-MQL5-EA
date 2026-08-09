@@ -1,0 +1,21 @@
+# Step 1 / 8 — SCAN
+
+Identify the EA codebase shape and the friction points worth fixing.
+
+## Inputs
+- Repository checkout
+- Issue / motivation note (≤ 200 words)
+
+## Activities
+- [ ] List `.mq5` / `.mqh` files touched in the last 30 days
+- [ ] Run `mql5-lint` on the entry-point EA → capture WARN / ERROR counts
+- [ ] Read any prior `step-8-refine.md` to inherit context
+
+## Outputs
+- `step-1-scan.md` — pain-point catalogue, listed paths, lint baseline
+
+## Exit criteria
+- Pain points ranked by impact
+- Decision recorded: continue to RRI, or stop (no useful change to ship)
+
+> Sentinel: when this step is complete, `touch .rri-state/scan.done`.

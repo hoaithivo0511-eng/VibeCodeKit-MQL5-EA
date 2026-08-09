@@ -1,0 +1,70 @@
+{
+  "ir_sha256": "1a01be363f859c1526944a2dfbd4e64adfd8e1f7b7a280a48b512f5748b21a3c",
+  "account_model": "netting",
+  "ok": true,
+  "features": [
+    {
+      "path": "risk.max_lot",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::NormalizeVolume",
+      "tests": [
+        "model:test_max_lot"
+      ],
+      "requirement_ids": [
+        "REQ-0003",
+        "REQ-0013"
+      ]
+    },
+    {
+      "path": "risk.max_positions",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::PositionGate",
+      "tests": [
+        "model:test_position_cap"
+      ],
+      "requirement_ids": [
+        "REQ-0004"
+      ]
+    },
+    {
+      "path": "risk.max_spread",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::SpreadGate",
+      "tests": [
+        "model:test_spread_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0002"
+      ]
+    },
+    {
+      "path": "strategy.entry.breakout",
+      "maturity": "stable",
+      "generator": "entry_breakout",
+      "implementation": "CEntryEngine::BreakoutSignal",
+      "tests": [
+        "model:test_breakout"
+      ],
+      "requirement_ids": [
+        "REQ-0001"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.atr_break",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::ATRBreak",
+      "tests": [
+        "model:test_signal_atr_break"
+      ],
+      "requirement_ids": [
+        "REQ-0005"
+      ]
+    }
+  ],
+  "blockers": [],
+  "warnings": []
+}

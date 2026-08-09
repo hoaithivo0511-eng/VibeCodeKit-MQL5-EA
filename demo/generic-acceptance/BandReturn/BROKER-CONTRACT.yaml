@@ -1,0 +1,11 @@
+schema_version: '1.0'
+ir_sha256: e2c9b9d14c80940a9ccd7af112bc1748578385fdd2fc39a6fb3dfeb7c4389f2a
+account_model: netting
+symbols:
+- GBPUSD
+digits_tested:
+- 5
+- 4
+- 3
+- 2
+native_validation_required: true

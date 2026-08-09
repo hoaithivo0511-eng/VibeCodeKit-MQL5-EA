@@ -1,0 +1,4 @@
+schema_version: '1.0'
+ir_sha256: 43b0cf5c9748c8637d5004b489401ed752ff864579204a3b7899b4bdb5f79dff
+release_eligible: false
+reason: native compile and MT5 tester evidence pending

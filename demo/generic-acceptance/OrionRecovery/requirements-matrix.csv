@@ -1,0 +1,31 @@
+requirement_id,priority,path,value,confidence,source_refs,implementation,tests,status
+REQ-0001,must,risk.max_spread,True,0.84,"acceptance:OrionRecovery:p1:Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions.",CRiskEngine::SpreadGate,model:test_spread_gate,GENERATED
+REQ-0003,must,risk.max_positions,True,0.84,"acceptance:OrionRecovery:p1:Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions.",CRiskEngine::PositionGate,model:test_position_cap,GENERATED
+REQ-0004,should,strategy.entry.signals.rsi,True,0.84,"acceptance:OrionRecovery:p1:Use RSI entry signal, base lot 0.01, max lot 1.0, max spread 2 pips and max 10 positions.",CEntryEngine::RSI,model:test_signal_rsi,GENERATED
+REQ-0005,must,identity.name,OrionRecovery,0.92,acceptance:OrionRecovery:p-:OrionRecovery,,,EXTRACTED
+REQ-0006,must,runtime.symbols.EURUSD,True,0.99,acceptance:OrionRecovery:p-:EURUSD,,,EXTRACTED
+REQ-0007,must,runtime.timeframes.H1,True,0.99,acceptance:OrionRecovery:p-:H1,,,EXTRACTED
+REQ-0011,must,controls.pending_commands.pause_engine,"{'order_type': 'buy_limit', 'price': 32123.25, 'action': {'type': 'set_state', 'path': 'ea.enabled', 'value': False}}",0.96,acceptance:OrionRecovery:p-:pause_engine=32123.25,,,EXTRACTED
+REQ-0012,must,controls.pending_commands.resume_engine,"{'order_type': 'sell_stop', 'price': 32124.75, 'action': {'type': 'set_state', 'path': 'ea.enabled', 'value': True}}",0.96,acceptance:OrionRecovery:p-:resume_engine=32124.75,,,EXTRACTED
+CFG-0009,must,runtime.account_model,hedging,1.0,acceptance:OrionRecovery-profile:p-:runtime.account_model='hedging',,,EXTRACTED
+CFG-0010,must,runtime.symbols,['EURUSD'],1.0,acceptance:OrionRecovery-profile:p-:runtime.symbols=['EURUSD'],,,EXTRACTED
+CFG-0011,must,runtime.timeframes,['H1'],1.0,acceptance:OrionRecovery-profile:p-:runtime.timeframes=['H1'],,,EXTRACTED
+CFG-0012,must,strategy.features,"['strategy.entry.signal_selectable', 'strategy.hedge.zone', 'strategy.lot_balance']",1.0,"acceptance:OrionRecovery-profile:p-:strategy.features=['strategy.entry.signal_selectable', 'strategy.hedge.zone', 'strategy.lot_balance']",,,EXTRACTED
+CFG-0013,must,strategy.signals,['rsi'],1.0,acceptance:OrionRecovery-profile:p-:strategy.signals=['rsi'],,,EXTRACTED
+CFG-0014,must,strategy.signal_logic,selectable,1.0,acceptance:OrionRecovery-profile:p-:strategy.signal_logic='selectable',,,EXTRACTED
+CFG-0015,must,strategy.parameters.hedge_zone_variant,alternating_boundaries_v1,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_variant='alternating_boundaries_v1',,,EXTRACTED
+CFG-0016,must,strategy.parameters.hedge_zone_trigger_positions,6,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_trigger_positions=6,,,EXTRACTED
+CFG-0017,must,strategy.parameters.hedge_zone_lot_multiplier,0.5,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_lot_multiplier=0.5,,,EXTRACTED
+CFG-0018,must,strategy.parameters.hedge_zone_distance_pips,20,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_distance_pips=20,,,EXTRACTED
+CFG-0019,must,strategy.parameters.hedge_zone_target_money,15,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_target_money=15,,,EXTRACTED
+CFG-0020,must,strategy.parameters.lot_balance_variant,managed_chain_v1,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.lot_balance_variant='managed_chain_v1',,,EXTRACTED
+CFG-0021,must,strategy.parameters.balance_trigger_lots,0.2,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.balance_trigger_lots=0.2,,,EXTRACTED
+CFG-0022,must,strategy.parameters.balance_stop_lots,0.05,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.balance_stop_lots=0.05,,,EXTRACTED
+CFG-0023,must,strategy.parameters.balance_add_lot,0.01,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.balance_add_lot=0.01,,,EXTRACTED
+CFG-0024,must,strategy.parameters.hedge_zone_concurrency_policy,exclusive,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.hedge_zone_concurrency_policy='exclusive',,,EXTRACTED
+CFG-0025,must,strategy.parameters.async_execution,False,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.async_execution=False,,,EXTRACTED
+CFG-0026,must,strategy.parameters.execution_idempotency_policy,reconcile_before_retry,1.0,acceptance:OrionRecovery-profile:p-:strategy.parameters.execution_idempotency_policy='reconcile_before_retry',,,EXTRACTED
+CFG-0027,must,risk.base_lot,0.01,1.0,acceptance:OrionRecovery-profile:p-:risk.base_lot=0.01,,,EXTRACTED
+CFG-0028,must,risk.max_lot,1.0,1.0,acceptance:OrionRecovery-profile:p-:risk.max_lot=1.0,CRiskEngine::NormalizeVolume,model:test_max_lot,GENERATED
+CFG-0029,must,risk.max_spread_pips,2.0,1.0,acceptance:OrionRecovery-profile:p-:risk.max_spread_pips=2.0,,,EXTRACTED
+CFG-0030,must,risk.max_open_positions,10,1.0,acceptance:OrionRecovery-profile:p-:risk.max_open_positions=10,,,EXTRACTED

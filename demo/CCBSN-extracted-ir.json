@@ -1,0 +1,2202 @@
+{
+  "schema_version": "3.1",
+  "identity": {
+    "name": "CCBSN",
+    "version": "3.0.3",
+    "source_documents": [
+      "/mnt/data/CCBSN Manual by Bo.Botfx.pdf"
+    ]
+  },
+  "runtime": {
+    "platform": "MT5",
+    "account_model": "hedging",
+    "account_model_status": "inferred",
+    "symbol_mode": "chart_symbol",
+    "symbols": [],
+    "timeframe_mode": "chart_timeframe",
+    "timeframes": []
+  },
+  "strategy": {
+    "topology": "multi_engine",
+    "features": [
+      "strategy.dca.bidirectional",
+      "strategy.dca.closed_bar",
+      "strategy.dca.enabled",
+      "strategy.dca.positive",
+      "strategy.dca.signal",
+      "strategy.dca.step",
+      "strategy.dca.step_multiplier",
+      "strategy.dca.step_timeframe",
+      "strategy.entry.signal_selectable",
+      "strategy.exit.account_money",
+      "strategy.exit.adaptive_basket_tp",
+      "strategy.exit.balance_difference",
+      "strategy.exit.basket_tp",
+      "strategy.exit.daily_target",
+      "strategy.exit.money",
+      "strategy.exit.side_money",
+      "strategy.exit.single_tp",
+      "strategy.exit.stepped_target",
+      "strategy.exit.trailing",
+      "strategy.exit.trend_reversal",
+      "strategy.filter.ema",
+      "strategy.filter.macd",
+      "strategy.filter.rsi",
+      "strategy.filter.trend",
+      "strategy.filter.zone_cycle",
+      "strategy.hedge.standard",
+      "strategy.hedge.zone",
+      "strategy.lot_balance",
+      "strategy.lottery.after_sl",
+      "strategy.reverse_entry",
+      "strategy.sizing.additive",
+      "strategy.sizing.martingale",
+      "strategy.sniper.cross_chain",
+      "strategy.sniper.partial",
+      "strategy.sniper.same_chain",
+      "strategy.time.sessions"
+    ],
+    "signals": [
+      "cci_reversal",
+      "stochastic_reversal",
+      "rsi_reversal",
+      "pinbar_engulfing",
+      "candle_color",
+      "no_condition",
+      "random",
+      "external_indicator",
+      "smc_all_with",
+      "smc_all_against",
+      "smc_internal_with",
+      "smc_internal_against",
+      "smc_swing_with",
+      "smc_swing_against",
+      "cci",
+      "stochastic",
+      "momentum",
+      "supertrend",
+      "utbot",
+      "rsi",
+      "ichimoku_kumo_break",
+      "smc",
+      "bollinger_bands",
+      "pinbar",
+      "engulfing"
+    ],
+    "signal_logic": "selectable",
+    "parameters": {}
+  },
+  "risk": {},
+  "controls": {
+    "features": [
+      "controls.chart_panel",
+      "controls.new_cycle",
+      "controls.pending_order_remote",
+      "controls.reset_lots"
+    ],
+    "new_cycle_semantics": "true_means_allow_new_cycle",
+    "pending_command_transport": "pending_order_v1",
+    "pending_commands": {
+      "disable_ea": {
+        "order_type": "buy_stop",
+        "price": 999999.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": false
+        }
+      },
+      "enable_ea": {
+        "order_type": "buy_stop",
+        "price": 666666.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": true
+        }
+      },
+      "disable_new_cycle": {
+        "order_type": "buy_stop",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": false
+        }
+      },
+      "enable_new_cycle": {
+        "order_type": "sell_limit",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": true
+        }
+      },
+      "disable_buy": {
+        "order_type": "buy_stop",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.buy_enabled",
+          "value": false
+        }
+      },
+      "disable_sell": {
+        "order_type": "sell_limit",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.sell_enabled",
+          "value": false
+        }
+      }
+    }
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "path": "strategy.entry.signal_selectable",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Chọn tín hiệu mở lệnh"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0002",
+      "path": "strategy.dca.enabled",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "CCBSN – EA giao dịch DCA + Martingale + Hedge thông minh"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0003",
+      "path": "strategy.dca.step",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0004",
+      "path": "strategy.dca.step_timeframe",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Step+TF: Mỗi nến chỉ nhồi 1 lần."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0005",
+      "path": "strategy.dca.step_multiplier",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Dùng cho kiểu Step Multiplier: khoảng cách = 0.Khoảng cách nhồi lệnh ban đầu × (Hệ số nhân khoảng cách)^(số lệnh)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0006",
+      "path": "strategy.dca.signal",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn kiểu DCA Step (khoảng cách cố định), Step+TF (mỗi nến nhồi 1 lần), Step Multiplier (khoảng cách nhân dần), Signal DCA (nhồi theo tín hiệu),"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Signal DCA: Có tín hiệu mua/bán mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0007",
+      "path": "strategy.dca.positive",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Nhồi dương / âm dương: Cho phép nhồi cả khi giá đi cùng chiều/cùng chiều và ngược chiều."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0008",
+      "path": "strategy.dca.bidirectional",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Nhồi lệnh DCA thông minh: Step, Step+TF, Step Multiplier (cấp số nhân), Signal DCA, Nhồi dương, Nhồi âm dương, Nhồi âm dương"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Đặc biệt cho kiểu DCA Nhồi âm dương theo Signal: khi có cả Buy và Sell hoặc giá đảo chiều, dùng TP"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0009",
+      "path": "strategy.dca.closed_bar",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nhồi dương, Nhồi âm dương, Nhồi âm dương theo Signal, Step+Đóng nến."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Step+Đóng nến: Đợi đóng nến và nhồi ở đầu nến mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0010",
+      "path": "strategy.sizing.martingale",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "CCBSN – EA giao dịch DCA + Martingale + Hedge thông minh"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "cho những nhà giao dịch muốn tự động hóa chiến lược nhồi lệnh trung bình giá (DCA), kiểm soát rủi ro bằng Martingale có điều kiện, đồng"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0011",
+      "path": "strategy.sizing.additive",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Chọn hệ số lots DCA Hệ số nhân (multiplier) hoặc hệ số cộng (plus)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Hệ số cộng Nếu chọn hệ số cộng, lots mới = lots lệnh trước + giá trị này (mặc định 0.01)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "Hệ số cộng Nếu chọn hệ số cộng, lots mới = lots lệnh trước + giá trị này (mặc định 0.01)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0012",
+      "path": "strategy.sniper.same_chain",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "✂ Nhóm: Tỉa lệnh cùng chuỗi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Tỉa lệnh cùng chuỗi không quan tâm MagicNếu true, tỉa cả lệnh không cùng Magic Number (chỉ cùng cặp tiền)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0013",
+      "path": "strategy.sniper.cross_chain",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "🔀 Nhóm: Tỉa lệnh khác chuỗi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Sử dụng tỉa lệnh khác chuỗi Bật cơ chế tỉa lệnh giữa 2 chiều Buy và Sell (dùng Buy tỉa sell, dùng Sell tỉa Buy)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0014",
+      "path": "strategy.sniper.partial",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Sử dụng tỉa lệnh 1 phần Thay vì đóng hẳn lệnh đầu, chỉ cắt bớt một phần lots của lệnh đầu tiên."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "% âm kích hoạt tỉa lệnh 1 phần Khi % thua lỗ của chiều đó vượt ngưỡng này (ví dụ -30%) mới kích hoạt tỉa 1 phần."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Số lệnh kích hoạt tỉa lệnh 1 phần Cần tối thiểu số lệnh này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Sử dụng tỉa lệnh 1 phần lệnh cùng chiềuCắt một phần lot của lệnh cùng chiều xa nhất."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0015",
+      "path": "strategy.hedge.standard",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "Sử dụng Hedging Zone? Bật vùng phòng hộ đặc biệt – khi đủ số lệnh, EA vẽ một vùng giá và mở lệnh lướt sóng 2 chiều với lots lớn."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 15,
+          "evidence": "🔄 Nhóm: Hedging (Phòng hộ thường)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 15,
+          "evidence": "Sử dụng hedging Mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh (mở lệnh cùng với lệnh DCA)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0016",
+      "path": "strategy.hedge.zone",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "🚀 Chiến lược chính: DCA (Dollar Cost Averaging) kết hợp Martingale linh hoạt, tự động tỉa lệnh (Sniper), hedging zone và nhiều tín"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "🛡 Nhóm: Hedging Zone"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 14,
+          "evidence": "Sử dụng Hedging Zone? Bật vùng phòng hộ đặc biệt – khi đủ số lệnh, EA vẽ một vùng giá và mở lệnh lướt sóng 2 chiều với lots lớn."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0017",
+      "path": "strategy.reverse_entry",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Hedging & Hedging Zone: mở lệnh ngược chiều khi thua lỗ hoặc đủ số lệnh, vùng phòng hộ với hệ số nhân tổng lots, thay đổi mức"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "🔄 Nhóm: Mở lệnh ngược chiều"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Mở lệnh ngược chiều? Khi đủ số lệnh cùng chiều, bot sẽ mở một lệnh ngược hướng."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Số lệnh kích hoạt mở lệnh ngược chiều Sau khi đạt số lệnh này (ví dụ 12 lệnh Buy), bot sẽ chờ tín hiệu Sell sau đó mới mở 1 lệnh Sell ngược."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0018",
+      "path": "strategy.lot_balance",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "⚖ Nhóm: Cân Lots"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Sử dụng cân lots? Tự động mở thêm lệnh ngược chiều để cân bằng khối lượng giữa Buy và Sell."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Chế độ cân lots Thêm lots độc lập (magic=0) hoặc thêm lots vào chuỗi hiện tại."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 13,
+          "evidence": "Số lots chênh lệch kích hoạt cân lots Khi chênh lệch giữa tổng lots buy và tổng lots sell ≥ ngưỡng này, bắt đầu cân."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0019",
+      "path": "strategy.lottery.after_sl",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Sử dụng chế độ xổ số? Bật chế độ Martingale kiểu \"xổ số\": nếu lệnh trước bị cắt lỗ (SL), lệnh tiếp theo sẽ tăng lots theo hệ số nhân."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Nếu dùng chế độ xổ số: đủ thời gian delay sau SL/TP và không nằm trong chuỗi xổ số đang chờ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0020",
+      "path": "strategy.exit.basket_tp",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP chuỗi DCA, pips Chốt lời chung cho toàn bộ chuỗi lệnh cùng chiều, tính trên giá trung bình + số pips TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP chuỗi DCA, pips Chốt lời chung cho toàn bộ chuỗi lệnh cùng chiều, tính trên giá trung bình + số pips TP chuỗi."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0021",
+      "path": "strategy.exit.money",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All account Đóng tất cả mọi lệnh trên toàn tài khoản (không quan tâm Magic) khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All Đóng lệnh cùng Magic hiện tại khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Buy Đóng riêng lệnh Buy khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Sell Đóng riêng lệnh Sell khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All khi mở lệnh DCA Signal âm hoặc xuất hiện"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0022",
+      "path": "strategy.exit.daily_target",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0023",
+      "path": "strategy.exit.trailing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "🏃 Nhóm: Trailing"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng trailing chuỗi DCA? Kéo SL tự động theo giá khi có lợi nhuận."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Pips bắt đầu trailing Khi lợi nhuận của chuỗi (tính từ giá trung bình) đạt mức pips này, bắt đầu trailing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Pips bắt đầu trailing Khi lợi nhuận của chuỗi (tính từ giá trung bình) đạt mức pips này, bắt đầu trailing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0024",
+      "path": "strategy.exit.single_tp",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 6,
+          "evidence": "TP, pips Chốt lời cho lệnh đầu tiên (nếu không sử dụng DCA hoặc Single TP = 0)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 9,
+          "evidence": "TP đơn lệnh Nếu >0, mỗi lệnh sẽ tự chốt lời riêng với TP này, thay vì dùng TP chuỗi. Giá trị 0 → dùng TP chuỗi."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 25,
+          "evidence": "Chạm TP chuỗi (tính trên giá trung bình tính theo số lots) hoặc TP đơn lệnh (nếu bật)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0025",
+      "path": "strategy.exit.adaptive_basket_tp",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "📉 Nhóm: Điều chỉnh TP chuỗi khi âm"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 10,
+          "evidence": "Điều chỉnh TP chuỗi khi âm? Khi thua lỗ vượt ngưỡng, TP chuỗi sẽ được rút ngắn (đặt gần hơn) để dễ chốt lời."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0026",
+      "path": "strategy.exit.account_money",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP All account Đóng tất cả mọi lệnh trên toàn tài khoản (không quan tâm Magic) khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL All account Đóng tất cả mọi lệnh khi thua lỗ đạt mức -$."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0027",
+      "path": "strategy.exit.side_money",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Buy Đóng riêng lệnh Buy khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL Buy Đóng riêng lệnh Buy khi thua lỗ đạt mức -$."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money TP Sell Đóng riêng lệnh Sell khi lợi nhuận đạt mức $."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "Money SL Sell Đóng riêng lệnh Sell khi thua lỗ đạt mức -$."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0028",
+      "path": "strategy.exit.stepped_target",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "📊 Nhóm: Mục tiêu lợi nhuận Bậc thang"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Sử dụng mục tiêu lợi nhuận bậc thang? Bật chế độ chốt lời từng bậc."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Mục tiêu lợi nhuận bậc thang, $ Khi lợi nhuận tích lũy (lịch sử + floating) đạt mức này, đóng hết lệnh và delay."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0029",
+      "path": "strategy.exit.trend_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 25,
+          "evidence": "Đảo trend (nếu bật Đóng lệnh khi đảo trend): khi RSI+EMA+MACD đảo chiều hoàn toàn, đóng hết lệnh cùng hướng cũ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0030",
+      "path": "strategy.exit.balance_difference",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Close Buy / Close Sell / Close All – Đóng lệnh theo chiều hoặc tất cả."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "% lãi/lỗ giữa buy và sell để Close All Ví dụ: nếu Buy lời 10%, Sell lỗ 8%, chênh lệch 2% thì đóng hết. Công thức: (lợi nhuận chiều lời) + (lợi"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 16,
+          "evidence": "% lãi/lỗ giữa buy và sell để Close All Ví dụ: nếu Buy lời 10%, Sell lỗ 8%, chênh lệch 2% thì đóng hết. Công thức: (lợi nhuận chiều lời) + (lợi"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0031",
+      "path": "strategy.time.sessions",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "⏰ Nhóm: Giới hạn thời gian theo giờ PC/Laptop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng giới hạn thời gian? Bật lịch giao dịch theo khung giờ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "Sử dụng giới hạn thời gian 1,2,3,4 Bật/tắt từng khung giờ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 18,
+          "evidence": "DCA ngoài thời gian? Nếu true, vẫn cho phép nhồi lệnh DCA ngay cả ngoài khung giờ giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Trong khung giờ giao dịch (hoặc được phép DCA ngoài giờ)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0032",
+      "path": "strategy.filter.trend",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0033",
+      "path": "strategy.filter.ema",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "📈 Bộ lọc EMA"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng bộ lọc EMA Xác định xu hướng dựa trên 2 đường EMA (chỉ cho phép Buy khi EMA 1 > EMA 2, chỉ cho phép Sell khi EMA 1 < EMA 2)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0034",
+      "path": "strategy.filter.macd",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "📉 Bộ lọc MACD"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng bộ lọc MACD Dùng histogram MACD để xác định xu hướng (dương → up, âm → down)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Bộ lọc xu hướng (nếu bật): EMA xu hướng lên (cho Buy) hoặc xuống (cho Sell), MACD cùng dấu, RSI trong vùng cho phép."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0035",
+      "path": "strategy.filter.zone_cycle",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "🔄 Bộ lọc Zone Cycle"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 20,
+          "evidence": "Sử dụng Zone Cycle? Khi giá vượt ra ngoài vùng (trên 'Vùng giá trên' hoặc dưới 'Vùng giá trên'), bot tự động bật New Cycle (dừng mở lệnh mới)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0036",
+      "path": "strategy.filter.rsi",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Nếu bật bộ lọc RSI/EMA/MACD và xu hướng đảo chiều hoàn toàn, bot sẽ đóng hết lệnh cùng hướng cũ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "📊 Bộ lọc RSI"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Sử dụng bộ lọc RSI Chỉ cho phép Buy khi RSI > RSI Up Level, chỉ Sell khi RSI < RSI Down Level."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "RSI TF, RSI Price, RSI Period Cấu hình chỉ báo RSI cho bộ lọc."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0037",
+      "path": "controls.pending_order_remote",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Điều khiển từ xa qua lệnh chờ (Mobile Control): dùng Buy Stop / Sell Limit với giá đặc biệt để bật/tắt EA, dừng New Cycle, stop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 3,
+          "evidence": "📱 Lệnh chờ điều khiển bot từ xa (Mobile Control)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 3,
+          "evidence": "📱 Lệnh chờ điều khiển bot từ xa (Mobile Control)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "🎮 Danh sách lệnh chờ điều khiển"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0038",
+      "path": "controls.chart_panel",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Ngoài lệnh chờ từ xa, bot còn cung cấp các nút bấm trực tiếp trên biểu đồ (khi chạy EA):"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0039",
+      "path": "controls.new_cycle",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Điều khiển từ xa qua lệnh chờ (Mobile Control): dùng Buy Stop / Sell Limit với giá đặc biệt để bật/tắt EA, dừng New Cycle, stop"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Bộ lọc xu hướng: RSI, EMA (có min/max khoảng cách), MACD, Zone Cycle (tự động bật New Cycle khi giá ra khỏi vùng)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "Buy Stop 888888 🔴 Tắt New Cycle Ngăn không cho bot mở lệnh mới (chu kỳ mới)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "Sell Limit 888888 🟢 Bật New Cycle Cho phép bot mở lệnh mới trở lại."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 4,
+          "evidence": "💡 Lưu ý về New Cycle:"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0040",
+      "path": "controls.reset_lots",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Các chức năng đặc biệt khác: Reset lots thủ công, điều chỉnh TP chuỗi khi âm, mở lệnh ngược chiều, DCA theo tín hiệu ngoài, xổ số"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 5,
+          "evidence": "Reset Lots Sell / Reset Lots Buy – Reset lots chuỗi về giá trị mới."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0041",
+      "path": "risk.max_spread",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Spread tối đa, pips Nếu spread hiện tại (tính bằng pips) lớn hơn giá trị này, bot sẽ không mở lệnh mới."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Spread ≤ Spread tối đa (mặc định 5 pips)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0042",
+      "path": "risk.max_lot",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Quản lý vốn & rủi ro: max lots, max spread, target lợi nhuận ngày, target bậc thang, trailing, cân lots 2 chiều (thêm lots độc lập hoặc"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Lots tối đa Khi nhồi lệnh DCA thì lots tối đa của lệnh đó không vượt quá giới hạn này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Lots tối đa Khi nhồi lệnh DCA thì lots tối đa của lệnh đó không vượt quá giới hạn này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Bật New Cycle khi đạt Lots tối đa Nếu true, khi bất kỳ lệnh nào có lots ≥ Lots tối đa, bot tự động bật New Cycle (dừng mở lệnh mới)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Bật New Cycle khi đạt Lots tối đa Nếu true, khi bất kỳ lệnh nào có lots ≥ Lots tối đa, bot tự động bật New Cycle (dừng mở lệnh mới)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0043",
+      "path": "risk.max_positions",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Số lệnh buy tối đa Dừng mở thêm lệnh Buy nếu số lượng lệnh Buy hiện tại đã đạt giới hạn này."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 7,
+          "evidence": "Số lệnh sell tối đa Tương tự cho lệnh Sell."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 11,
+          "evidence": "Số lệnh cuối tối đa dùng để tỉa Số lượng lệnh dương (ở cuối chuỗi) sẽ bị đóng cùng. 0 → auto (tự động dùng các lệnh dương cuối chuỗi)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 12,
+          "evidence": "Số lệnh cuối tối đa dùng để tỉa Số lệnh cuối tối đa sẽ đóng cùng khi tỉa 1 phần."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 24,
+          "evidence": "Chưa vượt quá số lệnh tối đa (Số lệnh buy tối đa / Số lệnh sell tối đa)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0044",
+      "path": "risk.daily_loss",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Giới hạn thua lỗ hằng ngày, -$Nếu thua lỗ vượt ngưỡng, bot đóng lệnh và dừng giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Phần trăm Giới hạn thua lỗ hằng ngày, -%Tương tự cho thua lỗ."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Số tiền Giới hạn thua lỗ hằng ngày, -$Nếu thua lỗ vượt ngưỡng, bot đóng lệnh và dừng giao dịch."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 17,
+          "evidence": "Phần trăm Giới hạn thua lỗ hằng ngày, -%Tương tự cho thua lỗ."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0045",
+      "path": "strategy.entry.signals.cci_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0046",
+      "path": "strategy.entry.signals.stochastic_reversal",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0047",
+      "path": "strategy.entry.signals.rsi_reversal",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0048",
+      "path": "strategy.entry.signals.pinbar_engulfing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0049",
+      "path": "strategy.entry.signals.candle_color",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0050",
+      "path": "strategy.entry.signals.no_condition",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0051",
+      "path": "strategy.entry.signals.random",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0052",
+      "path": "strategy.entry.signals.external_indicator",
+      "value": true,
+      "confidence": 0.9,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "📦 Indicator ngoài"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0053",
+      "path": "strategy.entry.signals.smc_all_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0054",
+      "path": "strategy.entry.signals.smc_all_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0055",
+      "path": "strategy.entry.signals.smc_internal_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0056",
+      "path": "strategy.entry.signals.smc_internal_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0057",
+      "path": "strategy.entry.signals.smc_swing_with",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0058",
+      "path": "strategy.entry.signals.smc_swing_against",
+      "value": true,
+      "confidence": 0.84,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0059",
+      "path": "strategy.entry.signals.cci",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🔵 Indi CCI"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0060",
+      "path": "strategy.entry.signals.stochastic",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟢 Indi Stoch"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0061",
+      "path": "strategy.entry.signals.momentum",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟡 Indi Momentum"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Momentum Period (14), Momentum Quá mua (100.45), Momentum Quá bán (99.45)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Momentum Period (14), Momentum Quá mua (100.45), Momentum Quá bán (99.45)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0062",
+      "path": "strategy.entry.signals.supertrend",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Danh sách đầy đủ: CCI, Stoch, Momentum, Xanh đỏ (2 nến xanh/đỏ liên tiếp), Không điều kiện, Supertrend, Random, CCI Reverse, Stoch Reverse,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🔴 Supertrend Indicator"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Periods Supertrend (21), Multiplier Supertrend (3.0)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "Periods Supertrend (21), Multiplier Supertrend (3.0)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0063",
+      "path": "strategy.entry.signals.utbot",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "🟠 UTBOT Indicator"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0064",
+      "path": "strategy.entry.signals.rsi",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 8,
+          "evidence": "Nếu true, chỉ nhồi lệnh khi xu hướng phù hợp (EMA, MACD, RSI)."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0065",
+      "path": "strategy.entry.signals.ichimoku_kumo_break",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0066",
+      "path": "strategy.entry.signals.smc",
+      "value": true,
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "Đa dạng tín hiệu vào lệnh: CCI, Stoch, Momentum, Supertrend, UTBOT, RSI, RSI Reversal, Break Kumo Ichimoku, SMC"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 23,
+          "evidence": "Tín hiệu: Có tín hiệu từ chỉ báo được chọn (CCI, Stoch, RSI, Pinbar, SMC, v.v.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0067",
+      "path": "strategy.entry.signals.bollinger_bands",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "UTBOT, Indi ngoài, RSI, RSI Reversal, Break Kumo Ichimoku, SMC All thuận, SMC All ngược, SMC Internal thuận/ngược, SMC Swing thuận/ngược, BB,"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "📊 BB Indicator"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "BB Period (20), BB Deviations (2.0)"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 21,
+          "evidence": "BB Period (20), BB Deviations (2.0)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0068",
+      "path": "strategy.entry.signals.pinbar",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0069",
+      "path": "strategy.entry.signals.engulfing",
+      "value": true,
+      "confidence": 0.99,
+      "status": "extracted",
+      "priority": "should",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 1,
+          "evidence": "Với hơn 30 tín hiệu đầu vào (CCI, Stoch, RSI, SMC, Pinbar, Engulfing, Ichimoku break, UTBOT...), EA có thể thích ứng với nhiều phong cách"
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 2,
+          "evidence": "(thuận/ngược/internal/swing), BB, Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        },
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": 19,
+          "evidence": "Pinbar, Engulfing, Pinbar/Engulfing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-0070",
+      "path": "identity.name",
+      "value": "CCBSN",
+      "confidence": 0.92,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "CCBSN"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0071",
+      "path": "runtime.account_model",
+      "value": "hedging",
+      "confidence": 0.9,
+      "status": "inferred",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "account model hedging"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0072",
+      "path": "controls.pending_commands.disable_ea",
+      "value": {
+        "order_type": "buy_stop",
+        "price": 999999.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": false
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "disable_ea=999999.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0073",
+      "path": "controls.pending_commands.enable_ea",
+      "value": {
+        "order_type": "buy_stop",
+        "price": 666666.0,
+        "action": {
+          "type": "set_state",
+          "path": "ea.enabled",
+          "value": true
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "enable_ea=666666.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0074",
+      "path": "controls.pending_commands.disable_new_cycle",
+      "value": {
+        "order_type": "buy_stop",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": false
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "disable_new_cycle=888888.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0075",
+      "path": "controls.pending_commands.enable_new_cycle",
+      "value": {
+        "order_type": "sell_limit",
+        "price": 888888.0,
+        "action": {
+          "type": "set_state",
+          "path": "cycle.new_enabled",
+          "value": true
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "enable_new_cycle=888888.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0076",
+      "path": "controls.pending_commands.disable_buy",
+      "value": {
+        "order_type": "buy_stop",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.buy_enabled",
+          "value": false
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "disable_buy=555555.0"
+        }
+      ]
+    },
+    {
+      "id": "REQ-0077",
+      "path": "controls.pending_commands.disable_sell",
+      "value": {
+        "order_type": "sell_limit",
+        "price": 555555.0,
+        "action": {
+          "type": "set_state",
+          "path": "direction.sell_enabled",
+          "value": false
+        }
+      },
+      "confidence": 0.96,
+      "status": "extracted",
+      "priority": "must",
+      "source_refs": [
+        {
+          "source": "/mnt/data/CCBSN Manual by Bo.Botfx.pdf",
+          "page": null,
+          "evidence": "disable_sell=555555.0"
+        }
+      ]
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "AMB-ACCOUNT-MODEL",
+      "severity": "warning",
+      "path": "runtime.account_model",
+      "assumption": "hedging",
+      "message": "Hedge components require a hedging account; inferred from requested behavior."
+    }
+  ],
+  "conflicts": [],
+  "metadata": {
+    "intake_engine": "deterministic-ea-ir-v2",
+    "source_length": 25122,
+    "document_kind": "manual",
+    "defaults_policy": "reject",
+    "document_format": "pdf",
+    "document_pages": 26,
+    "document_metadata": {
+      "Title": "Giới thiệu bot Can Cu Bu Sieng Nang - CCBSN",
+      "Creator": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "Producer": "Skia/PDF m148",
+      "CreationDate": "D:20260611103646+00'00'",
+      "ModDate": "D:20260611103646+00'00'"
+    }
+  },
+  "ir_sha256": "d2f7ea89262020dfb314100bb89d8fddf641a6958e9bb1f4c53b968a4c25a194"
+}

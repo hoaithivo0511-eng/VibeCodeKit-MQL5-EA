@@ -1,0 +1,344 @@
+# input-semantics.yaml
+# =================================================================
+# Per-input documentation library (Vietnamese).
+#
+# Used by ``scripts/vibecodekit_mql5/ea_docs_semantics.py`` to enrich
+# the auto-generated EA documentation. Each entry describes ONE
+# ``input`` / ``sinput`` declaration that may appear inside a
+# scaffolded ``.mq5`` source.
+#
+# Schema (every key required unless marked optional):
+#   meaning_vi     : 1-2 câu giải thích vai trò input
+#   unit           : đơn vị (USD / pip / % / bar / point / millisecond / ...)
+#   formula_vi     : công thức tính/quy đổi nếu có (để trống nếu không cần)
+#   depends_on     : list[str] tên input khác mà input này phụ thuộc
+#   used_by        : ngắn gọn module/helper sử dụng (để trống nếu N/A)
+#   sensible_range_vi : dải giá trị hợp lý + ngữ cảnh khi nào dùng
+#   gotchas_vi     : pitfall + cảnh báo khi tune sai
+#
+# Add a new entry whenever a scaffold adds a new ``input`` decl that
+# isn't already covered. Renderers downgrade gracefully when a
+# decl is not in the library (the table shows the source-side
+# tooltip only, same as the pre-semantics behaviour).
+# =================================================================
+
+InpMagic:
+  meaning_vi: |
+    Magic number để gắn nhãn mọi lệnh do EA này mở. Mỗi EA trong portfolio
+    phải có magic riêng để CTrade / CHistorySync / CMagicRegistry phân biệt
+    được lệnh của mình với lệnh của EA khác hoặc lệnh tay.
+  unit: "số nguyên long (range 70000-79999 reserve cho kit theo Plan v5 §6)"
+  formula_vi: ""
+  depends_on: []
+  used_by: "CMagicRegistry.Reserve() · CSafeTradeManager.Init() · mọi OrderSend"
+  sensible_range_vi: |
+    70000-79999 nếu build bằng kit. Ngoài dải này có thể clash với EA bên thứ 3.
+  gotchas_vi: |
+    Đổi magic giữa các build sẽ làm EA mất tracking các lệnh đã mở từ phiên
+    trước (chúng vẫn nằm trên broker nhưng EA không quản nữa). Đóng tay
+    trước khi đổi magic.
+
+InpRiskMoney:
+  meaning_vi: |
+    Số USD tối đa được phép rủi ro mỗi lệnh. Đây là số tiền account mất khi
+    SL chạm. Lot size sẽ được tự tính ngược từ giá trị này — không bao giờ
+    đặt cứng lot.
+  unit: "USD"
+  formula_vi: |
+    lot = InpRiskMoney / (InpSlPips × pip.PipValueAccount(symbol))
+    (`CPipNormalizer.LotForRisk` thực hiện phép tính + clamp về step lot tối thiểu)
+  depends_on: [InpSlPips]
+  used_by: "CPipNormalizer.LotForRisk()"
+  sensible_range_vi: |
+    1-2% account equity. Account 1000 USD: 10-20 USD/lệnh. Prop-firm thường
+    yêu cầu < 1% (10 USD trên 1000 USD account).
+  gotchas_vi: |
+    Đây là USD rủi ro, KHÔNG phải lot. Đặt 100 USD trên account 200 USD =
+    50% rủi ro → 2 lệnh đụng SL là mất account. Luôn quy đổi về % equity
+    trước khi tune.
+
+InpSlPips:
+  meaning_vi: |
+    Khoảng cách stop-loss tính bằng pip kể từ giá entry. EA luôn set SL ngay
+    khi mở lệnh (không trade no-SL — vi phạm AP-1).
+  unit: "pip (1 pip = 0.0001 cho EURUSD 5-digit / 0.01 cho USDJPY 3-digit, CPipNormalizer chuẩn hoá)"
+  formula_vi: |
+    sl_distance_in_price = InpSlPips × pip.Pip(symbol)
+    Buy:  SL = entry_ask - sl_distance_in_price
+    Sell: SL = entry_bid + sl_distance_in_price
+  depends_on: []
+  used_by: "CPipNormalizer.Pips() · CSafeTradeManager.Buy/Sell"
+  sensible_range_vi: |
+    20-50 cho intraday H1 (trend, mean-reversion).
+    5-15 cho M1 scalp.
+    50-100 cho swing H4 / D1.
+  gotchas_vi: |
+    SL quá nhỏ (< 5 pip) sẽ stop-out do spread/slippage thường xuyên — broker
+    có spread 2-3 pip thì SL 5 pip còn 2-3 pip thực tế. SL quá lớn (> 100)
+    làm tỷ lệ Risk:Reward < 1:1.5 → expectancy âm dài hạn.
+
+InpTpPips:
+  meaning_vi: |
+    Khoảng cách take-profit tính bằng pip kể từ giá entry. Set cùng lúc với SL
+    khi mở lệnh.
+  unit: "pip"
+  formula_vi: |
+    tp_distance_in_price = InpTpPips × pip.Pip(symbol)
+    Buy:  TP = entry_ask + tp_distance_in_price
+    Sell: TP = entry_bid - tp_distance_in_price
+  depends_on: []
+  used_by: "CPipNormalizer.Pips() · CSafeTradeManager.Buy/Sell"
+  sensible_range_vi: |
+    Tối thiểu RR 1:1.5 (InpTpPips ≥ 1.5 × InpSlPips) để cover spread + commission.
+    Default scaffold: InpSlPips=30, InpTpPips=60 → RR 1:2.
+  gotchas_vi: |
+    TP quá xa làm winrate giảm; TP quá gần kết hợp SL chặt làm RR < 1:1 →
+    chiến lược mean-reversion mới chấp nhận được. Cân nhắc tổng spread + commission
+    của broker khi đặt TP nhỏ.
+
+InpDailyLossPct:
+  meaning_vi: |
+    Ngưỡng drawdown trong ngày (% account equity) khi đạt thì CRiskGuard
+    ngăn EA mở lệnh mới (vẫn cho phép lệnh đang chạy đóng tự nhiên).
+  unit: "tỷ lệ thập phân (0.05 = 5%)"
+  formula_vi: |
+    Nếu account_equity_now ≤ account_equity_open_of_day × (1 - InpDailyLossPct)
+    → CanOpenNewPosition() trả về false đến cuối ngày broker.
+  depends_on: []
+  used_by: "CRiskGuard.Init() · CRiskGuard.CheckDailyDrawdown()"
+  sensible_range_vi: |
+    0.02-0.05 (2-5%) cho retail.
+    Prop-firm: theo rule challenge (FTMO 5%, FundedNext 4%, MyForexFunds 5%);
+    đặt LOW hơn ngưỡng challenge 0.5-1% để có buffer.
+  gotchas_vi: |
+    Reset tại 00:00 broker timezone (thường GMT+2/+3) — không phải UTC. Sai
+    timezone broker làm EA reset DD sai giờ.
+
+InpMaxPositions:
+  meaning_vi: |
+    Số lệnh tối đa được phép mở cùng lúc (đếm cả netting position lẫn hedge
+    side). CRiskGuard chặn lệnh mới khi đạt ngưỡng.
+  unit: "số nguyên (đếm position/order)"
+  formula_vi: ""
+  depends_on: []
+  used_by: "CRiskGuard.Init() · CRiskGuard.CanOpenNewPosition()"
+  sensible_range_vi: |
+    1-3 cho single-symbol EA.
+    5-10 cho portfolio-basket (kết hợp với correlation cap).
+    Prop-firm: cân nhắc rule "max trades open" của challenge.
+  gotchas_vi: |
+    Không tự động bao gồm pending order (chỉ count market position).
+    Nếu strategy có nhiều limit/stop pending, dùng `PositionsTotal()` chứ không
+    `OrdersTotal()`.
+
+InpEmaFastPeriod:
+  meaning_vi: |
+    Chu kỳ EMA nhanh dùng để phát hiện đảo chiều xu hướng (trend/netting
+    scaffold). EMA fast cross above slow → tín hiệu BUY; cross below → SELL.
+  unit: "bar (số nến trong period hiện tại của EA)"
+  formula_vi: |
+    handle_fast = iMA(_Symbol, _Period, InpEmaFastPeriod, 0, MODE_EMA, PRICE_CLOSE)
+  depends_on: [InpEmaSlowPeriod]
+  used_by: "iMA() · IsBuySignal/IsSellSignal trong OnTick"
+  sensible_range_vi: |
+    10-50 cho H1 trend.
+    5-21 cho M5/M15 (scalp).
+    Phổ biến: 50 (fast) × 200 (slow) — Golden/Death Cross truyền thống.
+  gotchas_vi: |
+    Khai báo bằng `sinput` (không phải `input`) → Strategy Tester optimiser
+    sẽ KHÔNG tự sweep biến này. Muốn optimize, đổi sang `input` thủ công.
+    Phải > 0 và < InpEmaSlowPeriod để cross signal có ý nghĩa.
+
+InpEmaSlowPeriod:
+  meaning_vi: |
+    Chu kỳ EMA chậm — đại diện cho xu hướng nền (trend baseline). Slope
+    của EMA chậm + cross của EMA nhanh = filter trend.
+  unit: "bar"
+  formula_vi: |
+    handle_slow = iMA(_Symbol, _Period, InpEmaSlowPeriod, 0, MODE_EMA, PRICE_CLOSE)
+  depends_on: []
+  used_by: "iMA() · IsBuySignal/IsSellSignal trong OnTick"
+  sensible_range_vi: |
+    100-300 cho H1.
+    50-100 cho M15.
+    200 là default truyền thống (số trading days/year).
+  gotchas_vi: |
+    Phải lớn hơn InpEmaFastPeriod. Nếu period quá lớn so với history bar
+    sẵn có (vd ratio > Bars(_Symbol, _Period)) thì handle trả INVALID,
+    OnInit fail.
+
+InpRsiPeriod:
+  meaning_vi: |
+    Chu kỳ RSI cho mean-reversion scaffold. RSI tính trên N bar gần nhất.
+  unit: "bar"
+  formula_vi: |
+    handle_rsi = iRSI(_Symbol, _Period, InpRsiPeriod, PRICE_CLOSE)
+  depends_on: []
+  used_by: "iRSI() · signal compute"
+  sensible_range_vi: |
+    14 (default truyền thống Wilder).
+    7-9 cho responsive scalp.
+    21-30 cho swing.
+  gotchas_vi: |
+    Period nhỏ → nhiều tín hiệu hơn nhưng nhiễu cao. Kết hợp với InpRsiOverbought/
+    InpRsiOversold để filter.
+
+InpRsiOverbought:
+  meaning_vi: |
+    Ngưỡng RSI để phát hiện vùng quá mua. RSI vượt qua → tín hiệu SELL
+    (mean-reversion: bán khi giá kéo quá xa lên).
+  unit: "RSI value (0-100)"
+  formula_vi: |
+    if (rsi[1] > InpRsiOverbought) → SELL signal
+  depends_on: [InpRsiPeriod]
+  used_by: "Mean-reversion signal compute"
+  sensible_range_vi: |
+    70-80 (default 70 Wilder).
+    Tăng (80-85) để filter tín hiệu yếu.
+  gotchas_vi: |
+    Trong strong trend, RSI có thể "sit" trên 70 hàng giờ — đừng vào SELL
+    mù trong uptrend mạnh. Filter thêm bằng EMA slope.
+
+InpRsiOversold:
+  meaning_vi: |
+    Ngưỡng RSI để phát hiện vùng quá bán. RSI rơi xuống dưới → tín hiệu BUY
+    (mean-reversion: mua khi giá kéo quá xa xuống).
+  unit: "RSI value (0-100)"
+  formula_vi: |
+    if (rsi[1] < InpRsiOversold) → BUY signal
+  depends_on: [InpRsiPeriod]
+  used_by: "Mean-reversion signal compute"
+  sensible_range_vi: |
+    20-30 (default 30 Wilder).
+    Giảm (15-20) để filter tín hiệu yếu.
+  gotchas_vi: |
+    Đối xứng với InpRsiOverbought. Trong downtrend mạnh, không vào BUY mù.
+
+InpAtrPeriod:
+  meaning_vi: |
+    Chu kỳ ATR (Average True Range) — đo volatility nến. Dùng để cấp pip SL
+    động hoặc filter low-volatility.
+  unit: "bar"
+  formula_vi: |
+    handle_atr = iATR(_Symbol, _Period, InpAtrPeriod)
+  depends_on: []
+  used_by: "iATR() · trailing stop ATR-adaptive · volatility filter"
+  sensible_range_vi: "14 (default Wilder) cho H1+. 7-10 cho M5."
+  gotchas_vi: |
+    ATR là absolute price difference, không phải pip — quy đổi qua
+    pip.PointsPerPip nếu so sánh với SL pips.
+
+InpAtrMinPoints:
+  meaning_vi: |
+    Ngưỡng ATR tối thiểu (tính bằng point) để cho phép vào lệnh. Filter low-vol
+    regime tránh chop.
+  unit: "point (1 pip = 10 point trên symbol 5-digit; pip.PointsPerPip)"
+  formula_vi: |
+    if (ATR(current) < InpAtrMinPoints * _Point) → skip signal
+  depends_on: [InpAtrPeriod]
+  used_by: "Volatility filter trong OnTick"
+  sensible_range_vi: |
+    20-50 point cho EURUSD H1.
+    Cao hơn 100+ cho XAUUSD hoặc cross volatile.
+  gotchas_vi: |
+    Point khác pip — 1 pip EURUSD = 10 point (broker 5-digit). Đừng nhầm.
+
+InpMaxSpreadPoints:
+  meaning_vi: |
+    Spread tối đa (point) tại lúc mở lệnh. Nếu spread thực > ngưỡng → skip.
+    Tránh vào lệnh trong giờ thanh khoản kém.
+  unit: "point"
+  formula_vi: |
+    spread_now = (Ask - Bid) / _Point
+    if (spread_now > InpMaxSpreadPoints) → skip signal
+  depends_on: []
+  used_by: "CSpreadGuard.Allow() trước mỗi OrderSend"
+  sensible_range_vi: |
+    EURUSD H1: 15-30 point (1.5-3 pip).
+    XAUUSD: 100-300.
+    Crypto / exotic: cao hơn nhiều (500+).
+  gotchas_vi: |
+    Khi rollover, swap session, spread bùng cao → spread guard sẽ skip.
+    Đó là behavior mong muốn; KHÔNG nâng ngưỡng để force trade qua giờ rollover.
+
+InpLookbackBars:
+  meaning_vi: |
+    Số bar nhìn lại để xác định mức high/low (breakout / range scaffold).
+  unit: "bar"
+  formula_vi: |
+    highest = iHighest(_Symbol, _Period, MODE_HIGH, InpLookbackBars, 1)
+    lowest  = iLowest (_Symbol, _Period, MODE_LOW,  InpLookbackBars, 1)
+  depends_on: []
+  used_by: "Breakout / range signal"
+  sensible_range_vi: "20 (default phổ biến). 50-100 cho swing breakout."
+  gotchas_vi: |
+    Lookback quá nhỏ → false breakout liên tục. Quá lớn → vào trễ.
+
+InpPollIntervalMs:
+  meaning_vi: |
+    Chu kỳ poll của service-llm-bridge / async service. Service "wake up"
+    mỗi InpPollIntervalMs ms để gọi LLM / check decision queue.
+  unit: "millisecond"
+  formula_vi: ""
+  depends_on: []
+  used_by: "Service main loop (Sleep + WebRequest)"
+  sensible_range_vi: |
+    500-2000 ms cho service tần suất medium.
+    100-300 ms cho hft-async cần phản ứng nhanh.
+  gotchas_vi: |
+    Poll quá nhanh (< 100 ms) sẽ rate-limit broker hoặc LLM provider. Tốn
+    CPU không cần thiết. Vi phạm AP-17 nếu WebRequest đặt trong OnTick.
+
+InpLlmTimeoutMs:
+  meaning_vi: |
+    Timeout cho WebRequest gọi LLM API. Quá thời gian này thì decision skip.
+  unit: "millisecond"
+  formula_vi: ""
+  depends_on: []
+  used_by: "service-llm-bridge · WebRequest()"
+  sensible_range_vi: |
+    3000-10000 ms cho cloud LLM (GPT-4, Claude).
+    1000-3000 ms cho ollama local.
+  gotchas_vi: |
+    Timeout quá ngắn → bỏ lỡ tín hiệu khi mạng chậm. Quá dài → block service
+    loop, các tick sau bị skip.
+
+InpMaxPendingAsync:
+  meaning_vi: |
+    Backpressure cho hft-async — số request OrderSendAsync chưa reconcile
+    tối đa được phép. Khi đạt ngưỡng, EA dừng gửi async mới.
+  unit: "số nguyên (đếm)"
+  formula_vi: ""
+  depends_on: []
+  used_by: "Async order book trong hft-async scaffold"
+  sensible_range_vi: |
+    1-3 cho symbol đơn lẻ.
+    5-10 cho portfolio nhiều symbol.
+  gotchas_vi: |
+    Quá thấp → EA chặn mình ở lúc broker xử lý lâu (1 OrderSendAsync chưa
+    về thì không gửi tiếp). Quá cao → mất kiểm soát khi broker mất kết nối.
+
+InpMaxRetries:
+  meaning_vi: |
+    Số lần retry khi OrderSend trả requote / reject. Sau N lần fail liên tiếp,
+    EA bỏ tín hiệu hiện tại.
+  unit: "số nguyên (đếm)"
+  formula_vi: ""
+  depends_on: []
+  used_by: "CSafeTradeManager retry loop"
+  sensible_range_vi: "1-3. Cao hơn → trượt giá ngày càng xa entry mong muốn."
+  gotchas_vi: |
+    Retry là khi broker từ chối do giá thay đổi. Đặt cao quá làm EA vào lệnh
+    ở giá tệ hơn tín hiệu gốc. 2 là sweet spot phổ biến.
+
+InpServiceTag:
+  meaning_vi: |
+    Tag để Service.Activate() đăng ký service trong system, phân biệt nhiều
+    service cùng chạy trên 1 terminal.
+  unit: "string"
+  formula_vi: ""
+  depends_on: []
+  used_by: "Service scaffold · ServiceActivate(InpServiceTag)"
+  sensible_range_vi: "Tên unique mô tả ngắn (vd: 'LLMBridge-EURUSD')."
+  gotchas_vi: |
+    Trùng tag giữa 2 service trên cùng terminal → service sau fail Activate.

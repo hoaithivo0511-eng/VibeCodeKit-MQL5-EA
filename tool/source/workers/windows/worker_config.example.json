@@ -1,0 +1,10 @@
+{
+  "worker_id": "win-mt5-worker-01",
+  "listen_url": "http://0.0.0.0:8787",
+  "token": "CHANGE_ME",
+  "metaeditor64": "C:\\Program Files\\MetaTrader 5\\metaeditor64.exe",
+  "terminal64": "C:\\Program Files\\MetaTrader 5\\terminal64.exe",
+  "workspace": "C:\\vibecodekit-worker\\jobs",
+  "timeout_compile_sec": 300,
+  "timeout_backtest_sec": 7200
+}

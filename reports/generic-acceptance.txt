@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "tool_version": "3.3.0rc4",
+  "execution_surface": "clean-installed-wheel",
+  "passed": 4,
+  "total": 4,
+  "ccbsn_specific_production_literals_found": false,
+  "cases": [
+    {
+      "name": "NorthTrend",
+      "kind": "prompt-archetype",
+      "ir_sha256": "43b0cf5c9748c8637d5004b489401ed752ff864579204a3b7899b4bdb5f79dff",
+      "planned_capabilities": 5,
+      "source_files": 12,
+      "static_verified": true,
+      "forbidden_literals_found": []
+    },
+    {
+      "name": "RangePulse",
+      "kind": "prompt-archetype",
+      "ir_sha256": "1a01be363f859c1526944a2dfbd4e64adfd8e1f7b7a280a48b512f5748b21a3c",
+      "planned_capabilities": 5,
+      "source_files": 12,
+      "static_verified": true,
+      "forbidden_literals_found": []
+    },
+    {
+      "name": "BandReturn",
+      "kind": "prompt-archetype",
+      "ir_sha256": "e2c9b9d14c80940a9ccd7af112bc1748578385fdd2fc39a6fb3dfeb7c4389f2a",
+      "planned_capabilities": 5,
+      "source_files": 12,
+      "static_verified": true,
+      "forbidden_literals_found": []
+    },
+    {
+      "name": "OrionRecovery",
+      "kind": "recovery-hedging-custom-protocol",
+      "ir_sha256": "3fc409373ebdfc2af01f98d86c67033d7344cef1961f47e6fa1e677be8d24ba0",
+      "planned_capabilities": 8,
+      "source_files": 12,
+      "static_verified": true,
+      "custom_command_prices": [
+        32123.25,
+        32124.75
+      ],
+      "forbidden_literals_found": []
+    }
+  ]
+}

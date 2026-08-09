@@ -1,0 +1,21 @@
+# Step 6 / 8 — BUILD
+
+Emit code from a scaffold plus targeted edits per the TIP.
+
+## Inputs
+- `step-5-tip.md`
+
+## Activities
+- [ ] `mql5-build <preset> --name ... --symbol ... --tf ...` (or extend existing)
+- [ ] Apply TIP module-by-module; commit small steps
+- [ ] Auto-include `CPipNormalizer.mqh` + `CMfeMaeLogger.mqh` if absent
+- [ ] Run `mql5-pip-normalize` to mop up any hard-coded pip math
+
+## Outputs
+- `step-6-build.md` — list of commits with their TIP item ids
+
+## Exit criteria
+- Build compiles (`mql5-compile` returns 0 errors)
+- All TIP items either implemented or explicitly deferred (with reason)
+
+> Sentinel: `touch .rri-state/build.done`.

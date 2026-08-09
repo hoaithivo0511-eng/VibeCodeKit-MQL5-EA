@@ -1,0 +1,21 @@
+# Step 2 / 8 — RRI (Requirements Matrix)
+
+Fill the Requirements / Risk / Intent matrix per chosen audit mode.
+
+## Inputs
+- `step-1-scan.md`
+- Audit mode: `{{mode}}` (personal / team / enterprise)
+
+## Activities
+- [ ] Run `python -m vibecodekit_mql5.rri.personas --mode <mode>`
+- [ ] Answer every question yielded by `iter_questions(mode)`
+- [ ] Tag any answer that introduces a constraint downstream (e.g. fitness goal)
+
+## Outputs
+- `step-2-rri.md` — answers per persona, with explicit constraints called out
+
+## Exit criteria
+- Question count equals the expected total (PERSONAL=30 / TEAM=72 / ENTERPRISE=150)
+- No constraint left as TODO
+
+> Sentinel: when this step is complete, `touch .rri-state/rri.done`.

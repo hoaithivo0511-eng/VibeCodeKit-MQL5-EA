@@ -1,0 +1,70 @@
+{
+  "ir_sha256": "43b0cf5c9748c8637d5004b489401ed752ff864579204a3b7899b4bdb5f79dff",
+  "account_model": "netting",
+  "ok": true,
+  "features": [
+    {
+      "path": "risk.max_lot",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::NormalizeVolume",
+      "tests": [
+        "model:test_max_lot"
+      ],
+      "requirement_ids": [
+        "REQ-0003",
+        "REQ-0013"
+      ]
+    },
+    {
+      "path": "risk.max_positions",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::PositionGate",
+      "tests": [
+        "model:test_position_cap"
+      ],
+      "requirement_ids": [
+        "REQ-0004"
+      ]
+    },
+    {
+      "path": "risk.max_spread",
+      "maturity": "stable",
+      "generator": "risk_engine",
+      "implementation": "CRiskEngine::SpreadGate",
+      "tests": [
+        "model:test_spread_gate"
+      ],
+      "requirement_ids": [
+        "REQ-0002"
+      ]
+    },
+    {
+      "path": "strategy.entry.signals.ema_cross",
+      "maturity": "stable",
+      "generator": "entry_signal",
+      "implementation": "CEntryEngine::EMACross",
+      "tests": [
+        "model:test_signal_ema_cross"
+      ],
+      "requirement_ids": [
+        "REQ-0005"
+      ]
+    },
+    {
+      "path": "strategy.entry.trend_following",
+      "maturity": "stable",
+      "generator": "entry_trend",
+      "implementation": "CEntryEngine::TrendSignal",
+      "tests": [
+        "model:test_trend_signal"
+      ],
+      "requirement_ids": [
+        "REQ-0001"
+      ]
+    }
+  ],
+  "blockers": [],
+  "warnings": []
+}

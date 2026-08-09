@@ -1,0 +1,131 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
+# RRI persona — strategy-architect (quant / strategy author).
+persona: strategy-architect
+description: Quant or strategy author owning signal & expectancy design.
+questions:
+  - id: strat-01
+    text: "Is the trading hypothesis stated in one sentence and falsifiable?"
+    priority: critical
+    applicable_steps: [scan, rri, vision]
+    applicable_modes: [personal, team, enterprise]
+  - id: strat-02
+    text: "Is sample size (trades) sufficient for the chosen expectancy claim?"
+    priority: critical
+    applicable_steps: [rri, verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: strat-03
+    text: "Does walk-forward IS/OOS correlation stay above 0.5?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: strat-04
+    text: "Does Monte-Carlo 95th-percentile DD respect the 1.5× tolerance?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: strat-05
+    text: "Is OOS/IS Sharpe ratio above the overfit threshold (≥ 0.7)?"
+    priority: critical
+    applicable_steps: [verify]
+    applicable_modes: [personal, team, enterprise]
+  - id: strat-06
+    text: "Are entry and exit rules deterministic from inputs alone?"
+    priority: high
+    applicable_steps: [build, verify]
+    applicable_modes: [team, enterprise]
+  - id: strat-07
+    text: "Has parameter sensitivity been characterised (cliff vs plateau)?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: strat-08
+    text: "Is the optimization budget (passes) and selection rule documented?"
+    priority: high
+    applicable_steps: [rri, blueprint]
+    applicable_modes: [team, enterprise]
+  - id: strat-09
+    text: "Is data snooping bias controlled (held-out OOS window untouched)?"
+    priority: high
+    applicable_steps: [verify]
+    applicable_modes: [team, enterprise]
+  - id: strat-10
+    text: "Is the regime (trend/range/news) the strategy targets explicit?"
+    priority: high
+    applicable_steps: [scan, rri, vision]
+    applicable_modes: [team, enterprise]
+  - id: strat-11
+    text: "Does the strategy degrade gracefully outside its target regime?"
+    priority: high
+    applicable_steps: [verify, refine]
+    applicable_modes: [team, enterprise]
+  - id: strat-12
+    text: "Is the chosen fitness metric appropriate (Sharpe vs profit-DD)?"
+    priority: high
+    applicable_steps: [rri, blueprint]
+    applicable_modes: [team, enterprise]
+  - id: strat-13
+    text: "Has feature-engineering / lookback been peer-reviewed?"
+    priority: standard
+    applicable_steps: [scan, rri, refine]
+    applicable_modes: [enterprise]
+  - id: strat-14
+    text: "Is there a documented edge thesis (why this works, why now)?"
+    priority: standard
+    applicable_steps: [vision, refine]
+    applicable_modes: [enterprise]
+  - id: strat-15
+    text: "Are dependencies on broker-specific quirks minimised?"
+    priority: standard
+    applicable_steps: [build, verify]
+    applicable_modes: [enterprise]
+  - id: strat-16
+    text: "Does the EA distinguish profit from luck via robustness metrics?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: strat-17
+    text: "Have correlated-signal redundancies been reduced?"
+    priority: standard
+    applicable_steps: [build, refine]
+    applicable_modes: [enterprise]
+  - id: strat-18
+    text: "Is the cost model (spread + commission + swap) realistic?"
+    priority: standard
+    applicable_steps: [rri, verify]
+    applicable_modes: [enterprise]
+  - id: strat-19
+    text: "Does live-canary plan compare to backtest within tolerance?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]
+  - id: strat-20
+    text: "Is the rolling-window re-optimisation cadence documented?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]
+  - id: strat-21
+    text: "Are exits (take-profit vs trail vs time-stop) jointly evaluated?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: strat-22
+    text: "Have failure-mode strategies (kill-switch) been signal-tested?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: strat-23
+    text: "Is the published expectancy net of all known costs?"
+    priority: standard
+    applicable_steps: [vision, verify]
+    applicable_modes: [enterprise]
+  - id: strat-24
+    text: "Has fitness vs out-of-sample been visualised for selection bias?"
+    priority: standard
+    applicable_steps: [verify]
+    applicable_modes: [enterprise]
+  - id: strat-25
+    text: "Are scientific notes (assumptions, observations) checked-in?"
+    priority: standard
+    applicable_steps: [refine]
+    applicable_modes: [enterprise]

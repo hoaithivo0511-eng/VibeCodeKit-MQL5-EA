@@ -1,0 +1,927 @@
+{
+  "schema_version": "1.0",
+  "tool_version": "3.3.0rc4",
+  "files": [
+    {
+      "path": "FIX-TRACEABILITY.csv",
+      "size": 4030,
+      "sha256": "b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e"
+    },
+    {
+      "path": "FIX-UPDATE-REPORT-VIBECODEKIT-MQL5-v3.3.0rc4-vi.md",
+      "size": 11943,
+      "sha256": "45726dcdfd32874e8d5b1e2e2ae6b5171f6c2c974f70b15a6255c5779b6423d0"
+    },
+    {
+      "path": "PHASE-TEST-LEDGER.csv",
+      "size": 1015,
+      "sha256": "eb5969b3df591119b1bb8b43adf437e2208262e4496a882f5f8cc7051a935ab3"
+    },
+    {
+      "path": "UPDATE-SUMMARY.json",
+      "size": 1670,
+      "sha256": "57a8f830d88e08319b63cfca0a8b6836db4ff999ad26520563c4095dbb4724ad"
+    },
+    {
+      "path": "demo/CCBSN-build-plan.json",
+      "size": 20078,
+      "sha256": "39c69603d240c9cc2ae692866964768ab2753e9fa47e71a737fa29ef5b3c0409"
+    },
+    {
+      "path": "demo/CCBSN-configured-ir.json",
+      "size": 175941,
+      "sha256": "df316ad8e50647d692970c3e14d0d8a801b8bb2958936afe79dc9e59c2d63128"
+    },
+    {
+      "path": "demo/CCBSN-extracted-ir.json",
+      "size": 80505,
+      "sha256": "ab9553f82c5588f4150204913100a4d69b19e8faeab2446ef30dd845585560b4"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/AI-BUILD-CONTRACT.json",
+      "size": 8955,
+      "sha256": "91ddc9c06f549d25e128035b1b0ea7beb6556780e7eac6826af3f770370e45c2"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/AI-BUILD-CONTRACT.md",
+      "size": 2548,
+      "sha256": "410c36d9f27d557dedd2484a51b4a70425c8748f6084fb50520e16f515cd00ba"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/BROKER-CONTRACT.yaml",
+      "size": 204,
+      "sha256": "fd167e1ff365364d05d453dc1d806e2e5553420cfbc80a50fc038a9b976816fb"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/BUILD-PLAN.json",
+      "size": 20078,
+      "sha256": "39c69603d240c9cc2ae692866964768ab2753e9fa47e71a737fa29ef5b3c0409"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/EA-IR.json",
+      "size": 175941,
+      "sha256": "df316ad8e50647d692970c3e14d0d8a801b8bb2958936afe79dc9e59c2d63128"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/EA-SPEC.yaml",
+      "size": 1270,
+      "sha256": "148cd3e3b8597f98c2fc0fff8ff76a95eb0a71bf6871bf7538c5a9ef1aae1e25"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "5968d41213da6867e8e1cf5fbb334ffc192c6dbeda1a5839038e50f57d6993cb"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Experts/CCBSN_GoldenFixture/CCBSN_GoldenFixture.mq5",
+      "size": 36959,
+      "sha256": "6cef6ecbb24c51de01cd93e1e3561bf947bf6dd59eb8042f446ec7079b185db5"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Config.mqh",
+      "size": 14766,
+      "sha256": "1a19748229122273c4f0d0305b763ef1a3666dec3cefd3f3ad0f47f5d69ef704"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/Include/CCBSN_GoldenFixture/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/README.md",
+      "size": 248,
+      "sha256": "102c6082cdaf5bba8ed669df538aa550e7db2e4456a7963001581b66e4e66a75"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "97218dea46aea15a866ff58a59d0776d9cfb66626f9585ec7ef476b9d201fbc2"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "90e975cf6be8dd6a623f951baf5c12c766416de4e7df275d5e2333b6a3ef08be"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/docs/docs-context.json",
+      "size": 133,
+      "sha256": "51b6ddbb258f31469a91208b162657613caf213514e60b551dc6e1c493231392"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/evidence/attestation/hash-chain.json",
+      "size": 1405,
+      "sha256": "62d491173db4074c5c9e4bfd302ee8cba793b64427a1a5055213c439f3c690ff"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/evidence/ir-artifacts.json",
+      "size": 4851,
+      "sha256": "32030233cfe7bb3fce5771c2ec02fdbbeeacaf08f32dc8353e2322fb9bd69d1d"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/evidence/manifest.json",
+      "size": 1520,
+      "sha256": "46f9425681e64a8cdb9e3edd013a36e0a61f51de118a51f8cac1d563394ef1d4"
+    },
+    {
+      "path": "demo/CCBSN_GoldenFixture/requirements-matrix.csv",
+      "size": 87231,
+      "sha256": "0cccaa1c5f06b1fd14d370d24985a1589092ddbc38ce035f140f4e869137538f"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/AI-BUILD-CONTRACT.json",
+      "size": 8946,
+      "sha256": "4674a2e68640de7c10a005dd131b26fb704940a451005f86487224d0e7be39c4"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/AI-BUILD-CONTRACT.md",
+      "size": 2530,
+      "sha256": "c4d07026a156a0cc5bc4fa823d4c4ceb780a95f6a8bc532c1d29283c34a861cb"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/BROKER-CONTRACT.yaml",
+      "size": 203,
+      "sha256": "54ea21a04314d3d72f1a82faed2e732de17de09931255602e71eb252e42d64ce"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/BUILD-PLAN.json",
+      "size": 1641,
+      "sha256": "b0e1f17ff4664fd4afa565fcded524255dabbc112cbe4f723ba6bc25c164a3c9"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/EA-IR.json",
+      "size": 6111,
+      "sha256": "791625951a21c5b9d2c50e37cdadb5edadf33d6137e23fe4957b73b9dcdbc9b1"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/EA-SPEC.yaml",
+      "size": 1256,
+      "sha256": "ddade209afacaaf5c0c538f441d1cc132f00e4745f7bbaeda730d75e60f79d82"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "5c57a4bf6e89601abd2e63762bc903448aea27ad7f75200ecf19dd563415d543"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Experts/BandReturn/BandReturn.mq5",
+      "size": 35786,
+      "sha256": "d5fbf37fbe4cf718a3373054bcdf3b93c1e7334044a8d1398bf050356125e499"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Config.mqh",
+      "size": 10923,
+      "sha256": "0f65273a400a77cd58154df44cf51070b267a605042eb377b7fc06dd59b4dac5"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/Include/BandReturn/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/README.md",
+      "size": 239,
+      "sha256": "4a47d7e027c55f7739b401cd8318a42032387f7f11e7f136969d32e512ff7e3f"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "6084ef45431bba42801426915f363be5cbfb2f95dc90534ae970d215e60a5a61"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "64a247aed42d0e6dea9676a52e6d60992dc4fcb203dafede789920490c213579"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/docs/docs-context.json",
+      "size": 133,
+      "sha256": "f5bec08096b814021732c0c3001b0d67ab5de14024d6005fc6c8d65b9f8d295e"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/evidence/ir-artifacts.json",
+      "size": 4730,
+      "sha256": "649b2e584b5beaf74fffe66fe0f91fd3bca35f4a5d39a40898936268cee600f8"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/evidence/manifest.json",
+      "size": 1520,
+      "sha256": "624ada175019c3ac4327548a3bbfd765e2d2b2e503fa6862f7c92942d564e2a1"
+    },
+    {
+      "path": "demo/generic-acceptance/BandReturn/requirements-matrix.csv",
+      "size": 2275,
+      "sha256": "2cda19713401b98de440ad4943e26efc8e708f45376e2c888c1510cf0ad7078a"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/AI-BUILD-CONTRACT.json",
+      "size": 8946,
+      "sha256": "72736af63527245e4a1625988520c21ee9c5bdf8479c995d44de2d2a0aa83ac2"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/AI-BUILD-CONTRACT.md",
+      "size": 2530,
+      "sha256": "69fc0e2f2e4ee40470bfb6e132878dd7b3acb1849ef7729b84a76360198e8a14"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/BROKER-CONTRACT.yaml",
+      "size": 203,
+      "sha256": "0c14144422374063272b8e9268582c7bc7cb08823b9e17975d7e7690be6cd147"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/BUILD-PLAN.json",
+      "size": 1610,
+      "sha256": "652b92c19706ca2d45c59cb848d461717cd24c52c5b6986cde2294219eb9295c"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/EA-IR.json",
+      "size": 6333,
+      "sha256": "67e8f2542c25cd4047f84bc3c0bf08af70542faac505f67766996ff9be21d689"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/EA-SPEC.yaml",
+      "size": 1255,
+      "sha256": "58db3d623c5dc0f1f45a51eb7bed29eaeb957919d2a993766c9d65786934bb26"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "9110a7d9deba5b92058fe887338e165fd2d65c574aea4f997ae91692dad14613"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Experts/NorthTrend/NorthTrend.mq5",
+      "size": 35786,
+      "sha256": "27666fa3613ad01c646585b0a94bbc868acabc011bb4accfdd797af21356110e"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Config.mqh",
+      "size": 10914,
+      "sha256": "206f701c1caf3f03301f8f3b2c2a1215507a29729d4bf627c5a3af79c43d7aef"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/Include/NorthTrend/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/README.md",
+      "size": 239,
+      "sha256": "79da2044552b655a137822546db1ae01a930cf2b82d1d958fca82bb68c1ccd28"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "907dc0562fc74cbe2dfef6997b917b5ed4c3a7e88344ba823d85260a6961f628"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "0a8ea93e94ef93ecab109f2a2f4a193bb6ff6e0753640d6fd95943ad56e3ecba"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/docs/docs-context.json",
+      "size": 133,
+      "sha256": "3ba012d328852efab31289a57b83f8afd3e3c74fed82cee3b4ea7b7630efcae5"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/evidence/ir-artifacts.json",
+      "size": 4730,
+      "sha256": "f78ddca79cd29e6f61d9c775a6768dfeecfe6268891d956294034960f2e9bcda"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/evidence/manifest.json",
+      "size": 1520,
+      "sha256": "cd0c247d296385d7cd1de3371f1610aa9c6d718641df93d51a875e28a8d869d8"
+    },
+    {
+      "path": "demo/generic-acceptance/NorthTrend/requirements-matrix.csv",
+      "size": 2386,
+      "sha256": "f958940d176efe3412f1b2147ae4d6c8d557af0e1a514e26e284e7b81fc7aa4e"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/AI-BUILD-CONTRACT.json",
+      "size": 8950,
+      "sha256": "901d8fc3039a830301676c89d88501c0f8fb869d8adff00d924c62b045c2b12e"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/AI-BUILD-CONTRACT.md",
+      "size": 2537,
+      "sha256": "f42ced4e615a07133b6e76190f0925364232c388a227d4f4c3c8f921697f2c68"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/BROKER-CONTRACT.yaml",
+      "size": 203,
+      "sha256": "ed6af2dca0ae3c5e3f6e164919d22c495744268551799748d9da1eb1314dfe45"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/BUILD-PLAN.json",
+      "size": 2295,
+      "sha256": "1b600a84140b2c40adbe912b308cc6297e72d23b40133d994c7048e87fd09113"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/EA-IR.json",
+      "size": 14532,
+      "sha256": "328639275da9e1879bc46c4764578370db9420f8a95fc6c5e355fb029663005d"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/EA-SPEC.yaml",
+      "size": 1259,
+      "sha256": "2aa5c950751f4493a9bf62466c5304a35477c16103e27210130e8918c8ef3041"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "e3c8ad204da199b03dee64821fb986d77eb55d4d1a8c9a2f648288d0b07b7ba6"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Experts/OrionRecovery/OrionRecovery.mq5",
+      "size": 36465,
+      "sha256": "e01538014d1eab4410a13542493ec12b0439aa46af6944f73f25339d26a4ff6a"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Config.mqh",
+      "size": 11308,
+      "sha256": "593a61beb6346d036890fca10ee16e5febb7e36b8fafdbb47bd422a4258ba3d0"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/Include/OrionRecovery/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/README.md",
+      "size": 242,
+      "sha256": "917c28bac44c54ecdc8a0f2eb5c52d66b790908dd369827a1f517cfb235bea2b"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "2054d8d7c15815da6fbaa2cb73071b5b9634bb60f89cf435acd0e92c2a44baeb"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "50fb0c3f1d625bd0ba8efbd1ffda34d3c4626a3754f46b980f25ba713b71959d"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/docs/docs-context.json",
+      "size": 133,
+      "sha256": "3d274674c5434dbf6f13cf35a7de70d6179f184858bf322d9bb2691670dc8e96"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/evidence/ir-artifacts.json",
+      "size": 4770,
+      "sha256": "90f9934803bf71e69381a8695eb2082007bfffba5df0f7b50d7597b29c17519b"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/evidence/manifest.json",
+      "size": 1520,
+      "sha256": "24727ebcf5124e6f85d1ca9d61a4f4d68e6f612f960a5ebd14d6242fb1234ef1"
+    },
+    {
+      "path": "demo/generic-acceptance/OrionRecovery/requirements-matrix.csv",
+      "size": 4963,
+      "sha256": "96c50527dbb4384277d0212c2c276a029b8c79a46411b8c8a12bcee3c5bc2f1a"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/ACCEPTANCE-SCOPE.md",
+      "size": 290,
+      "sha256": "300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/AGENTS.md",
+      "size": 148,
+      "sha256": "936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/AI-BUILD-CONTRACT.json",
+      "size": 8946,
+      "sha256": "6b7ed9fead8eedb96d318d6dc239b620e07d2859e585cb6b4cee89c227fd431c"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/AI-BUILD-CONTRACT.md",
+      "size": 2530,
+      "sha256": "87b6bf09c785a4488e1d313d10c175b410fe6c9f22be42b9366c41159651fbed"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/BROKER-CONTRACT.yaml",
+      "size": 203,
+      "sha256": "2cd2d94e68346c7c0264e912791d4298f21b30a1b5c6a67e8c2f4f61917e69b1"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/BUILD-PLAN.json",
+      "size": 1605,
+      "sha256": "8f86f422459706566479380969b8f95caa8f1e9d67fa38f0ffa27a76386e9022"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/EA-IR.json",
+      "size": 6067,
+      "sha256": "e987cd42956cc0f2bb72d02d1274306598f40f412500c7d789afa0c2241a6e15"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/EA-SPEC.yaml",
+      "size": 1256,
+      "sha256": "4f8ee9ae1bc8e889c9221212f97e3bdfbc75a74c987bae6cb03d8661578932a3"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/EVIDENCE-CONTRACT.yaml",
+      "size": 232,
+      "sha256": "7ceca0adaa8c3ebcad6fc5b8949c17e9739615c6830c19c809c6c193d8e702d1"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Experts/RangePulse/RangePulse.mq5",
+      "size": 35786,
+      "sha256": "c0d3f56239e3433ac805e0875c7008def5f08f82ee9f779c003e29ccde76035a"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Config.mqh",
+      "size": 10911,
+      "sha256": "57c0ec1770d185b832b6af17578baf3d3566131af9b4470f033410e6591b9bcb"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Core/AsyncTradeExecutor.mqh",
+      "size": 4413,
+      "sha256": "bbcac20968105b23f30e69d0b24eb8a917d47806084ffe226c353c4be02c49ca"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Core/PositionBook.mqh",
+      "size": 1754,
+      "sha256": "905d03f00d7a15c7d68efe3eb63b89d012dbfba5f9fefd5d151ad2c5f2ff854b"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Core/TradeEventReducer.mqh",
+      "size": 2337,
+      "sha256": "b27d080980b6068549ef602fc268e9350921d1b22531924c0dc6827c4f33211c"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Core/TradeIntentLedger.mqh",
+      "size": 4301,
+      "sha256": "84368b76049c343002a2404f2aff9375452e52e3d0d84fbb453f5f29d5630a93"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Exit/BasketCloseEngine.mqh",
+      "size": 455,
+      "sha256": "4374e17fea572ca39b356472a2eebb2f957f97cca8421fbe9d485800e7d5b7d6"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Risk/GridRiskGuard.mqh",
+      "size": 1117,
+      "sha256": "e3b6df6312cf37299eaac3c416b8ba9af84c8f7eee27d82e37f43b3178de5d31"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Signal/EntryEngine.mqh",
+      "size": 9841,
+      "sha256": "75479baf42daf938267add054f36d18ec6b42b37c5bb889b43a6cf0e06f0ac7c"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/State/PersistentStateStore.mqh",
+      "size": 3903,
+      "sha256": "2ad8394a02c80398cc11ba89e2d1cc8ce81e49fa617d05ada27b47aef4318d4a"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Telemetry/MfeMaeLogger.mqh",
+      "size": 1474,
+      "sha256": "4d63b66576872751ac7041d50c325bf1198ca3a7e4d0dc97cd0c678eaa6bdacc"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/Include/RangePulse/Telemetry/StructuredLogger.mqh",
+      "size": 548,
+      "sha256": "af0c535b6a90fb5eece260d8bd68d8fb65f5c67939375bc8864401d3871082b8"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/README.md",
+      "size": 239,
+      "sha256": "2b9645219668fe457c72031eaadb42e02f6e0a8ab2f035f8cff13a1a54696b59"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/RELEASE-TRUST.yaml",
+      "size": 177,
+      "sha256": "6887f66efb9c6464e9f7109d9513fe0accb2f9f0650d61bdc563e6be27e5713b"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/RISK-CONTRACT.yaml",
+      "size": 248,
+      "sha256": "2475543e41c37544ed6b2af088a5b9b5ddfc24e78d0e04bd5760aa9b13e2d7a4"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/docs/docs-context.json",
+      "size": 133,
+      "sha256": "a6e85c4e4506fcdb219594b08135c0b5b686a444ffb22c8802a2b49ce650bb7e"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/docs/docs-prompt.md",
+      "size": 150,
+      "sha256": "53c92f60e50b30bcd2321afd9a20b3d6159fdb630330e845316c5fe200aa1c03"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/docs/guide.md",
+      "size": 244,
+      "sha256": "c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/evidence/ir-artifacts.json",
+      "size": 4730,
+      "sha256": "b23eeda2f1411fdc65100b72fe55d57785057ddde49b26eabe7c7f6d488c6897"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/evidence/manifest.json",
+      "size": 1520,
+      "sha256": "d92568a0a7876f39a07fc492de66e98cf29aa8a2ac941bbf88fabc7321b9c483"
+    },
+    {
+      "path": "demo/generic-acceptance/RangePulse/requirements-matrix.csv",
+      "size": 2225,
+      "sha256": "c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd"
+    },
+    {
+      "path": "native/NATIVE-VALIDATION-HANDOFF.md",
+      "size": 1449,
+      "sha256": "991e7c9038ea5d7587a4eed257517197301d8009f214687d2ef99e36ab38f440"
+    },
+    {
+      "path": "native/workers-windows/run_backtest.ps1",
+      "size": 1138,
+      "sha256": "f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6"
+    },
+    {
+      "path": "native/workers-windows/run_compile.ps1",
+      "size": 1122,
+      "sha256": "4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7"
+    },
+    {
+      "path": "native/workers-windows/worker.ps1",
+      "size": 1051,
+      "sha256": "d33bbb3b44e7fa8531e2e4995dd0893f9097d0f880e970630c6c9c018f5047e3"
+    },
+    {
+      "path": "reports/CCBSN-build-report.json",
+      "size": 23822,
+      "sha256": "1563e2c920bdb10df758009420aa5c5b07d894cd5713b002bcbf340e7352e79c"
+    },
+    {
+      "path": "reports/CCBSN-wheel-rebuild.json",
+      "size": 379,
+      "sha256": "143f218807f5150965fb0f71c81339138a2791837db3cf7d6db6f3d29a8956db"
+    },
+    {
+      "path": "reports/CCBSN-wheel-rebuild.txt",
+      "size": 379,
+      "sha256": "143f218807f5150965fb0f71c81339138a2791837db3cf7d6db6f3d29a8956db"
+    },
+    {
+      "path": "reports/GENERIC-ACCEPTANCE.json",
+      "size": 1459,
+      "sha256": "2782ff2cf67f21bfb9f83ef2da93239ecf450da393d3b2cceb1c993c01cb516e"
+    },
+    {
+      "path": "reports/architecture.json",
+      "size": 1060,
+      "sha256": "3fcf55ff53934679ef99e51d404ad6c48f8e55458bf57ddd3938c483bc5f1706"
+    },
+    {
+      "path": "reports/check-all.json",
+      "size": 2273,
+      "sha256": "7429cba8c9aa9175c3c7f3a2b32f1678372dd2ee492059a28f062cd851b8dd3c"
+    },
+    {
+      "path": "reports/check-all.md",
+      "size": 1198,
+      "sha256": "835952481c7d3d227ef2cc908958cc99111fa8b28b36e1bb519df4ee47a25f67"
+    },
+    {
+      "path": "reports/contract.json",
+      "size": 720,
+      "sha256": "a3da0dc43334d4296ca560dda9d4e2ca031aacab4662f4b9479f37c92dcf3627"
+    },
+    {
+      "path": "reports/coverage.json",
+      "size": 986075,
+      "sha256": "b09679ff92a886772fab10c8e84b501b3b820cbb467b29d5978f2c5dd716c406"
+    },
+    {
+      "path": "reports/deep-review/deep-review.json",
+      "size": 37749,
+      "sha256": "c1c1161570ac344f377793ad35480857f09fc119adb401bae181bd0797f1b612"
+    },
+    {
+      "path": "reports/deep-review/deep-review.md",
+      "size": 6096,
+      "sha256": "427df0e981a08ec0983949a5d892d3ab42801eaf237b3a240f083ad658adcf0d"
+    },
+    {
+      "path": "reports/generic-acceptance.txt",
+      "size": 1459,
+      "sha256": "2782ff2cf67f21bfb9f83ef2da93239ecf450da393d3b2cceb1c993c01cb516e"
+    },
+    {
+      "path": "reports/ir-verify.json",
+      "size": 1704,
+      "sha256": "866c0ed374b866e97b3d5aa4b6cda059014424b912a6e20af7fd6d3de8592fbd"
+    },
+    {
+      "path": "reports/lint.json",
+      "size": 459,
+      "sha256": "926b2f5f9404c46dc7174181112362471c7ca6898468f0418d972180f576ed06"
+    },
+    {
+      "path": "reports/source-coverage.txt",
+      "size": 26704,
+      "sha256": "def5fe7e5a8487031511244d64669adb8952bf56c3a656e6711dbed63e7773cc"
+    },
+    {
+      "path": "reports/source-selftest-final.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/source-tests-final.txt",
+      "size": 2500,
+      "sha256": "fadd25edf05fc996e6a14989c4db5a22c135879ff7409d4d5355029d2a0c3d8f"
+    },
+    {
+      "path": "reports/wheel-selftest-final.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/wheel-tests-final.txt",
+      "size": 5713,
+      "sha256": "ce86d079672d59face437b051a8ce6fd3d88597541598b244edae2caeb490348"
+    },
+    {
+      "path": "tool/vibecodekit-mql5-v3.3.0rc4-source-full.manifest.json",
+      "size": 110680,
+      "sha256": "b314aae2b207c37ddf68614c33267772b3134ecb286584001c85df11da8e951e"
+    },
+    {
+      "path": "tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip",
+      "size": 1302614,
+      "sha256": "a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f"
+    },
+    {
+      "path": "tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl",
+      "size": 837396,
+      "sha256": "5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a"
+    }
+  ],
+  "file_count": 184
+}

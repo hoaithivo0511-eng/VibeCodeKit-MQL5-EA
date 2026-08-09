@@ -1,0 +1,44 @@
+{
+  "schema_version": "2.6",
+  "generated_by": "mql5-evidence-attestation",
+  "created_at_utc": "2026-08-06T17:02:05Z",
+  "root": "14f9e009878384c2fb32bfdc5ec603ec6dd885e15e506582ba3e225f21ffe6b1",
+  "links": [
+    {
+      "path": "evidence/compile/compile-log.txt",
+      "exists": false,
+      "sha256": "",
+      "chained": "fc6bd65739d8d68679d22404aff3a022c9b919952808af489de05156133ee292"
+    },
+    {
+      "path": "evidence/compile/ea.ex5",
+      "exists": false,
+      "sha256": "",
+      "chained": "07a86284f30e518bcc31b36b92f3f7ab9f982b264f6325afe9a839897a006fca"
+    },
+    {
+      "path": "evidence/backtest/report.xml",
+      "exists": false,
+      "sha256": "",
+      "chained": "5c5fdd90608ea2a4def9b0f09b7f89e3797153c35272a9315bdbf360bc4ca7b7"
+    },
+    {
+      "path": "evidence/stress/stress-matrix-report.json",
+      "exists": false,
+      "sha256": "",
+      "chained": "da8ffbc0b43bd5ccd3c346218036631cb503820f3972c926f11f62a98d7eed08"
+    },
+    {
+      "path": "evidence/review/deep-review.json",
+      "exists": false,
+      "sha256": "",
+      "chained": "ccaad2a17b81a6b7628d183d2fe8432ea086577b36e9173d5bc115a0ee37989a"
+    },
+    {
+      "path": "evidence/manifest.json",
+      "exists": true,
+      "sha256": "46f9425681e64a8cdb9e3edd013a36e0a61f51de118a51f8cac1d563394ef1d4",
+      "chained": "14f9e009878384c2fb32bfdc5ec603ec6dd885e15e506582ba3e225f21ffe6b1"
+    }
+  ]
+}
