@@ -54,11 +54,27 @@ jobs:
           rm -rf /tmp/vkmql-wheel-suite
           mkdir -p /tmp/vkmql-wheel-suite
           cp -R tool/source/tests /tmp/vkmql-wheel-suite/tests
+      - name: Verify package import origin
+        run: |
+          cd /tmp
+          python - <<'PY'
+          from pathlib import Path
+          import vibecodekit_mql5
+
+          package_file = Path(vibecodekit_mql5.__file__).resolve()
+          print(f'wheel import origin: {package_file}')
+          if 'site-packages' not in package_file.parts:
+              raise SystemExit(f'wheel isolation failed: runtime package is not from site-packages: {package_file}')
+          PY
       - name: Run installed wheel regression
+        env:
+          PYTHONPATH: /tmp/vkmql-wheel-suite/tests
         run: |
           cd /tmp/vkmql-wheel-suite
           python -m pytest -q tests
       - name: Run installed wheel selftest
+        env:
+          PYTHONPATH: ''
         run: |
           cd /tmp
           mql5-selftest
