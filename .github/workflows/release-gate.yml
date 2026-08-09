@@ -81,8 +81,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install '/tmp/vkmql-source-zip[dev]' 'reportlab>=4'
       - name: Fresh source archive regression
-        working-directory: /tmp/vkmql-source-zip
-        run: python -m pytest -q --junitxml=/tmp/archive-junit.xml
+        run: |
+          cd /tmp/vkmql-source-zip
+          python -m pytest -q --junitxml=/tmp/archive-junit.xml
       - name: Enforce archive 126 tests with zero skip/fail/error
         run: |
           python - <<'PY'
@@ -95,8 +96,9 @@ jobs:
               raise SystemExit('source archive suite must be exactly 126 PASS with no skips')
           PY
       - name: Source archive selftest
-        working-directory: /tmp/vkmql-source-zip
-        run: python -m vibecodekit_mql5.selftest
+        run: |
+          cd /tmp/vkmql-source-zip
+          python -m vibecodekit_mql5.selftest
 
   wheel-regression:
     runs-on: ubuntu-latest
@@ -116,10 +118,11 @@ jobs:
           mkdir -p /tmp/vkmql-wheel-tests
           cp -R tool/source/tests/. /tmp/vkmql-wheel-tests/
       - name: Installed wheel regression
-        working-directory: /tmp/vkmql-wheel-tests
         env:
           PYTHONPATH: ''
-        run: python -m pytest -q --junitxml=/tmp/wheel-junit.xml
+        run: |
+          cd /tmp/vkmql-wheel-tests
+          python -m pytest -q --junitxml=/tmp/wheel-junit.xml
       - name: Enforce wheel 126 tests with zero skip/fail/error
         run: |
           python - <<'PY'
@@ -132,10 +135,11 @@ jobs:
               raise SystemExit('wheel suite must be exactly 126 PASS with no skips')
           PY
       - name: Wheel selftest
-        working-directory: /tmp
         env:
           PYTHONPATH: ''
-        run: mql5-selftest
+        run: |
+          cd /tmp
+          mql5-selftest
 
   artifact-parity:
     runs-on: ubuntu-latest
