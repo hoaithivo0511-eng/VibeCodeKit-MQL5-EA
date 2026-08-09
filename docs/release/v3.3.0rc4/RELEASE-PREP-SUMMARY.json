@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "version": "3.3.0rc4",
+  "branch": "release-prep/v3.3.0rc4",
+  "base_main_commit": "df2fbf65384465316898f2426f547e6d90579d3c",
+  "deterministic_evidence_commit": "cc0458289f2e2cb2a4c4ea52c42bb30844a875f5",
+  "status": "READY_AFTER_MANIFEST_REFRESH",
+  "workflows": {
+    "release_gate": {
+      "run_id": 31304351274,
+      "jobs_passed": 3,
+      "jobs_total": 3,
+      "status": "PASS"
+    },
+    "package_regression": {
+      "run_id": 31304351258,
+      "jobs_passed": 2,
+      "jobs_total": 2,
+      "status": "PASS"
+    }
+  },
+  "tests": {
+    "source": {
+      "passed": 126,
+      "failed": 0,
+      "skipped": 0,
+      "selftest_passed": 13,
+      "selftest_total": 13
+    },
+    "source_archive": {
+      "passed": 126,
+      "failed": 0,
+      "skipped": 0,
+      "selftest_passed": 13,
+      "selftest_total": 13
+    },
+    "wheel": {
+      "passed": 126,
+      "failed": 0,
+      "skipped": 0,
+      "selftest_passed": 13,
+      "selftest_total": 13,
+      "runtime_origin": "site-packages"
+    }
+  },
+  "artifacts": {
+    "bundle_sha256": "33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c",
+    "source_zip_sha256": "a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f",
+    "wheel_sha256": "5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a"
+  },
+  "generic_acceptance": {
+    "passed": 4,
+    "total": 4,
+    "ccbsn_specific_production_literals_found": false
+  },
+  "coverage_evidence": {
+    "fresh_cleanup_coverage": false,
+    "source": "reports/source-coverage.txt",
+    "covered_statements": 3520,
+    "statements": 19310,
+    "percent": 18.23
+  },
+  "repository_manifest": "PENDING_REFRESH",
+  "native_validation": {
+    "metaeditor_compile": "PENDING",
+    "mt5_strategy_tester": "PENDING",
+    "release_eligible": false
+  },
+  "decision": {
+    "go_for_tag_pre_release": "AFTER_REPO_MANIFEST_PASS",
+    "go_for_production": false
+  }
+}

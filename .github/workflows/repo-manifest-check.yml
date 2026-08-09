@@ -1,0 +1,23 @@
+name: Repository Manifest Check
+
+on:
+  push:
+    branches:
+      - main
+      - 'release-prep/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Verify tracked-file SHA-256 manifest
+        run: python scripts/maintenance/repo_manifest.py --check
