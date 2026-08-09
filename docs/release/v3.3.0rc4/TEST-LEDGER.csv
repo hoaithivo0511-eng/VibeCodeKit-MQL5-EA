@@ -1,19 +1,19 @@
 id,phase,gate,surface,status,result,evidence,notes
-P2-HYGIENE,2,repository cleanup,tracked repository,PASS,forbidden root/bootstrap artifacts removed and release metadata added,RC4 Release Gate run 31304351274,canonical package contents unchanged
-P3-SOURCE,3,source regression,tool/source,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Release Gate run 31304351274 job source-regression,ReportLab installed as test-only dependency so PDF ingest executes
-P3-SELFTEST,3,source selftest,tool/source,PASS,13/13 invariants PASS,RC4 Release Gate run 31304351274,139 catalog tools/entrypoints checked
-P3-ARTIFACT-HASH,3,frozen artifact hashes,bundle + source ZIP + wheel,PASS,3/3 SHA-256 identities unchanged,RC4 Release Gate run 31304351274 job artifact-parity,RC4 artifacts frozen
-P3-SOURCE-PARITY,3,source archive parity,tool/source vs canonical source ZIP,PASS,605 files byte-identical,RC4 Release Gate run 31304351274 job artifact-parity,every non-directory ZIP member compared
-P3-REPO-HYGIENE,3,tracked repository hygiene,git ls-files,PASS,no forbidden tracked garbage; required release files present,RC4 Release Gate run 31304351274 job repository-hygiene,reports/coverage.json explicitly allowed as versioned evidence
-P4-ZIP-TESTS,4,fresh source ZIP regression,/tmp extracted canonical source ZIP,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Package Regression run 31304351258 job source-archive-regression,independent extraction/install
-P4-ZIP-SELFTEST,4,fresh source ZIP selftest,/tmp extracted source ZIP,PASS,13/13 invariants PASS,RC4 Package Regression run 31304351258 job source-archive-regression,independent extraction/install
-P4-WHEEL-ORIGIN,4,wheel runtime isolation,installed wheel,PASS,runtime imported from site-packages,RC4 Package Regression run 31304351258 job wheel-regression,source package not copied into harness
-P4-WHEEL-TESTS,4,installed wheel regression,/tmp tests + site-packages runtime,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Package Regression run 31304351258 job wheel-regression,test-only tests path supplied via PYTHONPATH
-P4-WHEEL-SELFTEST,4,installed wheel selftest,site-packages runtime,PASS,13/13 invariants PASS,RC4 Package Regression run 31304351258 job wheel-regression,PYTHONPATH cleared for selftest
+P2-HYGIENE,2,repository cleanup,tracked repository,PASS,forbidden root/bootstrap artifacts removed and release metadata added,RC4 Release Gate run 31304836123,canonical package contents unchanged
+P3-SOURCE,3,source regression,tool/source,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Release Gate run 31304836123 job source-regression,ReportLab installed as test-only dependency so PDF ingest executes
+P3-SELFTEST,3,source selftest,tool/source,PASS,13/13 invariants PASS,RC4 Release Gate run 31304836123,139 catalog tools/entrypoints checked
+P3-ARTIFACT-HASH,3,frozen artifact hashes,bundle + source ZIP + wheel,PASS,3/3 SHA-256 identities unchanged,RC4 Release Gate run 31304836123 job artifact-parity,RC4 artifacts frozen
+P3-SOURCE-PARITY,3,source archive parity,tool/source vs canonical source ZIP,PASS,605 files byte-identical,RC4 Release Gate run 31304836123 job artifact-parity,every non-directory ZIP member compared
+P3-REPO-HYGIENE,3,tracked repository hygiene,git ls-files,PASS,no forbidden tracked garbage; required release files present,RC4 Release Gate run 31304836123 job repository-hygiene,reports/coverage.json explicitly allowed as versioned evidence
+P4-ZIP-TESTS,4,fresh source ZIP regression,/tmp extracted canonical source ZIP,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Package Regression run 31304836130 job source-archive-regression,independent extraction/install
+P4-ZIP-SELFTEST,4,fresh source ZIP selftest,/tmp extracted source ZIP,PASS,13/13 invariants PASS,RC4 Package Regression run 31304836130 job source-archive-regression,independent extraction/install
+P4-WHEEL-ORIGIN,4,wheel runtime isolation,installed wheel,PASS,runtime imported from site-packages,RC4 Package Regression run 31304836130 job wheel-regression,source package not copied into harness
+P4-WHEEL-TESTS,4,installed wheel regression,/tmp tests + site-packages runtime,PASS,126/126 PASS; 0 fail; 0 skip,RC4 Package Regression run 31304836130 job wheel-regression,test-only tests path supplied via PYTHONPATH
+P4-WHEEL-SELFTEST,4,installed wheel selftest,site-packages runtime,PASS,13/13 invariants PASS,RC4 Package Regression run 31304836130 job wheel-regression,PYTHONPATH cleared for selftest
 P4-GENERIC,4,generic cross-project acceptance,clean installed wheel,PASS,4/4 PASS,reports/GENERIC-ACCEPTANCE.json,no CCBSN-specific production literals found
 P4-COVERAGE,4,preserved RC4 coverage audit,Python package,PASS_WITH_DEBT,3520/19310 statements covered = 18.23%,reports/source-coverage.txt,historical RC4 audit evidence; not fresh cleanup coverage
-P5-MANIFEST,5,repository SHA-256 manifest,all tracked regular files except manifest,PENDING,refresh/check not yet completed,scripts/maintenance/repo_manifest.py,manifest must pass before tag recommendation becomes GO
+P5-MANIFEST,5,repository SHA-256 manifest,all tracked regular files except manifest,PASS,repository manifest verified,Repository Manifest Check run 31304836168,manifest is machine-generated and read-only checked
 NATIVE-COMPILE,5,MetaEditor native compile,Windows/MT5,PENDING,UNTESTABLE,reports/check-all.json,no trusted native compile evidence in current environment
 NATIVE-TESTER,5,MT5 Strategy Tester,Windows/MT5,PENDING,UNTESTABLE,reports/check-all.json,no trusted backtest/tester evidence in current environment
-RELEASE-PRE,5,pre-release tag gate,repository,PENDING,AFTER_REPO_MANIFEST_PASS,docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md,owner approval still required before merge/tag
+RELEASE-PRE,5,pre-release tag gate,repository,READY,GO_FOR_TAG_PRE_RELEASE,docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md,owner approval still required before merge/tag
 RELEASE-PROD,5,production release gate,repository,BLOCKED,release_eligible=false,reports/check-all.json,requires trusted MetaEditor compile + MT5 Strategy Tester evidence

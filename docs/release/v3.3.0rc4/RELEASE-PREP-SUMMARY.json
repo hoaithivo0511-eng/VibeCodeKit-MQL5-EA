@@ -4,18 +4,25 @@
   "branch": "release-prep/v3.3.0rc4",
   "base_main_commit": "df2fbf65384465316898f2426f547e6d90579d3c",
   "deterministic_evidence_commit": "cc0458289f2e2cb2a4c4ea52c42bb30844a875f5",
-  "status": "READY_AFTER_MANIFEST_REFRESH",
+  "integrity_verification_commit": "a5ec3f5e84310870f40f9a3aca01b9e1b70e8f8a",
+  "status": "GO_FOR_TAG_PRE_RELEASE",
   "workflows": {
     "release_gate": {
-      "run_id": 31304351274,
+      "run_id": 31304836123,
       "jobs_passed": 3,
       "jobs_total": 3,
       "status": "PASS"
     },
     "package_regression": {
-      "run_id": 31304351258,
+      "run_id": 31304836130,
       "jobs_passed": 2,
       "jobs_total": 2,
+      "status": "PASS"
+    },
+    "repository_manifest_check": {
+      "run_id": 31304836168,
+      "jobs_passed": 1,
+      "jobs_total": 1,
       "status": "PASS"
     }
   },
@@ -60,14 +67,14 @@
     "statements": 19310,
     "percent": 18.23
   },
-  "repository_manifest": "PENDING_REFRESH",
+  "repository_manifest": "PASS",
   "native_validation": {
     "metaeditor_compile": "PENDING",
     "mt5_strategy_tester": "PENDING",
     "release_eligible": false
   },
   "decision": {
-    "go_for_tag_pre_release": "AFTER_REPO_MANIFEST_PASS",
+    "go_for_tag_pre_release": true,
     "go_for_production": false
   }
 }

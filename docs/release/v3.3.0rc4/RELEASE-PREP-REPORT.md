@@ -2,14 +2,17 @@
 
 Branch: `release-prep/v3.3.0rc4`  
 Base `main`: `df2fbf65384465316898f2426f547e6d90579d3c`  
-Deterministic evidence commit: `cc0458289f2e2cb2a4c4ea52c42bb30844a875f5`  
-Report status: **READY_AFTER_MANIFEST_REFRESH**
+Deterministic package evidence commit: `cc0458289f2e2cb2a4c4ea52c42bb30844a875f5`  
+First full integrity-verification commit: `a5ec3f5e84310870f40f9a3aca01b9e1b70e8f8a`  
+Report status: **GO_FOR_TAG_PRE_RELEASE**
 
 ## Executive verdict
 
 Repository cleanup and deterministic release-candidate validation are complete for the source/package surfaces. The canonical RC4 bundle, source ZIP and wheel remain frozen and hash-stable. Source checkout, fresh source archive and isolated installed-wheel regression each execute the full 126-test suite with zero failures and zero skips; all three selftest surfaces pass 13/13 invariants.
 
-This report does **not** declare production readiness. The preserved project release gate remains `release_eligible=false` because trusted MetaEditor compile and MT5 Strategy Tester evidence are not available in the current environment. The appropriate next release state, once the repository SHA-256 manifest refresh/check passes, is **GitHub Pre-release / tag candidate only**.
+The repository SHA-256 manifest was regenerated from the finalized tracked tree and its read-only verification gate passed together with the release and package regression workflows on the integrity-verification tree. Therefore the branch is eligible for **owner review as a GitHub Pre-release/tag candidate**.
+
+This report does **not** declare production readiness. The preserved project release gate remains `release_eligible=false` because trusted MetaEditor compile and MT5 Strategy Tester evidence are not available in the current environment.
 
 ## Cleanup delta
 
@@ -21,7 +24,7 @@ Repository-only cleanup was deliberately separated from canonical package conten
 - archived maintenance/import guidance under `docs/maintenance/`;
 - added a safe maintenance importer under `scripts/maintenance/` that never commits, pushes or force-pushes;
 - rewrote root `README.md` and `STRUCTURE.md` around release semantics and integrity boundaries rather than stale file counts;
-- added deterministic release and package CI workflows;
+- added deterministic release, package-regression and repository-manifest CI workflows;
 - retained `tool/source/DRAFT-NOT-VALIDATED.txt` intentionally because it is a draft-output safety notice and a canonical source-archive member;
 - did not mutate `tool/source/`, the canonical source ZIP, the wheel, or the RC4 bundle during repository cleanup.
 
@@ -29,17 +32,17 @@ Repository-only cleanup was deliberately separated from canonical package conten
 
 | Gate | Surface | Result | Evidence |
 |---|---|---:|---|
-| Source regression | expanded `tool/source/` | **126/126 PASS, 0 skip** | Release Gate run `31304351274`, job `source-regression` |
-| Source selftest | expanded `tool/source/` | **13/13 PASS** | Release Gate run `31304351274` |
-| Repository hygiene | Git-tracked repository | **PASS** | Release Gate run `31304351274`, job `repository-hygiene` |
-| Artifact identity/parity | bundle + source ZIP + wheel + expanded source | **PASS** | Release Gate run `31304351274`, job `artifact-parity` |
-| Fresh source-ZIP regression | `/tmp` extraction of canonical source ZIP | **126/126 PASS, 0 skip** | Package Regression run `31304351258`, job `source-archive-regression` |
-| Fresh source-ZIP selftest | `/tmp` extraction | **13/13 PASS** | Package Regression run `31304351258` |
-| Wheel runtime isolation | installed package | **PASS — imported from `site-packages`** | Package Regression run `31304351258`, job `wheel-regression` |
-| Installed-wheel regression | tests outside source checkout | **126/126 PASS, 0 skip** | Package Regression run `31304351258` |
-| Installed-wheel selftest | installed wheel | **13/13 PASS** | Package Regression run `31304351258` |
+| Source regression | expanded `tool/source/` | **126/126 PASS, 0 skip** | Release Gate run `31304836123`, job `source-regression` |
+| Source selftest | expanded `tool/source/` | **13/13 PASS** | Release Gate run `31304836123` |
+| Repository hygiene | Git-tracked repository | **PASS** | Release Gate run `31304836123`, job `repository-hygiene` |
+| Artifact identity/parity | bundle + source ZIP + wheel + expanded source | **PASS** | Release Gate run `31304836123`, job `artifact-parity` |
+| Fresh source-ZIP regression | `/tmp` extraction of canonical source ZIP | **126/126 PASS, 0 skip** | Package Regression run `31304836130`, job `source-archive-regression` |
+| Fresh source-ZIP selftest | `/tmp` extraction | **13/13 PASS** | Package Regression run `31304836130` |
+| Wheel runtime isolation | installed package | **PASS — imported from `site-packages`** | Package Regression run `31304836130`, job `wheel-regression` |
+| Installed-wheel regression | tests outside source checkout | **126/126 PASS, 0 skip** | Package Regression run `31304836130` |
+| Installed-wheel selftest | installed wheel | **13/13 PASS** | Package Regression run `31304836130` |
 | Generic cross-project acceptance | clean installed wheel | **4/4 PASS** | preserved `reports/GENERIC-ACCEPTANCE.json` |
-| Repository manifest | all Git-tracked regular files except manifest itself | **PENDING REFRESH** | `repo_manifest.py` + manifest CI introduced by this report batch |
+| Repository manifest | all Git-tracked regular files except manifest itself | **PASS** | Repository Manifest Check run `31304836168` |
 
 The wheel regression explicitly checks that `vibecodekit_mql5.__file__` resolves under Python `site-packages`; the source package is not copied into the isolated test harness. Test-only support under `tests/` is supplied through `PYTHONPATH` because the source suite itself declares `pythonpath = ["scripts", "tests"]` in pytest configuration.
 
@@ -86,8 +89,8 @@ No trusted `.ex5`, native compile log, or MT5 Strategy Tester result is claimed 
 ## Release decision
 
 ```text
-GO_FOR_TAG_PRE_RELEASE = AFTER_REPO_MANIFEST_PASS
+GO_FOR_TAG_PRE_RELEASE = true
 GO_FOR_PRODUCTION      = false
 ```
 
-Once the repository manifest is regenerated from the finalized tracked tree and its read-only CI check passes together with the release/package workflows, the branch is suitable for owner review as a **pre-release tag candidate**. Merge to `main`, creation of `v3.3.0rc4`, and GitHub Pre-release publication are explicitly outside this report batch and require owner approval.
+The release-prep branch may now proceed to owner review. Merge to `main`, creation of `v3.3.0rc4`, and publication as a GitHub **Pre-release** remain a separate Phase 6 action and require explicit owner approval. A stable/production release remains blocked until trusted native MetaEditor compile and MT5 Strategy Tester evidence passes.
