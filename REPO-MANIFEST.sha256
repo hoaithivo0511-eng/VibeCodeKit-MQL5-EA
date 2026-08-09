@@ -171,9 +171,9 @@ d92568a0a7876f39a07fc492de66e98cf29aa8a2ac941bbf88fabc7321b9c483  ./demo/generic
 c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd  ./demo/generic-acceptance/RangePulse/requirements-matrix.csv
 095f9f63c8434749c0d3b4226c7e88725fbc1aae665d7816600ee6a1a95529f3  ./docs/maintenance/INITIAL-IMPORT.md
 2f1e7b5bc07f6dcc62b4245ae9a159f5d7c9690f48ece31481bc91ab75cceb96  ./docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md
-5bfd74953ab2b942639155c94c801d6bc7bfb672e07e9229674b54e607651b47  ./docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md
-e3e21412e30588e50623c2c076c08ca4aa2b1e6d1ea1780311afb7fa43a26b8d  ./docs/release/v3.3.0rc4/RELEASE-PREP-SUMMARY.json
-170330f91219cbdc9f9c626480233183ff9d777d83c2b11203d0698295f6328b  ./docs/release/v3.3.0rc4/TEST-LEDGER.csv
+72df94c5930bfec29f68c1c18613e89cf497e7adde6113ee8b54c9900b269fa2  ./docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md
+63223a78187c8ac44d9b331cdd097bf6e3e97b8a09a39c258cd5fba21fcf786e  ./docs/release/v3.3.0rc4/RELEASE-PREP-SUMMARY.json
+4ceb9dc52bed4ff89b21843571d1c2ee6364688f78dbb944cbeb71d22a0ba01a  ./docs/release/v3.3.0rc4/TEST-LEDGER.csv
 991e7c9038ea5d7587a4eed257517197301d8009f214687d2ef99e36ab38f440  ./native/NATIVE-VALIDATION-HANDOFF.md
 f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6  ./native/workers-windows/run_backtest.ps1
 4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7  ./native/workers-windows/run_compile.ps1
