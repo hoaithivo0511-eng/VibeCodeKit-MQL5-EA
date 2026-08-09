@@ -15,8 +15,8 @@ jobs:
   source-regression:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
           cache: pip
@@ -32,8 +32,8 @@ jobs:
   artifact-parity:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: Verify fixed RC4 artifact hashes
@@ -71,26 +71,42 @@ jobs:
   repository-hygiene:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Check release hygiene
+      - uses: actions/checkout@v7
+      - name: Check tracked release hygiene
         run: |
           python - <<'PY'
-          from pathlib import Path
+          from pathlib import PurePosixPath, Path
+          import subprocess
 
-          forbidden_names = {
-              '.DS_Store', 'Thumbs.db', '.coverage', 'coverage.json',
-              'chatgpt-write-smoke.txt', 'PUSH-GUIDE.md', 'SETUP-CODESPACE.sh'
+          tracked = subprocess.check_output(['git', 'ls-files'], text=True).splitlines()
+          forbidden_exact = {
+              'chatgpt-write-smoke.txt',
+              'PUSH-GUIDE.md',
+              'SETUP-CODESPACE.sh',
           }
-          forbidden_parts = {'__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', '.venv', 'node_modules'}
+          forbidden_segments = {
+              '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache',
+              '.venv', 'venv', 'node_modules', 'htmlcov',
+          }
+          forbidden_basenames = {'.DS_Store', 'Thumbs.db', '.coverage', 'coverage.json', '.env'}
+
           bad = []
-          for p in Path('.').rglob('*'):
-              if '.git' in p.parts:
-                  continue
-              if p.name in forbidden_names or forbidden_parts.intersection(p.parts):
-                  bad.append(str(p))
-          required = ['.gitignore', 'LICENSE', 'README.md', 'STRUCTURE.md', 'docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md']
-          missing = [p for p in required if not Path(p).is_file()]
+          for path in tracked:
+              p = PurePosixPath(path)
+              if path in forbidden_exact or any(seg in forbidden_segments for seg in p.parts) or p.name in forbidden_basenames:
+                  bad.append(path)
+
+          required = [
+              '.gitignore', 'LICENSE', 'README.md', 'STRUCTURE.md',
+              'docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md',
+              'docs/maintenance/INITIAL-IMPORT.md',
+              'scripts/maintenance/import-release-bundle.sh',
+          ]
+          missing = [path for path in required if path not in tracked or not Path(path).is_file()]
+          print(f'tracked files checked: {len(tracked)}')
+          print(f'forbidden tracked files: {bad}')
+          print(f'missing required files: {missing}')
           if bad or missing:
-              raise SystemExit(f'hygiene FAIL bad={bad} missing={missing}')
+              raise SystemExit(1)
           print('repository hygiene: PASS')
           PY
