@@ -15,3 +15,7 @@ T00-013,Metadata syntax,Python json parser,All changed JSON documents parsed,loc
 T00-014,JUnit gate script,Ruff,No lint findings,ruff check scripts/maintenance/assert_junit_clean.py,PASS,Checked after import ordering and shebang correction
 T00-015,Repository integrity,Git and manifest,Manifest regenerated and verified,repo_manifest.py --check,PASS,Final tracked-file digest inventory is current
 T00-016,Native MQL5 evidence,MetaEditor and MT5,Not run,Release Task 10,DEFERRED,PR-00 changes no generated MQL5 runtime behavior
+T01-001,Worker artifact security,Python 3.12,18/18 targeted tests passed,tests/test_worker_artifact_security.py,PASS,"Traversal; symlink; duplicate; hash; size; staging; rollback"
+T01-002,Worker module coverage,coverage.py,94.87% combined,pytest-cov --cov-fail-under=90,PASS,"worker_protocol 98%; remote_worker_client 93%"
+T01-003,RC5 source regression after Task 01,Python 3.12,144/144 tests passed,task01-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T01-004,RC5 selftest after Task 01,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,25 shipped test modules detected

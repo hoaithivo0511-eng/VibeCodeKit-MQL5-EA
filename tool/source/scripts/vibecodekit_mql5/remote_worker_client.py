@@ -9,14 +9,27 @@ worker may expose compatible endpoints:
 """
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Protocol
 import json
-import urllib.request
-import urllib.error
+import os
+import shutil
+import tempfile
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path, PurePosixPath
+from typing import Any, Protocol
 
-from .worker_protocol import WorkerJobRequest, WorkerJobResult, WorkerArtifact, verify_artifacts
+from .worker_protocol import (
+    ArtifactSecurityError,
+    ArtifactVerificationError,
+    WorkerArtifact,
+    WorkerJobRequest,
+    WorkerJobResult,
+    safe_artifact_path,
+    validate_artifact_filename,
+    verify_artifacts,
+)
 
 
 class WorkerTransport(Protocol):
@@ -49,10 +62,15 @@ class HttpWorkerTransport:
             return json.loads(resp.read().decode("utf-8"))
 
     def download(self, path: str, dest: Path) -> None:
+        if dest.is_symlink() or dest.exists():
+            raise ArtifactSecurityError(f"refusing to overwrite transport destination: {dest}")
         dest.parent.mkdir(parents=True, exist_ok=True)
         req = urllib.request.Request(self.base_url + path, headers=self._headers(), method="GET")
-        with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-            dest.write_bytes(resp.read())
+        with (
+            urllib.request.urlopen(req, timeout=self.timeout) as resp,
+            dest.open("xb") as handle,
+        ):
+            shutil.copyfileobj(resp, handle)
 
 
 class MockWorkerTransport:
@@ -77,12 +95,86 @@ class MockWorkerTransport:
     def download(self, path: str, dest: Path) -> None:
         if self.artifact_dir is None:
             raise FileNotFoundError("mock artifact_dir not configured")
-        filename = Path(path).name
-        src = self.artifact_dir / filename
+        marker = "/artifacts/"
+        if marker not in path:
+            raise ArtifactSecurityError(f"invalid mock artifact route: {path!r}")
+        filename = urllib.parse.unquote(path.split(marker, 1)[1])
+        src = safe_artifact_path(self.artifact_dir, filename)
         if not src.is_file():
             raise FileNotFoundError(src)
+        if dest.is_symlink() or dest.exists():
+            raise ArtifactSecurityError(f"refusing to overwrite mock destination: {dest}")
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(src.read_bytes())
+
+
+def _artifact_paths(artifacts: list[WorkerArtifact]) -> list[tuple[WorkerArtifact, PurePosixPath]]:
+    resolved: list[tuple[WorkerArtifact, PurePosixPath]] = []
+    seen: set[str] = set()
+    for art in artifacts:
+        relative = validate_artifact_filename(art.filename)
+        key = relative.as_posix()
+        if key in seen:
+            raise ArtifactSecurityError(f"duplicate worker artifact filename: {key!r}")
+        seen.add(key)
+        resolved.append((art, relative))
+    return resolved
+
+
+def _ensure_safe_parent(root: Path, relative: PurePosixPath) -> Path:
+    """Create missing target parents while rejecting existing symlinks."""
+    root.mkdir(parents=True, exist_ok=True)
+    if root.is_symlink() or not root.is_dir():
+        raise ArtifactSecurityError(f"artifact destination is not a real directory: {root}")
+    current = root
+    for part in relative.parts[:-1]:
+        current = current / part
+        if current.is_symlink():
+            raise ArtifactSecurityError(
+                f"artifact destination crosses a symlink: {relative.as_posix()!r}"
+            )
+        current.mkdir(exist_ok=True)
+        if not current.is_dir():
+            raise ArtifactSecurityError(f"artifact parent is not a directory: {current}")
+    return safe_artifact_path(root, relative.as_posix())
+
+
+def _commit_staged(
+    destination: Path,
+    stage: Path,
+    backup: Path,
+    artifacts: list[tuple[WorkerArtifact, PurePosixPath]],
+) -> dict[str, Any]:
+    """Commit verified files with per-file atomic replace and batch rollback."""
+    records: list[tuple[Path, Path | None, bool]] = []
+    try:
+        for _art, relative in artifacts:
+            final_path = _ensure_safe_parent(destination, relative)
+            staged_path = safe_artifact_path(stage, relative.as_posix())
+            backup_path: Path | None = None
+            if final_path.exists():
+                if final_path.is_symlink() or not final_path.is_file():
+                    raise ArtifactSecurityError(f"unsafe existing artifact target: {final_path}")
+                backup_path = _ensure_safe_parent(backup, relative)
+                os.replace(final_path, backup_path)
+            records.append((final_path, backup_path, False))
+            os.replace(staged_path, final_path)
+            records[-1] = (final_path, backup_path, True)
+
+        committed_check = verify_artifacts(
+            destination, [artifact for artifact, _relative in artifacts]
+        )
+        if not committed_check["ok"]:  # pragma: no cover - filesystem fault
+            raise ArtifactVerificationError(committed_check)
+        return committed_check
+    except Exception:
+        for final_path, backup_path, installed in reversed(records):
+            if installed and final_path.is_file() and not final_path.is_symlink():
+                final_path.unlink()
+            if backup_path is not None and backup_path.is_file():
+                final_path.parent.mkdir(parents=True, exist_ok=True)
+                os.replace(backup_path, final_path)
+        raise
 
 
 class RemoteWorkerClient:
@@ -106,10 +198,31 @@ class RemoteWorkerClient:
 
     def download_artifacts(self, result: WorkerJobResult, dest_dir: str | Path) -> dict[str, Any]:
         dest = Path(dest_dir)
-        dest.mkdir(parents=True, exist_ok=True)
-        for art in result.artifacts:
-            self.transport.download(f"/jobs/{result.job_id}/artifacts/{art.filename}", dest / art.filename)
-        return verify_artifacts(dest, result.artifacts)
+        if dest.is_symlink() or (dest.exists() and not dest.is_dir()):
+            raise ArtifactSecurityError(f"artifact destination is not a real directory: {dest}")
+        artifacts = _artifact_paths(result.artifacts)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+
+        with tempfile.TemporaryDirectory(prefix=".vck-worker-", dir=dest.parent) as txn_name:
+            transaction = Path(txn_name)
+            stage = transaction / "stage"
+            backup = transaction / "backup"
+            stage.mkdir()
+
+            for art, relative in artifacts:
+                staged_path = _ensure_safe_parent(stage, relative)
+                encoded = "/".join(urllib.parse.quote(part, safe="") for part in relative.parts)
+                self.transport.download(
+                    f"/jobs/{result.job_id}/artifacts/{encoded}", staged_path
+                )
+
+            staged_check = verify_artifacts(stage, result.artifacts)
+            if not staged_check["ok"]:
+                raise ArtifactVerificationError(staged_check)
+
+            # All network I/O and descriptor verification completed before any
+            # caller-visible file is replaced.
+            return _commit_staged(dest, stage, backup, artifacts)
 
 
 def client_from_url(worker_url: str, token: str | None = None, timeout: int = 60) -> RemoteWorkerClient:

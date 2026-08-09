@@ -1,9 +1,9 @@
 requirement_id,priority,requirement,source,status,target_task
 REQ-000,P0,"Preserve RC4 artifact bytes and bind RC5 work to a new versioned branch",Repo scan,COMPLETED,00
-REQ-001,P0,"Reject artifact filenames that escape the destination",Security cross-check,PLANNED,01
-REQ-002,P0,"Reject symlink-based artifact escapes",Security cross-check,PLANNED,01
-REQ-003,P0,"Stage and verify all worker artifacts before atomic commit",RRI-T DevOps,PLANNED,01
-REQ-004,P0,"Make mock worker behavior preserve the production trust boundary",RRI-T QA,PLANNED,01
+REQ-001,P0,"Reject artifact filenames that escape the destination",Security cross-check,COMPLETED,01
+REQ-002,P0,"Reject symlink-based artifact escapes",Security cross-check,COMPLETED,01
+REQ-003,P0,"Stage and verify all worker artifacts before atomic commit",RRI-T DevOps,COMPLETED,01
+REQ-004,P0,"Make mock worker behavior preserve the production trust boundary",RRI-T QA,COMPLETED,01
 REQ-005,P0,"Emit a complete canonical EA-IR from the default prompt flow",Quickstart review,PLANNED,02
 REQ-006,P0,"Never relabel a legacy mapping as EA-IR by adding schema_version only",Architecture review,PLANNED,02
 REQ-007,P0,"Require an explicit compatibility flag for legacy scaffold output",Operator review,PLANNED,02

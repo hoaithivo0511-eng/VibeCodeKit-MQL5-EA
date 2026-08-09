@@ -11,6 +11,17 @@
 - Production release remains blocked pending the planned security/runtime
   fixes and trusted MetaEditor plus MT5 Strategy Tester evidence.
 
+### Worker artifact security
+
+- Reject worker-controlled absolute, traversal, Windows drive/UNC/stream and
+  duplicate artifact paths before network download.
+- Reject source or destination paths that cross symlinks.
+- Download into an isolated transaction directory, validate every declared
+  artifact hash and size, then atomically replace destination files with batch
+  rollback on commit failure.
+- Apply the same path boundary to the deterministic mock transport used by
+  regression tests.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening
