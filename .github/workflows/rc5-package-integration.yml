@@ -7,6 +7,12 @@ on:
     paths:
       - '.github/workflows/rc5-package-integration.yml'
       - 'scripts/maintenance/build_rc5_candidate.py'
+      - 'scripts/maintenance/build_rc5_ship.py'
+      - 'scripts/maintenance/verify_rc5_native_evidence.py'
+      - 'scripts/native/Invoke-RC5NativeEvidence.ps1'
+      - 'RELEASE-TRUST.yaml'
+      - 'docs/release/v3.3.0rc5/SHIP-README.md'
+      - 'docs/release/v3.3.0rc5/TASK-10-NATIVE-EVIDENCE-RUNBOOK.md'
       - 'tool/source/**'
   workflow_dispatch:
 
@@ -104,27 +110,46 @@ jobs:
             --wheel-selftest "${RUNNER_TEMP}/rc5-wheel-selftest.txt"
           sed -i 's/[[:space:]]\+$//' docs/release/v3.3.0rc5/PR-09-COMPLETION.md
 
-      - name: Stage candidate and refresh repository manifest
+      - name: Build and verify complete RC5 SHIP handoff
+        run: |
+          set -euo pipefail
+          python scripts/maintenance/build_rc5_ship.py build --run-id "$GITHUB_RUN_ID"
+          python scripts/maintenance/build_rc5_ship.py verify
+          python scripts/maintenance/verify_rc5_native_evidence.py
+
+      - name: Stage candidate, SHIP handoff and refresh repository manifest
         run: |
           git add \
             tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip \
             tool/vibecodekit-mql5-v3.3.0rc5-source-full.manifest.json \
             tool/vibecodekit_mql5_ea-3.3.0rc5-py3-none-any.whl \
             VibecodeKit-MQL5-v3.3.0rc5-runtime-candidate-bundle.zip \
+            VibeCodeKit-MQL5-v3.3.0rc5-SHIP.zip \
             docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json \
             docs/release/v3.3.0rc5/RC5-ARTIFACTS.sha256 \
-            docs/release/v3.3.0rc5/PR-09-COMPLETION.md
+            docs/release/v3.3.0rc5/PR-09-COMPLETION.md \
+            docs/release/v3.3.0rc5/RC5-SHIP-MANIFEST.json \
+            docs/release/v3.3.0rc5/RC5-SHIP.sha256 \
+            docs/release/v3.3.0rc5/SHIP-COMPLETION.md \
+            docs/release/v3.3.0rc5/native-evidence/templates/restart-recovery.template.json \
+            docs/release/v3.3.0rc5/native-evidence/templates/deep-review.template.json
           python scripts/maintenance/repo_manifest.py --write
           git add REPO-MANIFEST.sha256
           git diff --cached --check
 
-      - name: Commit verified candidate artifacts
+      - name: Final pre-commit SHIP verification
+        run: |
+          python scripts/maintenance/build_rc5_candidate.py verify
+          python scripts/maintenance/build_rc5_ship.py verify
+          python scripts/maintenance/verify_rc5_native_evidence.py
+
+      - name: Commit verified candidate and SHIP artifacts
         run: |
           if git diff --cached --quiet; then
-            echo 'candidate artifacts already current'
+            echo 'candidate and SHIP artifacts already current'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'build(rc5): materialize verified package candidate'
+          git commit -m 'build(rc5): materialize verified final SHIP handoff'
           git push
