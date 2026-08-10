@@ -1,10 +1,11 @@
 0eaa26bd7dd997830dc75be37e8594a224ab79eb273b19389172de03e0390ba2  ./.gitattributes
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
 90860fd29d8232eab6ef5153e336a4a710f56053a8d15aa973c534a5e308fe40  ./.github/workflows/rc5-conformance-verify.yml
+46762ce9bcc0d29858cd6f35aa6ced3f85ec95d195f331d72fd54259329740fa  ./.github/workflows/rc5-native-evidence-gate.yml
 5d6a657e610b4e05aba2c95beaec917cee9ef7707430938f381cdb8256daa617  ./.github/workflows/rc5-package-integration.yml
 9538a3f47e43bf4d10388e31ef043c4ab8014ac26464f4e144f0e3b620d1cdc9  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-14ef295c4c63439effcc4457f91befe5f79b513b0fdc42ac2c53b841c4622b84  ./.github/workflows/repo-manifest-refresh.yml
+dda2976e32dee2ce2d8682fbee4a002a6f0f16cd35986501086ef66a9e475335  ./.github/workflows/repo-manifest-refresh.yml
 fe0c9d28212f1ced93a7f23b67ccc5a6d5dfa2e7da6c748ca9d96abdc97b336f  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
@@ -179,6 +180,7 @@ c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd  ./demo/generic
 4ceb9dc52bed4ff89b21843571d1c2ee6364688f78dbb944cbeb71d22a0ba01a  ./docs/release/v3.3.0rc4/TEST-LEDGER.csv
 1f83f87b068d218911046e658a08a003bfb26e3f6294464c16f357a453f5a4bc  ./docs/release/v3.3.0rc5/CONFORMANCE-ONLINE-COMPLETION.md
 5bd94f8790519dc275a378d5f8105ca8d73f509eb59aa8f25ddddf3a66eaf7c6  ./docs/release/v3.3.0rc5/HARDENING-PLAN.md
+c557904e82181a31787c10e8722ade47c73e77f64d94f72f9fa4ef7c348a4e47  ./docs/release/v3.3.0rc5/NATIVE-EVIDENCE-SPEC.md
 555546a364c492316613b33ef8e60122aa55a7e16e23c77b5460171b591dae3d  ./docs/release/v3.3.0rc5/PR-00-COMPLETION.md
 3601bd97619bf3b434cd23cb7e83e7d5ed96c23987bc9f08d156605796a8102d  ./docs/release/v3.3.0rc5/PR-01-COMPLETION.md
 c8ebabd70a304b089ba774da4773c8f64ef715a4bccb79fff0d67a92e3dd561c  ./docs/release/v3.3.0rc5/PR-02-COMPLETION.md
@@ -189,10 +191,14 @@ fe84c85e07062db2ee713ef503a9ff56a5d1ff0d64c1ea082c1759558a6c3321  ./docs/release
 e4c9bdbbf3a7388af302f0ca660a104057ade63639b828098972474912d8e0b7  ./docs/release/v3.3.0rc5/PR-07-COMPLETION.md
 e99358cbf0632f1aad712c7f13df7cca41f4ea7aed86c8467670331e0bdfac7b  ./docs/release/v3.3.0rc5/PR-08-COMPLETION.md
 358d84906360e9c5fd77175a8149c2eb9e2cfef738ff3e1701af565096bf59d3  ./docs/release/v3.3.0rc5/PR-09-COMPLETION.md
+b0d71589417228cbe0bd2e9c4d4157aff658ef846631b038639d5327b025ea25  ./docs/release/v3.3.0rc5/PR-10-INFRA-VERIFY-REPORT.md
+24d2c607324fa5ff03d51fcfcf2d582a6df684cc6b3b087b73a9e4a2bc558bff  ./docs/release/v3.3.0rc5/PR-10-NATIVE-LEDGER.csv
+8cdd1b2f92021fd3750b9fdba0509a9b4128ae4ab349bb395a5bcef3f80307f5  ./docs/release/v3.3.0rc5/PR-10-STATUS.md
 4ed00ebd77542bdc9db927820ccf2b256be500749f0b402091784eea152546fe  ./docs/release/v3.3.0rc5/RC5-ARTIFACTS.sha256
 8946406a36baa6fd1b5100cc13973835a24bfae212ea10f80a3e0b5d6c6241ee  ./docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json
 074a34e0815abbb7d2475777c90f88dc592af535d5d5573701063b0c199974a3  ./docs/release/v3.3.0rc5/REQUIREMENTS.csv
 e567e28bb77eb89ae1167cfa206a255445b594da4753234d5f0e6fecba21601f  ./docs/release/v3.3.0rc5/TEST-LEDGER.csv
+ac2b38aaee966d93961e5fadc4f10aea1fadd24440b9e51d171f1aa015a009f0  ./docs/release/v3.3.0rc5/TIP-10-NATIVE-EVIDENCE.md
 535cbe1b219865a62143d7ad516667d396d55124ddf2725901e60941dc3256df  ./docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md
 4c0aeff4ed863252f230cfed82e135ad373e68cba419636f9746b25cce2f932a  ./docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md
 88f1062cf9a26db25342983496eae0009c282f40763b7dfc453dfd51d97f6c25  ./docs/release/v3.3.0rc5/WAVE-2-COMPLETION.md
@@ -223,6 +229,11 @@ f273199a69a7e15413391813ecef9a228e54477beb1d2362eb9f258ecf4a33f0  ./scripts/main
 dba1ce0fe7acaf3a88c6bf90660a78c80aa3055f4024b1104aebf15a91dd2f6c  ./scripts/maintenance/build_rc5_candidate.py
 1d1334a44378e411a74b772fdb794d4fbf360845c808c173524a838dc4c741f9  ./scripts/maintenance/import-release-bundle.sh
 603fa594b8241e51a63eea34da9ce2cc0ec417baa93376b2c268624081c30056  ./scripts/maintenance/repo_manifest.py
+b1caab4993a707593591d496af98a9297b96c52d9434a0f867b444527c96413f  ./scripts/release/native_evidence_collector.py
+69cba13d6afb40918949931e2b9acfab936f46bdd4b23535395b4f84379d8bef  ./scripts/release/rc5_native_gate.py
+8e42a1ab87bcb6dc1a15446dfa7847a8b18f21abfedd529699a4731837f86a4e  ./scripts/release/tests/test_rc5_native_gate.py
+b76120c866bdeb24e9606df10a9e3522577fc8c7295693b64bff4ff8f458bbc2  ./scripts/release/verify_rc5_candidate_source.py
+f20ff6cec906d73f1d1e71dba1fb893ba135a12444843c98ed776985f4e5700b  ./tool/native/collect-rc5-evidence.ps1
 c2b5e350e0b9c8c88e635858a8039bf2ce564a14de186364885e6dabda5e7e2a  ./tool/source/.dockerignore
 e695b95c7b4f821a8100bfdf1d1f756850acf0d865ea6dab84987a4f2e6a8c2f  ./tool/source/AGENTS.md
 228173e76e1a6b8f3e84f0bd7e505e8a698c83c354a532b8d5723f9dc3837c78  ./tool/source/CHANGELOG-3.0.0rc1.md
