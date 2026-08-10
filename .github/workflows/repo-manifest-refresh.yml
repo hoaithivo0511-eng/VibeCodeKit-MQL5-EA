@@ -18,6 +18,7 @@ on:
       - '.github/workflows/rc5-native-evidence-gate.yml'
       - 'scripts/maintenance/repo_manifest.py'
       - 'scripts/maintenance/assert_junit_clean.py'
+      - 'scripts/release/**'
       - 'docs/release/**'
       - 'release-evidence/**'
       - 'tool/native/**'

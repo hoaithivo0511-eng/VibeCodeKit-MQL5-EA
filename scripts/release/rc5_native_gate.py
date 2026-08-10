@@ -1,15 +1,14 @@
-"""RC5 Task-10 native release-evidence gate.
+"""RC5 Task-10 native release-evidence gate (release tooling, not shipped kit source).
 
-This module binds native MetaEditor/MT5 evidence to the exact RC5 package
-candidate produced by Task 09.  It deliberately distinguishes BLOCKED
-(missing native execution) from FAIL (evidence exists but is inconsistent or
-untrusted).  Only PASS is release-positive.
+This validator binds real MetaEditor/MT5 evidence to the exact RC5 package
+candidate produced by Task 09. It deliberately distinguishes BLOCKED (native
+execution missing) from FAIL (evidence exists but is inconsistent/untrusted).
+Only PASS is release-positive.
 
-The generic provenance validator remains the authority for compile/backtest
-execution source, canonical artifact hashes and the pinned Ed25519 runner key.
-This module adds RC5-specific package binding plus the two runtime scenarios
-that Task 06 deferred to Task 10: async partial-fill reconciliation and
-restart/crash recovery.
+The generic shipped provenance validator remains the authority for trusted
+execution source, canonical core artifact hashes and the pinned Ed25519 runner
+key. This script adds only RC5 release-candidate binding and Task-10 lifecycle
+semantics; keeping it outside tool/source preserves the Task-09 package bytes.
 """
 from __future__ import annotations
 
@@ -20,10 +19,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from .provenance import validate_release_provenance
-from .release_policy import sha256_file
+from vibecodekit_mql5.provenance import validate_release_provenance
+from vibecodekit_mql5.release_policy import sha256_file
 
-TOOL = "mql5-rc5-native-gate"
+TOOL = "rc5-native-gate"
 KIT_VERSION = "3.3.0rc5"
 CANDIDATE_MANIFEST = Path("docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json")
 ARTIFACT_HASHES = Path("docs/release/v3.3.0rc5/RC5-ARTIFACTS.sha256")
@@ -90,7 +89,7 @@ def _parse_hash_inventory(path: Path) -> dict[str, str]:
 
 
 def expected_candidate_binding(repo_root: Path | str) -> dict[str, str]:
-    """Return the exact Task-09 candidate identity that native evidence must sign."""
+    """Return the immutable Task-09 identity that native evidence must sign."""
     root = Path(repo_root)
     candidate_path = root / CANDIDATE_MANIFEST
     hashes_path = root / ARTIFACT_HASHES
@@ -189,8 +188,7 @@ def _validate_compile(
         errors.append("compile log has no MetaEditor '<n> errors, <n> warnings' summary")
     elif counts[0] != 0:
         errors.append(f"MetaEditor compile reports {counts[0]} error(s)")
-    declared_errors = compile_block.get("errors")
-    if declared_errors not in (0, "0"):
+    if compile_block.get("errors") not in (0, "0"):
         errors.append("compile.errors must be 0")
 
 
@@ -214,7 +212,7 @@ def _load_scenario(
         missing.append(f"backtest.native_scenarios.{name}")
         return None
     signed_path = str(signed_record.get("path") or "")
-    if signed_path != str(rel).replace("\\", "/"):
+    if signed_path != rel.as_posix():
         errors.append(f"{name} signed path must be {rel.as_posix()}, got {signed_path!r}")
     _hash_matches(project, rel, signed_record.get("sha256"), errors, missing)
     path = project / rel
@@ -268,10 +266,7 @@ def _validate_restart(data: dict[str, Any] | None, missing: list[str], errors: l
         errors.append("restart-recovery resolution must be TERMINAL_PROOF or OPERATOR_REQUIRED")
 
 
-def validate_rc5_native_evidence(
-    repo_root: Path | str,
-    project_dir: Path | str,
-) -> NativeGateResult:
+def validate_rc5_native_evidence(repo_root: Path | str, project_dir: Path | str) -> NativeGateResult:
     repo = Path(repo_root)
     project = Path(project_dir)
     result = NativeGateResult(status="BLOCKED")
@@ -325,25 +320,16 @@ def validate_rc5_native_evidence(
                 result.missing.append(f"backtest.tester.{key}")
 
     async_data = _load_scenario(
-        project,
-        ASYNC_REPORT,
-        _scenario_record(backtest, "async_fill"),
-        "async_fill",
-        result.missing,
-        result.errors,
+        project, ASYNC_REPORT, _scenario_record(backtest, "async_fill"),
+        "async_fill", result.missing, result.errors,
     )
     restart_data = _load_scenario(
-        project,
-        RESTART_REPORT,
-        _scenario_record(backtest, "restart_recovery"),
-        "restart_recovery",
-        result.missing,
-        result.errors,
+        project, RESTART_REPORT, _scenario_record(backtest, "restart_recovery"),
+        "restart_recovery", result.missing, result.errors,
     )
     _validate_async(async_data, result.missing, result.errors)
     _validate_restart(restart_data, result.missing, result.errors)
 
-    # Deduplicate while preserving order to keep CI output stable.
     result.missing = list(dict.fromkeys(result.missing))
     result.errors = list(dict.fromkeys(result.errors))
     result.checks = {

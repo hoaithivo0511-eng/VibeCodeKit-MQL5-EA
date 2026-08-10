@@ -11,7 +11,6 @@ param(
     [Parameter(Mandatory=$true)][string]$Symbol,
     [Parameter(Mandatory=$true)][string]$Period,
     [Parameter(Mandatory=$true)][string]$Timeframe,
-    [Parameter(Mandatory=$true)][string]$Model,
     [Parameter(Mandatory=$true)][string]$StressReport,
     [Parameter(Mandatory=$true)][string]$ReviewReport,
     [Parameter(Mandatory=$true)][string]$AsyncFillReport,
@@ -112,9 +111,11 @@ try {
 
     $CompileCommand = "$Python " + (($CompileArgs | ForEach-Object { '"' + $_.Replace('"','\"') + '"' }) -join ' ')
     $TesterCommand = "$Python " + (($TesterArgs | ForEach-Object { '"' + $_.Replace('"','\"') + '"' }) -join ' ')
+    $FinalizeScript = Join-Path $RepoRoot "scripts\release\native_evidence_collector.py"
+    Assert-File $FinalizeScript "Task-10 release finalizer"
 
     $FinalizeArgs = @(
-        "-m", "vibecodekit_mql5.native_evidence_collector",
+        $FinalizeScript,
         "--repo-root", $RepoRoot,
         "--project-dir", $ProjectDir,
         "--source-mq5", $SourceMq5,
@@ -130,7 +131,6 @@ try {
         "--terminal-build", $TerminalBuild,
         "--tester-symbol", $Symbol,
         "--tester-timeframe", $Timeframe,
-        "--tester-model", $Model,
         "--tester-from", $FromDate,
         "--tester-to", $ToDate,
         "--compile-command", $CompileCommand,
