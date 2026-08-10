@@ -40,23 +40,26 @@ jobs:
 
       - name: Live source regression
         run: |
+          set -euo pipefail
           python -m pip install './tool/source[dev]'
           cd tool/source
           python -m pytest -q --junitxml="${RUNNER_TEMP}/rc5-live.xml"
-          python -m vibecodekit_mql5.selftest | tee "${RUNNER_TEMP}/rc5-live-selftest.txt"
+          python -m vibecodekit_mql5.selftest 2>&1 | tee "${RUNNER_TEMP}/rc5-live-selftest.txt"
 
       - name: Extract and test source ZIP
         run: |
+          set -euo pipefail
           rm -rf /tmp/vkmql-rc5-source
           mkdir -p /tmp/vkmql-rc5-source
           unzip -q tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip -d /tmp/vkmql-rc5-source
           python -m pip install '/tmp/vkmql-rc5-source[dev]'
           cd /tmp/vkmql-rc5-source
           python -m pytest -q --junitxml="${RUNNER_TEMP}/rc5-source-zip.xml"
-          python -m vibecodekit_mql5.selftest | tee "${RUNNER_TEMP}/rc5-source-zip-selftest.txt"
+          python -m vibecodekit_mql5.selftest 2>&1 | tee "${RUNNER_TEMP}/rc5-source-zip-selftest.txt"
 
       - name: Test installed wheel outside source checkout
         run: |
+          set -euo pipefail
           rm -rf /tmp/vkmql-rc5-wheel-suite /tmp/vkmql-rc5-wheel-venv
           mkdir -p /tmp/vkmql-rc5-wheel-suite
           unzip -q tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip 'tests/*' -d /tmp/vkmql-rc5-wheel-suite
@@ -79,7 +82,7 @@ jobs:
             /tmp/vkmql-rc5-wheel-venv/bin/python -m pytest -q tests \
             --junitxml="${RUNNER_TEMP}/rc5-wheel.xml"
           cd /tmp
-          PYTHONPATH='' /tmp/vkmql-rc5-wheel-venv/bin/mql5-selftest \
+          PYTHONPATH='' /tmp/vkmql-rc5-wheel-venv/bin/mql5-selftest 2>&1 \
             | tee "${RUNNER_TEMP}/rc5-wheel-selftest.txt"
 
       - name: Verify JUnit has zero skips and candidate hashes still match
