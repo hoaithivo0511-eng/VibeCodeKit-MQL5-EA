@@ -102,6 +102,7 @@ jobs:
             --live-selftest "${RUNNER_TEMP}/rc5-live-selftest.txt" \
             --zip-selftest "${RUNNER_TEMP}/rc5-source-zip-selftest.txt" \
             --wheel-selftest "${RUNNER_TEMP}/rc5-wheel-selftest.txt"
+          sed -i 's/[[:space:]]\+$//' docs/release/v3.3.0rc5/PR-09-COMPLETION.md
 
       - name: Stage candidate and refresh repository manifest
         run: |
