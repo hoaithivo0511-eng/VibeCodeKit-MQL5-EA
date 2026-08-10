@@ -1,6 +1,7 @@
 0eaa26bd7dd997830dc75be37e8594a224ab79eb273b19389172de03e0390ba2  ./.gitattributes
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
 90860fd29d8232eab6ef5153e336a4a710f56053a8d15aa973c534a5e308fe40  ./.github/workflows/rc5-conformance-verify.yml
+d7a230623eddc002fcde320ba6e161affa5ea3ac069e5235362286c05388f3a5  ./.github/workflows/rc5-native-evidence-verify.yml
 5d6a657e610b4e05aba2c95beaec917cee9ef7707430938f381cdb8256daa617  ./.github/workflows/rc5-package-integration.yml
 9538a3f47e43bf4d10388e31ef043c4ab8014ac26464f4e144f0e3b620d1cdc9  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
