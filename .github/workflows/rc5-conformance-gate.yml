@@ -39,6 +39,18 @@ jobs:
             PYTHONPATH="${RUNNER_TEMP}/review/patches" \
               python "${RUNNER_TEMP}/review/patches/apply_all_conformance.py" "${GITHUB_WORKSPACE}"
           fi
+          # Canonicalize the two appended Python tests to exactly one trailing newline.
+          # The approved transformer appends source-level tests; this prevents a
+          # style-only extra blank EOF from blocking an otherwise deterministic patch.
+          python - <<'PY'
+          from pathlib import Path
+          for rel in (
+              "tool/source/tests/test_phase23_remote_command_lifecycle.py",
+              "tool/source/tests/test_phase24_trade_lifecycle_v2.py",
+          ):
+              path = Path(rel)
+              path.write_text(path.read_text(encoding="utf-8").rstrip("\n") + "\n", encoding="utf-8")
+          PY
           git diff --check
       - uses: actions/setup-python@v7
         with:
