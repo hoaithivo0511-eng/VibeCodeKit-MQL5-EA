@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "kind": "rc5-ship",
+  "kit_version": "3.3.0rc5",
+  "ship_ready": true,
+  "native_validation_status": "PENDING",
+  "release_eligible": false,
+  "release_blockers": [
+    "Trusted native MetaEditor compile evidence pending",
+    "Trusted native MT5 Strategy Tester evidence pending",
+    "Crash/restart recovery evidence pending",
+    "Native deep-review evidence pending"
+  ],
+  "candidate_source_tree_sha": "1d06c5132855f8d33dc829a1de72256907b63f51",
+  "candidate_build_input_commit": "8eac8ac5711a2985b02c6d78b934547d9e40cca2",
+  "bundle": {
+    "path": "VibeCodeKit-MQL5-v3.3.0rc5-SHIP.zip",
+    "size": 8307207,
+    "sha256": "6b9b01a1be819d6a801dc4b8fc4e0d29e5b1bbb6dbc5588d413b49b2d42c7be0"
+  },
+  "contents_manifest_sha256": "bd2dc72d3098a324d4a362e4f4088be4fa2255cfacf3820aa4daa03ec149b670",
+  "payload_member_count": 638
+}

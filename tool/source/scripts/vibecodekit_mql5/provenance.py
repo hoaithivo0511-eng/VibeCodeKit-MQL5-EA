@@ -1,7 +1,7 @@
 """Canonical release-evidence provenance validation.
 
 Presence of a file, a parseable JSON manifest, or a valid hash chain is not
-proof that MetaEditor/Strategy Tester actually produced the evidence.  This
+proof that MetaEditor/Strategy Tester actually produced the evidence. This
 module is the single conservative gate used by both ``check_all`` and the
 attestation CLI.
 """
@@ -26,6 +26,17 @@ CORE_ARTIFACTS = (
     "evidence/review/deep-review.json",
 )
 REQUIRED_PROVENANCE = ("source", "command", "tool_version", "host", "recorded_at_utc")
+REQUIRED_RESTART_CASES = (
+    "abrupt_terminal_kill",
+    "restart_reconcile",
+    "no_duplicate_order",
+    "legacy_v1_migration_restart",
+)
+TRUSTED_RESTART_SOURCES = {
+    "actual_mt5_restart_recovery",
+    "remote_worker_mt5_restart_recovery",
+}
+RESOLVED_FINDING_STATES = {"RESOLVED", "CLOSED", "FIXED"}
 
 
 @dataclass
@@ -72,39 +83,134 @@ def _validate_report(path: Path, errors: list[str]) -> None:
     except Exception as exc:  # noqa: BLE001
         errors.append(f"backtest report is not valid XML: {exc}")
         return
-    # An empty ``<report/>`` is a fixture, not a Strategy Tester result.  A
-    # real report must expose at least one metric and a trade count.
     tags = {el.tag.rsplit("}", 1)[-1] for el in root.iter()}
     if "TotalTrades" not in tags:
         errors.append("backtest report has no TotalTrades metric")
     if not ({"ProfitFactor", "NetProfit", "ExpectedPayoff"} & tags):
         errors.append("backtest report has no performance metric")
 
+
+def _load_json_object(path: Path, label: str, errors: list[str]) -> dict[str, Any] | None:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"{label} is not valid JSON: {exc}")
+        return None
+    if not isinstance(data, dict):
+        errors.append(f"{label} must be a JSON object")
+        return None
+    return data
+
+
+def _validate_stress_report(
+    path: Path,
+    *,
+    expected_source_tree_sha: str,
+    errors: list[str],
+) -> None:
+    data = _load_json_object(path, "stress report", errors)
+    if data is None:
+        return
+    if data.get("schema_version") != "1.0":
+        errors.append("stress report schema_version must be 1.0")
+    if str(data.get("status") or "").upper() != "PASS":
+        errors.append("stress report status is not PASS")
+    source = str(data.get("source") or "").strip()
+    if source not in TRUSTED_RESTART_SOURCES:
+        errors.append("stress report source is not trusted native restart/recovery evidence")
+    bound_tree = str(data.get("candidate_source_tree_sha") or "").strip()
+    if not bound_tree:
+        errors.append("stress report missing candidate_source_tree_sha")
+    elif expected_source_tree_sha and bound_tree != expected_source_tree_sha:
+        errors.append("stress report candidate_source_tree_sha does not match compile candidate")
+
+    cases = data.get("restart_recovery_cases")
+    if not isinstance(cases, list):
+        errors.append("stress report restart_recovery_cases must be a list")
+        return
+    by_id: dict[str, dict[str, Any]] = {}
+    for raw in cases:
+        if not isinstance(raw, dict):
+            errors.append("stress report contains a non-object restart recovery case")
+            continue
+        case_id = str(raw.get("id") or "").strip()
+        if not case_id:
+            errors.append("stress report contains restart recovery case without id")
+            continue
+        if case_id in by_id:
+            errors.append(f"stress report contains duplicate restart recovery case {case_id}")
+            continue
+        by_id[case_id] = raw
+    for case_id in REQUIRED_RESTART_CASES:
+        raw = by_id.get(case_id)
+        if raw is None:
+            errors.append(f"stress report missing required restart recovery case {case_id}")
+            continue
+        if str(raw.get("status") or "").upper() != "PASS":
+            errors.append(f"stress report restart recovery case {case_id} is not PASS")
+        if not str(raw.get("evidence") or "").strip():
+            errors.append(f"stress report restart recovery case {case_id} has no evidence reference")
+
+
+def _validate_review_report(
+    path: Path,
+    *,
+    expected_source_tree_sha: str,
+    errors: list[str],
+) -> None:
+    data = _load_json_object(path, "review report", errors)
+    if data is None:
+        return
+    if data.get("schema_version") != "1.0":
+        errors.append("review report schema_version must be 1.0")
+    if str(data.get("status") or "").upper() != "PASS":
+        errors.append("review report status is not PASS")
+    bound_tree = str(data.get("candidate_source_tree_sha") or "").strip()
+    if not bound_tree:
+        errors.append("review report missing candidate_source_tree_sha")
+    elif expected_source_tree_sha and bound_tree != expected_source_tree_sha:
+        errors.append("review report candidate_source_tree_sha does not match compile candidate")
+    if not str(data.get("reviewer") or "").strip():
+        errors.append("review report missing reviewer")
+    if not str(data.get("reviewed_at_utc") or "").strip():
+        errors.append("review report missing reviewed_at_utc")
+
+    blockers = data.get("release_blockers")
+    if not isinstance(blockers, list):
+        errors.append("review report release_blockers must be a list")
+    elif blockers:
+        errors.append("review report still contains release blockers")
+
+    findings = data.get("findings")
+    if not isinstance(findings, list):
+        errors.append("review report findings must be a list")
+        return
+    for index, finding in enumerate(findings):
+        if not isinstance(finding, dict):
+            errors.append(f"review report findings[{index}] is not an object")
+            continue
+        severity = str(finding.get("severity") or "").upper().strip()
+        status = str(finding.get("status") or "").upper().strip()
+        if severity in {"P0", "P1"} and status not in RESOLVED_FINDING_STATES:
+            errors.append(f"review report has unresolved {severity} finding at index {index}")
+
+
 def attestation_payload(manifest: dict[str, Any], hashes: dict[str, str]) -> bytes:
     """Canonical bytes signed by the native runner, never by the repo writer."""
-    return json.dumps({"schema_version": manifest.get("schema_version"), "compile": manifest.get("compile"), "backtest": manifest.get("backtest"), "artifacts": hashes}, sort_keys=True, separators=(",", ":")).encode()
+    return json.dumps(
+        {
+            "schema_version": manifest.get("schema_version"),
+            "compile": manifest.get("compile"),
+            "backtest": manifest.get("backtest"),
+            "artifacts": hashes,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+
 
 def _verify_runner_attestation(manifest: dict[str, Any], hashes: dict[str, str], result: ProvenanceResult) -> None:
-    """Verify the detached native-runner signature against a *pinned* key.
-
-    Two independent conditions must both hold:
-
-    1. The signature verifies over the canonical payload.
-    2. The key that made it is named in the project's ``RELEASE-TRUST.yaml``
-       pin, matched by ``key_id`` **and** by SHA-256 fingerprint.
-
-    Condition 2 is what closes ADV-6. Verifying a signature against a key
-    supplied by the same party that produced the evidence proves only internal
-    consistency, not provenance: an attacker can always generate a fresh
-    keypair and sign their own forgery. Requiring the key to match an in-repo
-    pin means a forged release must additionally modify a reviewed, hash-chained
-    contract artifact -- a visible act rather than an invisible one.
-
-    Failure taxonomy is deliberate:
-      * absent signature / absent pin / absent env key -> ``missing`` (INCOMPLETE)
-      * present but wrong / unpinned / malformed       -> ``errors`` (FAIL)
-    An unpinned key is an active rejection, never a silent pass.
-    """
+    """Verify detached native-runner signature against an in-repo pinned key."""
     block = manifest.get("runner_attestation")
     if not isinstance(block, dict) or not block.get("signature_b64") or block.get("algorithm") != "Ed25519":
         result.missing.append("external runner Ed25519 attestation")
@@ -150,8 +256,6 @@ def _verify_runner_attestation(manifest: dict[str, Any], hashes: dict[str, str],
 
     supplied = fingerprint(raw)
     if supplied != pinned.public_key_sha256:
-        # The ADV-6 path lands exactly here: a well-formed, self-generated key
-        # that signs perfectly but was never authorised for this project.
         result.errors.append(
             f"supplied runner public key does not match the pin for key_id {key_id!r} "
             f"(pinned {pinned.public_key_sha256[:16]}..., supplied {supplied[:16]}...)"
@@ -170,7 +274,7 @@ def _verify_runner_attestation(manifest: dict[str, Any], hashes: dict[str, str],
 
 
 def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
-    """Validate canonical manifest, trusted execution provenance and hashes."""
+    """Validate canonical manifest, native evidence semantics, provenance and hashes."""
     root = Path(project_dir)
     result = ProvenanceResult(ok=False, project_dir=str(root))
     manifest_path = root / EVIDENCE_MANIFEST
@@ -216,23 +320,27 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
             result.errors.append(f"artifact hash mismatch for {rel}")
         else:
             verified_hashes[rel] = str(record.get("sha256"))
+
     ex5 = root / CORE_ARTIFACTS[1]
     if ex5.is_file() and ex5.stat().st_size < 32:
         result.errors.append("ea.ex5 is implausibly small; refusing fixture/stub binary")
     report = root / CORE_ARTIFACTS[2]
     if report.is_file():
         _validate_report(report, result.errors)
-    stress = root / CORE_ARTIFACTS[3]
-    review = root / CORE_ARTIFACTS[4]
-    for path, label in ((stress, "stress report"), (review, "review report")):
-        if path.is_file():
-            try:
-                json.loads(path.read_text(encoding="utf-8"))
-            except Exception as exc:  # noqa: BLE001
-                result.errors.append(f"{label} is not valid JSON: {exc}")
 
-    # A manifest is author-controlled. Release provenance therefore requires a
-    # detached Ed25519 signature made by a configured native runner key.
+    compile_candidate = compile_block.get("candidate")
+    expected_source_tree_sha = (
+        str(compile_candidate.get("source_tree_sha") or "").strip()
+        if isinstance(compile_candidate, dict)
+        else ""
+    )
+    stress = root / CORE_ARTIFACTS[3]
+    if stress.is_file():
+        _validate_stress_report(stress, expected_source_tree_sha=expected_source_tree_sha, errors=result.errors)
+    review = root / CORE_ARTIFACTS[4]
+    if review.is_file():
+        _validate_review_report(review, expected_source_tree_sha=expected_source_tree_sha, errors=result.errors)
+
     if not result.missing:
         _verify_runner_attestation(manifest, verified_hashes, result)
 

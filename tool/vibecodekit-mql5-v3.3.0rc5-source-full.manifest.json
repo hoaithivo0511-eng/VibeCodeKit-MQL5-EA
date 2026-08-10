@@ -3,9 +3,9 @@
   "kind": "kit-distribution",
   "kit_version": "3.3.0rc5",
   "flavor": "full",
-  "build_input_commit": "8a9d785e9c0ff5e73b4dd634585d7376b370a9ac",
-  "source_tree_sha": "1314fe7cb562aa41ce46a4a65db6b99b5dbff65c",
-  "file_count": 621,
+  "build_input_commit": "8eac8ac5711a2985b02c6d78b934547d9e40cca2",
+  "source_tree_sha": "1d06c5132855f8d33dc829a1de72256907b63f51",
+  "file_count": 623,
   "files": [
     {
       "path": ".dockerignore",
@@ -1659,8 +1659,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/provenance.py",
-      "size": 10668,
-      "sha256": "9fc74bda1ad936ddea754a1a61641888c54af45a4ad86270096e8074528fffa9"
+      "size": 14419,
+      "sha256": "9afceef9c31de6a7db8afc1d5881adb79f6d7a577a7cf54cda9df47352cd893c"
     },
     {
       "path": "scripts/vibecodekit_mql5/refine.py",
@@ -2914,8 +2914,8 @@
     },
     {
       "path": "tests/_util.py",
-      "size": 5093,
-      "sha256": "73bbc3617e75f6b1e861ca2e3d21125f64e4e2e52aa31281e66c29602c2c86cc"
+      "size": 6000,
+      "sha256": "94846e78ade4b590f68e3ded853e25f468807f545878519bdf80bb30bdc80446"
     },
     {
       "path": "tests/fixtures/ccbsn_demo_profile.yaml",
@@ -3021,6 +3021,16 @@
       "path": "tests/test_phase25_audit_gate_execution.py",
       "size": 16001,
       "sha256": "2bc2dd3a90654c5d5c3cc5930b7e2c6f079d76be77875030361e106375739c9c"
+    },
+    {
+      "path": "tests/test_phase25_native_release_contract.py",
+      "size": 1614,
+      "sha256": "55356a0c7b5d6694452a1c09afc855eb784d83dbadb3fd61aac74f17e1e954d5"
+    },
+    {
+      "path": "tests/test_phase26_native_evidence_semantics.py",
+      "size": 3124,
+      "sha256": "846f9dd65314ba29dd7f8f0b8786fa0deaecf0d30ddd0c612e79cb49603ce3cf"
     },
     {
       "path": "tests/test_phase26_review_truthfulness.py",
