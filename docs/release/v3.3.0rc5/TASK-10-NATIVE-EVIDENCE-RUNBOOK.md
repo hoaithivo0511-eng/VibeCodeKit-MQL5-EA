@@ -26,6 +26,15 @@ Any missing, skipped, untestable or non-PASS P0/P1 item blocks release eligibili
 
 ## One-time runner trust bootstrap
 
+The repository intentionally starts with a fail-closed root trust file:
+
+```yaml
+schema_version: 1
+policy:
+  require_pinned_runner_key: true
+runner_keys: []
+```
+
 On the trusted Windows/MT5 machine, install the RC5 candidate wheel and generate a runner key:
 
 ```powershell
@@ -34,17 +43,21 @@ C:\vck\runner-venv\Scripts\pip.exe install .\tool\vibecodekit_mql5_ea-3.3.0rc5-p
 C:\vck\runner-venv\Scripts\mql5-runner-key.exe generate --key-id windows-runner-01 --out C:\vck\keys\runner.key
 ```
 
-The command prints `public_key_b64` and `public_key_sha256`. Keep `runner.key` only on the native runner. Add only the public fingerprint to the reviewed root trust file:
+The command prints `public_key_b64` and `public_key_sha256`. Keep `runner.key` only on the native runner. Add only the public fingerprint to the reviewed root trust file. `schema_version` is the integer `1` (not the string `"1.0"`), because the verifier rejects any other type/value:
 
 ```yaml
-schema_version: "1.0"
+schema_version: 1
+policy:
+  require_pinned_runner_key: true
 runner_keys:
   - key_id: windows-runner-01
     algorithm: Ed25519
     public_key_sha256: "<PUBLIC_KEY_SHA256>"
+    owner: "<responsible operator>"
+    note: "Trusted Windows MetaEditor/MT5 runner"
 ```
 
-Commit the trust-root change separately for review. Do not commit the private key.
+Commit the trust-root change separately for review. Do not commit the private key or `public_key_b64`; only the SHA-256 public-key fingerprint is pinned in the repository.
 
 ## Required restart/crash report
 
@@ -67,7 +80,7 @@ The report is hash-bound and included in the runner signature. A status other th
 
 ## Execute the native run
 
-From the repository checkout on the trusted Windows host:
+Before executing, the reviewed branch must contain the real public-key fingerprint in root `RELEASE-TRUST.yaml`. From the repository checkout on the trusted Windows host:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\native\Invoke-RC5NativeEvidence.ps1 `
