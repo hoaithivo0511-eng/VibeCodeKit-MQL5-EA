@@ -1,10 +1,11 @@
 0eaa26bd7dd997830dc75be37e8594a224ab79eb273b19389172de03e0390ba2  ./.gitattributes
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
 90860fd29d8232eab6ef5153e336a4a710f56053a8d15aa973c534a5e308fe40  ./.github/workflows/rc5-conformance-verify.yml
+d7a230623eddc002fcde320ba6e161affa5ea3ac069e5235362286c05388f3a5  ./.github/workflows/rc5-native-evidence-verify.yml
 5d6a657e610b4e05aba2c95beaec917cee9ef7707430938f381cdb8256daa617  ./.github/workflows/rc5-package-integration.yml
-9538a3f47e43bf4d10388e31ef043c4ab8014ac26464f4e144f0e3b620d1cdc9  ./.github/workflows/release-gate.yml
+d9c1bdd5de890d779560f3233c8a034d43a3d945b7fba3bf7c4e8194d8920325  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-14ef295c4c63439effcc4457f91befe5f79b513b0fdc42ac2c53b841c4622b84  ./.github/workflows/repo-manifest-refresh.yml
+ee6252360b7a268684dd49b2bbc248a83ecce45e810f850d9e10feb2a01a6657  ./.github/workflows/repo-manifest-refresh.yml
 fe0c9d28212f1ced93a7f23b67ccc5a6d5dfa2e7da6c748ca9d96abdc97b336f  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
@@ -12,6 +13,7 @@ b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABI
 736931112b3ebfd20125862be116e45a07d6a98d33fc56f3143d20888d23bd31  ./LICENSE
 eb5969b3df591119b1bb8b43adf437e2208262e4496a882f5f8cc7051a935ab3  ./PHASE-TEST-LEDGER.csv
 f3111adaf5264a0d89f1ba7ef7bf5e4f51ce36a772c00cccccd106511ff85102  ./README.md
+5c3fd3ffccabd140cca63efb2ecc5e76a295dc44240a9266fbeae65fdf8aa52b  ./RELEASE-TRUST.yaml
 7bead4fe3ab54ceb1aa3a5c29996fca7728dbb7d53ddede2707239cfc5fe0985  ./SHA256SUMS.txt
 2003f5cf9c42f187602a5837d1efe7f09792c3591400cd431f2d8053c97a94a4  ./STRUCTURE.md
 57a8f830d88e08319b63cfca0a8b6836db4ff999ad26520563c4095dbb4724ad  ./UPDATE-SUMMARY.json
@@ -189,9 +191,11 @@ fe84c85e07062db2ee713ef503a9ff56a5d1ff0d64c1ea082c1759558a6c3321  ./docs/release
 e4c9bdbbf3a7388af302f0ca660a104057ade63639b828098972474912d8e0b7  ./docs/release/v3.3.0rc5/PR-07-COMPLETION.md
 e99358cbf0632f1aad712c7f13df7cca41f4ea7aed86c8467670331e0bdfac7b  ./docs/release/v3.3.0rc5/PR-08-COMPLETION.md
 358d84906360e9c5fd77175a8149c2eb9e2cfef738ff3e1701af565096bf59d3  ./docs/release/v3.3.0rc5/PR-09-COMPLETION.md
+ab481cc321fd52e0fd785a6f7f4ce60437816692b7610251c7207afa22e056d8  ./docs/release/v3.3.0rc5/PR-10-STATUS.md
 4ed00ebd77542bdc9db927820ccf2b256be500749f0b402091784eea152546fe  ./docs/release/v3.3.0rc5/RC5-ARTIFACTS.sha256
 8946406a36baa6fd1b5100cc13973835a24bfae212ea10f80a3e0b5d6c6241ee  ./docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json
 074a34e0815abbb7d2475777c90f88dc592af535d5d5573701063b0c199974a3  ./docs/release/v3.3.0rc5/REQUIREMENTS.csv
+a20bd76c9669746eab8f8cad5177a75a3d60cef3b67c9029887a7af1e8254955  ./docs/release/v3.3.0rc5/TASK-10-NATIVE-EVIDENCE-RUNBOOK.md
 e567e28bb77eb89ae1167cfa206a255445b594da4753234d5f0e6fecba21601f  ./docs/release/v3.3.0rc5/TEST-LEDGER.csv
 535cbe1b219865a62143d7ad516667d396d55124ddf2725901e60941dc3256df  ./docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md
 4c0aeff4ed863252f230cfed82e135ad373e68cba419636f9746b25cce2f932a  ./docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md
@@ -223,6 +227,8 @@ f273199a69a7e15413391813ecef9a228e54477beb1d2362eb9f258ecf4a33f0  ./scripts/main
 dba1ce0fe7acaf3a88c6bf90660a78c80aa3055f4024b1104aebf15a91dd2f6c  ./scripts/maintenance/build_rc5_candidate.py
 1d1334a44378e411a74b772fdb794d4fbf360845c808c173524a838dc4c741f9  ./scripts/maintenance/import-release-bundle.sh
 603fa594b8241e51a63eea34da9ce2cc0ec417baa93376b2c268624081c30056  ./scripts/maintenance/repo_manifest.py
+43e1b18d586924d295796a0a21296cd7c79ffeca32e248afc02ce4684cb38042  ./scripts/maintenance/verify_rc5_native_evidence.py
+3c3ab26c410e8254fa3af1462a98f433e9ced15d45593ef61e915204f2eeecf9  ./scripts/native/Invoke-RC5NativeEvidence.ps1
 c2b5e350e0b9c8c88e635858a8039bf2ce564a14de186364885e6dabda5e7e2a  ./tool/source/.dockerignore
 e695b95c7b4f821a8100bfdf1d1f756850acf0d865ea6dab84987a4f2e6a8c2f  ./tool/source/AGENTS.md
 228173e76e1a6b8f3e84f0bd7e505e8a698c83c354a532b8d5723f9dc3837c78  ./tool/source/CHANGELOG-3.0.0rc1.md
@@ -826,6 +832,7 @@ f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/
 6e1834a8734646ccd9b2a5e8e6fd5e18c38a3cb846ea423d69c3f8f42fe32828  ./tool/source/tests/test_phase23_remote_command_lifecycle.py
 69afac51d1dfaf0db2d5da2db3162ce26be3284735b4d7011622334f25fb8eab  ./tool/source/tests/test_phase24_trade_lifecycle_v2.py
 2bc2dd3a90654c5d5c3cc5930b7e2c6f079d76be77875030361e106375739c9c  ./tool/source/tests/test_phase25_audit_gate_execution.py
+55356a0c7b5d6694452a1c09afc855eb784d83dbadb3fd61aac74f17e1e954d5  ./tool/source/tests/test_phase25_native_release_contract.py
 3c1cd47d4f5cad778da236e4f0a547faf14ebcbea5cd26d856e1cd3da3018d34  ./tool/source/tests/test_phase26_review_truthfulness.py
 58d546f8eb7d5dd4ae5170ab60c0d8411bd0effc8461da8b3589364bf84b7113  ./tool/source/tests/test_phase27_conformance_validation.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/tests/test_phase2_planning.py

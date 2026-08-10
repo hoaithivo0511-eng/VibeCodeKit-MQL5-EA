@@ -1,0 +1,77 @@
+name: RC5 Native Evidence Gate
+
+on:
+  push:
+    branches:
+      - 'release/**'
+    paths:
+      - '.github/workflows/rc5-native-evidence-verify.yml'
+      - 'scripts/maintenance/verify_rc5_native_evidence.py'
+      - 'scripts/native/**'
+      - 'tool/source/scripts/vibecodekit_mql5/evidence_attestation.py'
+      - 'tool/source/scripts/vibecodekit_mql5/provenance.py'
+      - 'tool/source/scripts/vibecodekit_mql5/execution_sources.py'
+      - 'tool/source/scripts/vibecodekit_mql5/runner_key.py'
+      - 'tool/source/tests/test_phase25_native_release_contract.py'
+      - 'docs/release/v3.3.0rc5/**'
+      - 'RELEASE-TRUST.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/rc5-native-evidence-verify.yml'
+      - 'scripts/maintenance/verify_rc5_native_evidence.py'
+      - 'scripts/native/**'
+      - 'tool/source/scripts/vibecodekit_mql5/evidence_attestation.py'
+      - 'tool/source/scripts/vibecodekit_mql5/provenance.py'
+      - 'tool/source/scripts/vibecodekit_mql5/execution_sources.py'
+      - 'tool/source/scripts/vibecodekit_mql5/runner_key.py'
+      - 'tool/source/tests/test_phase25_native_release_contract.py'
+      - 'docs/release/v3.3.0rc5/**'
+      - 'RELEASE-TRUST.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-evidence-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install RC5 source + dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Lock trusted execution-source contract
+        run: |
+          cd tool/source
+          python -m pytest -q tests/test_phase25_native_release_contract.py
+      - name: Parse PowerShell native runner
+        shell: pwsh
+        run: |
+          $text = Get-Content -Raw scripts/native/Invoke-RC5NativeEvidence.ps1
+          [void][scriptblock]::Create($text)
+          Write-Host "native PowerShell runner syntax: PASS"
+      - name: Verify candidate binding and native evidence state
+        shell: bash
+        run: |
+          set -euo pipefail
+          project='docs/release/v3.3.0rc5/native-evidence/project'
+          if [ -f "$project/evidence/manifest.json" ]; then
+            python scripts/maintenance/verify_rc5_native_evidence.py --native-project "$project" --require-pass
+          else
+            python scripts/maintenance/verify_rc5_native_evidence.py --native-project "$project"
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          if data.get('release_eligible') is not False:
+              raise SystemExit('native evidence is absent but candidate release_eligible is not false')
+          print('native evidence pending: fail-closed candidate state PASS')
+          PY
+          fi

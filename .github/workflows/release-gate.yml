@@ -6,6 +6,7 @@ on:
       - main
       - 'release-prep/**'
       - 'hardening/**'
+      - 'release/**'
   pull_request:
   workflow_dispatch:
 
