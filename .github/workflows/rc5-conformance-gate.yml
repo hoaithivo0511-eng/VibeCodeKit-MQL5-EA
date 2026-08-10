@@ -1,0 +1,218 @@
+name: RC5 Conformance Gate
+
+on:
+  push:
+    branches:
+      - conformance/rc5-c02-c03
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Reconstruct approved review kit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/rc5-conformance/review.b64.* > "${RUNNER_TEMP}/review.b64"
+          base64 -d "${RUNNER_TEMP}/review.b64" > "${RUNNER_TEMP}/review.zip"
+          echo "ca2598c89b689e3ae73597d10356c4cc36a240c3a343ca782941db0e9d098a60  ${RUNNER_TEMP}/review.zip" | sha256sum -c -
+          rm -rf "${RUNNER_TEMP}/review"
+          mkdir -p "${RUNNER_TEMP}/review"
+          unzip -q "${RUNNER_TEMP}/review.zip" -d "${RUNNER_TEMP}/review"
+      - name: Apply C02 C03 fail-closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q 'VCK_COMMAND_OWNERSHIP_MODE' tool/source/scripts/vibecodekit_mql5/advanced_codegen.py \
+            && grep -q 'MigrateLegacySlot' tool/source/scripts/vibecodekit_mql5/advanced_codegen.py; then
+            echo "Conformance source already applied; no transformation needed."
+          else
+            PYTHONPATH="${RUNNER_TEMP}/review/patches" \
+              python "${RUNNER_TEMP}/review/patches/apply_all_conformance.py" "${GITHUB_WORKSPACE}"
+          fi
+          git diff --check
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Pre-commit focused verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q \
+            tests/test_phase16_semantic_isolation.py \
+            tests/test_phase23_remote_command_lifecycle.py \
+            tests/test_phase24_trade_lifecycle_v2.py
+          python -m compileall -q scripts/vibecodekit_mql5
+      - name: Commit conformance source
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            sha="$(git rev-parse HEAD)"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add \
+              tool/source/scripts/vibecodekit_mql5/feature_config.py \
+              tool/source/scripts/vibecodekit_mql5/build_planner.py \
+              tool/source/scripts/vibecodekit_mql5/intake.py \
+              tool/source/scripts/vibecodekit_mql5/advanced_codegen.py \
+              tool/source/tests/test_phase23_remote_command_lifecycle.py \
+              tool/source/tests/test_phase24_trade_lifecycle_v2.py
+            git commit -m "fix(conformance): align command ownership and intent migration"
+            git push origin HEAD:"${GITHUB_REF_NAME}"
+            sha="$(git rev-parse HEAD)"
+          fi
+          echo "commit_sha=${sha}" >> "$GITHUB_OUTPUT"
+
+  source-regression:
+    needs: apply
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.apply.outputs.commit_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Full source regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/source-tests.xml"
+          cd ../..
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/source-tests.xml"
+      - name: Source selftest
+        run: python -m vibecodekit_mql5.selftest
+
+  coverage:
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.apply.outputs.commit_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Conformance touched-module coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q \
+            tests/test_phase16_semantic_isolation.py \
+            tests/test_phase23_remote_command_lifecycle.py \
+            tests/test_phase24_trade_lifecycle_v2.py \
+            --cov=vibecodekit_mql5.advanced_codegen \
+            --cov=vibecodekit_mql5.feature_config \
+            --cov=vibecodekit_mql5.build_planner \
+            --cov=vibecodekit_mql5.intake \
+            --cov-report=term-missing \
+            --cov-report=json:"${RUNNER_TEMP}/conformance-coverage.json" \
+            --cov-fail-under=90
+
+  frozen-rc4-artifacts:
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.apply.outputs.commit_sha }}
+      - name: Verify fixed RC4 artifact hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip | awk '{print $1}')" = "33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c"
+          test "$(sha256sum tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip | awk '{print $1}')" = "a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f"
+          test "$(sha256sum tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl | awk '{print $1}')" = "5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a"
+
+  repository-hygiene:
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.apply.outputs.commit_sha }}
+      - name: Check tracked release hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import PurePosixPath, Path
+          import subprocess
+
+          tracked = subprocess.check_output(['git', 'ls-files'], text=True).splitlines()
+          forbidden_exact = {'chatgpt-write-smoke.txt', 'PUSH-GUIDE.md', 'SETUP-CODESPACE.sh'}
+          forbidden_segments = {'__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', '.venv', 'venv', 'node_modules', 'htmlcov'}
+          forbidden_basenames = {'.DS_Store', 'Thumbs.db', '.coverage', '.env'}
+          bad = []
+          for path in tracked:
+              p = PurePosixPath(path)
+              generated_coverage_json = p.name == 'coverage.json' and (not p.parts or p.parts[0] != 'reports')
+              if path in forbidden_exact or any(seg in forbidden_segments for seg in p.parts) or p.name in forbidden_basenames or generated_coverage_json:
+                  bad.append(path)
+          required = [
+              '.gitignore', 'LICENSE', 'README.md', 'STRUCTURE.md',
+              'docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md',
+              'docs/release/v3.3.0rc5/HARDENING-PLAN.md',
+              'docs/release/v3.3.0rc5/REQUIREMENTS.csv',
+              'docs/release/v3.3.0rc5/TEST-LEDGER.csv',
+              'docs/release/v3.3.0rc5/PR-00-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-01-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-02-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-03-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-04-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-05-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-06-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-07-COMPLETION.md',
+              'docs/release/v3.3.0rc5/PR-08-COMPLETION.md',
+              'docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md',
+              'docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md',
+              'docs/release/v3.3.0rc5/WAVE-2-COMPLETION.md',
+              'docs/maintenance/INITIAL-IMPORT.md',
+              'scripts/maintenance/import-release-bundle.sh',
+              'scripts/maintenance/assert_junit_clean.py',
+          ]
+          missing = [path for path in required if path not in tracked or not Path(path).is_file()]
+          print(f'tracked files checked: {len(tracked)}')
+          print(f'forbidden tracked files: {bad}')
+          print(f'missing required files: {missing}')
+          if bad or missing:
+              raise SystemExit(1)
+          print('repository hygiene: PASS')
+          PY
