@@ -1,0 +1,19 @@
+# RC5 native release trust root.
+#
+# This file intentionally ships with NO trusted runner key. Task 10 cannot
+# become release-eligible until an operator generates an Ed25519 key on the
+# trusted Windows/MT5 runner and a reviewed commit pins the SHA-256 fingerprint
+# of that public key below. The private key must never enter this repository.
+#
+# Example after operator key generation:
+# runner_keys:
+#   - key_id: windows-runner-01
+#     algorithm: Ed25519
+#     public_key_sha256: "<64-char sha256 of raw 32-byte public key>"
+#     owner: "<responsible operator>"
+#     note: "Trusted Windows MetaEditor/MT5 runner"
+
+schema_version: 1
+policy:
+  require_pinned_runner_key: true
+runner_keys: []
