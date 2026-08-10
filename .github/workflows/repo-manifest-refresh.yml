@@ -5,11 +5,13 @@ on:
     branches:
       - 'release-prep/**'
       - 'hardening/**'
+      - 'conformance/**'
     paths:
       - '.github/workflows/repo-manifest-check.yml'
       - '.github/workflows/repo-manifest-refresh.yml'
       - '.github/workflows/release-gate.yml'
       - '.github/workflows/package-regression.yml'
+      - '.github/workflows/rc5-conformance-verify.yml'
       - 'scripts/maintenance/repo_manifest.py'
       - 'scripts/maintenance/assert_junit_clean.py'
       - 'docs/release/**'
