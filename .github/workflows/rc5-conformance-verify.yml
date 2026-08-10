@@ -1,0 +1,161 @@
+name: RC5 Conformance Verify
+
+on:
+  push:
+    branches:
+      - conformance/rc5-c02-c03
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Refine regression contracts fail-closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path("tool/source/scripts/vibecodekit_mql5/feature_config.py"): (
+                  'if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES and mode == "legacy_price_only":',
+                  'if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES and mode != "manual_comment_token":',
+              ),
+              Path("tool/source/scripts/vibecodekit_mql5/advanced_codegen.py"): (
+                  'MigrateLegacySlot(source,direction);string id_key=Key(source,direction,"id");if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key))return false;}',
+                  'MigrateLegacySlot(source,direction);string id_key=Key(source,direction,"id");if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key)){datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if(VCK_BLOCK_UNKNOWN_OUTCOME||created==0||TimeCurrent()-created<m_timeout)return false;SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);return false;}}',
+              ),
+          }
+          for path, (before, after) in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              if after in text:
+                  continue
+              if text.count(before) != 1:
+                  raise SystemExit(f"REFINE guard failed for {path}: expected exactly one source anchor")
+              path.write_text(text.replace(before, after, 1), encoding="utf-8")
+          PY
+          git diff --check
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Focused conformance regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q \
+            tests/test_phase16_semantic_isolation.py \
+            tests/test_phase17_runtime_safety.py \
+            tests/test_phase18_cross_feature_invariants.py \
+            tests/test_phase23_remote_command_lifecycle.py \
+            tests/test_phase24_trade_lifecycle_v2.py
+          python -m compileall -q scripts/vibecodekit_mql5
+      - name: Commit refined product source
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            sha="$(git rev-parse HEAD)"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add \
+              tool/source/scripts/vibecodekit_mql5/feature_config.py \
+              tool/source/scripts/vibecodekit_mql5/advanced_codegen.py
+            git commit -m "fix(conformance): preserve collision and unknown-outcome gates"
+            git push origin HEAD:"${GITHUB_REF_NAME}"
+            sha="$(git rev-parse HEAD)"
+          fi
+          echo "commit_sha=${sha}" >> "$GITHUB_OUTPUT"
+
+  source-regression:
+    needs: refine
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.refine.outputs.commit_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Full source regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/source-tests.xml"
+          cd ../..
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/source-tests.xml"
+      - name: Source selftest
+        run: python -m vibecodekit_mql5.selftest
+
+  coverage:
+    needs: refine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.refine.outputs.commit_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Full-suite touched-module coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd tool/source
+          python -m pytest -q \
+            --cov=vibecodekit_mql5.advanced_codegen \
+            --cov=vibecodekit_mql5.feature_config \
+            --cov=vibecodekit_mql5.build_planner \
+            --cov=vibecodekit_mql5.intake \
+            --cov-report=term-missing \
+            --cov-report=json:"${RUNNER_TEMP}/conformance-coverage.json" \
+            --cov-fail-under=90
+
+  frozen-rc4-artifacts:
+    needs: refine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.refine.outputs.commit_sha }}
+      - name: Verify fixed RC4 artifact hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip | awk '{print $1}')" = "33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c"
+          test "$(sha256sum tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip | awk '{print $1}')" = "a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f"
+          test "$(sha256sum tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl | awk '{print $1}')" = "5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a"
