@@ -224,6 +224,7 @@ dba1ce0fe7acaf3a88c6bf90660a78c80aa3055f4024b1104aebf15a91dd2f6c  ./scripts/main
 1d1334a44378e411a74b772fdb794d4fbf360845c808c173524a838dc4c741f9  ./scripts/maintenance/import-release-bundle.sh
 603fa594b8241e51a63eea34da9ce2cc0ec417baa93376b2c268624081c30056  ./scripts/maintenance/repo_manifest.py
 43e1b18d586924d295796a0a21296cd7c79ffeca32e248afc02ce4684cb38042  ./scripts/maintenance/verify_rc5_native_evidence.py
+3c3ab26c410e8254fa3af1462a98f433e9ced15d45593ef61e915204f2eeecf9  ./scripts/native/Invoke-RC5NativeEvidence.ps1
 c2b5e350e0b9c8c88e635858a8039bf2ce564a14de186364885e6dabda5e7e2a  ./tool/source/.dockerignore
 e695b95c7b4f821a8100bfdf1d1f756850acf0d865ea6dab84987a4f2e6a8c2f  ./tool/source/AGENTS.md
 228173e76e1a6b8f3e84f0bd7e505e8a698c83c354a532b8d5723f9dc3837c78  ./tool/source/CHANGELOG-3.0.0rc1.md
