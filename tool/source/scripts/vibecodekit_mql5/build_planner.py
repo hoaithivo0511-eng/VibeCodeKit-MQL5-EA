@@ -124,6 +124,17 @@ def plan(ir: EAIR, *, allow_beta: bool = True) -> BuildPlan:
     result.blockers.extend(validate_feature_config(ir, requested))
     result.blockers.extend(validate_feature_invariants(ir, requested))
     result.blockers.extend(validate_ir_values(ir))
+    ownership = ir.controls.get("pending_command_ownership") or {}
+    if (
+        "controls.pending_order_remote" in requested
+        and isinstance(ownership, dict)
+        and ownership.get("mode") == "legacy_price_only"
+    ):
+        result.warnings.append({
+            "id": "LEGACY-REMOTE-COMMAND-DRAFT-ONLY",
+            "path": "controls.pending_command_ownership.mode",
+            "message": "legacy_price_only is compatibility-only and must never become release eligible.",
+        })
 
     # Explicit dependencies must be included even when the source only names a
     # specialised mode such as step_multiplier.

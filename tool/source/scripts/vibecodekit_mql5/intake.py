@@ -497,7 +497,7 @@ def parse_text(text: str, *, source: str = "prompt", strict: bool = False) -> EA
             "id": "AMB-REMOTE-COMMAND-OWNERSHIP",
             "severity": "blocking" if strict else "warning",
             "path": "controls.pending_command_ownership",
-            "message": "Choose an owner magic, portable comment prefix and managed-symbol scope for the pending-order command channel.",
+            "message": "Choose authenticated_ea_order, manual_comment_token or legacy_price_only ownership and a managed-symbol scope. Legacy price-only is draft-only.",
         })
 
     explicit_signal_logic: str | None = None

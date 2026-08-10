@@ -133,6 +133,7 @@ def _command_definitions(ir: EAIR) -> list[dict[str, Any]]:
             "order_type": order_types[str(raw["order_type"]).lower()],
             "price": float(raw["price"]),
             "action": dict(raw["action"]),
+            "comment_token": raw.get("comment_token"),
         })
     return result
 
@@ -140,6 +141,30 @@ def _command_definitions(ir: EAIR) -> list[dict[str, Any]]:
 def _command_ownership(ir: EAIR) -> dict[str, Any]:
     ownership = ir.controls.get("pending_command_ownership") or {}
     return ownership if isinstance(ownership, dict) else {}
+
+
+def _command_ownership_mode(ownership: dict[str, Any]) -> str:
+    mode = ownership.get("mode")
+    if mode is None and {"magic", "comment_prefix"} <= set(ownership):
+        return "authenticated_ea_order"
+    return str(mode or "")
+
+
+def _authenticated_command_token(prefix: str, command_id: str) -> str:
+    digest = hashlib.sha256(command_id.encode("utf-8")).hexdigest()[:6].upper()
+    room = 31 - len(prefix) - 1 - 1 - len(digest)
+    body = _command_identifier(command_id)[:max(1, room)]
+    return f"{prefix}:{body}-{digest}"
+
+
+def _command_token(ir: EAIR, command: dict[str, Any]) -> str:
+    ownership = _command_ownership(ir)
+    mode = _command_ownership_mode(ownership)
+    if mode == "authenticated_ea_order":
+        return _authenticated_command_token(str(ownership["comment_prefix"]), str(command["id"]))
+    if mode == "manual_comment_token":
+        return str(command["comment_token"])
+    return ""
 
 
 def _remote_action_statement(action: dict[str, Any]) -> str:
@@ -188,6 +213,7 @@ def _remote_command_handler(ir: EAIR) -> str:
     commands = _command_definitions(ir)
     if not commands:
         return "bool ProcessRemoteCommands(){return false;}"
+    ownership_mode = _command_ownership_mode(_command_ownership(ir))
     match_branches: list[str] = []
     apply_branches: list[str] = []
     effect_branches: list[str] = []
@@ -195,8 +221,16 @@ def _remote_command_handler(ir: EAIR) -> str:
         prefix = "if" if index == 0 else "else if"
         ident = command["identifier"]
         statement = _remote_action_statement(command["action"])
+        identity = ""
+        if ownership_mode == "authenticated_ea_order":
+            identity = (
+                "&&(long)OrderGetInteger(ORDER_MAGIC)==VCK_COMMAND_OWNER_MAGIC"
+                f"&&comment==VCK_CMD_{ident}_TOKEN"
+            )
+        elif ownership_mode == "manual_comment_token":
+            identity = f"&&comment==VCK_CMD_{ident}_TOKEN"
         match_branches.append(
-            f"{prefix}(type==VCK_CMD_{ident}_TYPE&&MathAbs(p-InpCmd_{ident})<=point)"
+            f"{prefix}(type==VCK_CMD_{ident}_TYPE&&MathAbs(p-InpCmd_{ident})<=point{identity})"
             f"return {index};"
         )
         apply_branches.append(f"{prefix}(command_index=={index}){{{statement}}}")
@@ -211,23 +245,22 @@ def _remote_command_handler(ir: EAIR) -> str:
         "if(t==0||!PositionSelectByTicket(t))continue;if(PositionGetString(POSITION_SYMBOL)!=g_symbol||(long)PositionGetInteger(POSITION_MAGIC)!=InpMagic)continue;"
         "ENUM_POSITION_TYPE side=(ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);if(direction==0||(direction>0&&side==POSITION_TYPE_BUY)||(direction<0&&side==POSITION_TYPE_SELL))return false;}return true;}"
         "bool RemoteAccountScopeEmpty(){return PositionsTotal()==0;}"
-        "bool RemoteOrderOwned(const ulong ticket){if(ticket==0||!OrderSelect(ticket))return false;string comment=OrderGetString(ORDER_COMMENT);"
-        "return OrderGetString(ORDER_SYMBOL)==g_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==VCK_COMMAND_OWNER_MAGIC&&StringFind(comment,VCK_COMMAND_COMMENT_PREFIX)==0;}"
-        "int MatchRemoteCommand(){ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);double p=OrderGetDouble(ORDER_PRICE_OPEN);"
+        "int MatchRemoteCommand(){string comment=OrderGetString(ORDER_COMMENT);ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);double p=OrderGetDouble(ORDER_PRICE_OPEN);"
         "double point=SymbolInfoDouble(g_symbol,SYMBOL_POINT);" + match_body + "return -1;}"
+        "bool RemoteCommandTicketMatches(const ulong ticket,const int expected){if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=g_symbol)return false;return MatchRemoteCommand()==expected;}"
         "bool ApplyRemoteCommandOnce(const int command_index){bool applied=false;" + apply_body + "return applied;}"
         "bool RemoteCommandEffectSatisfied(const int command_index){" + effect_body + "return false;}"
         "bool ContinueRemoteCommand(){int state=CommandLedger.State();if(state==VCK_CMD_IDLE)return false;"
         "ulong ticket=CommandLedger.Ticket();int command_index=CommandLedger.CommandIndex();"
         "if(state==VCK_CMD_APPLIED){CommandLedger.FinalizeApplied();return true;}"
         "if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_BLOCKED\",\"manual reconciliation required\",(double)ticket);return true;}"
-        "if(state==VCK_CMD_CLAIMED){if(!RemoteOrderOwned(ticket)){CommandLedger.Block();return true;}"
+        "if(state==VCK_CMD_CLAIMED){if(!RemoteCommandTicketMatches(ticket,command_index)){CommandLedger.Block();return true;}"
         "if(!Trade.DeleteOrder(ticket))return true;if(!CommandLedger.MarkDeleted(ticket,command_index))return true;state=VCK_CMD_DELETED;}"
         "if(state==VCK_CMD_DELETED){if(!CommandLedger.BeginApply(ticket,command_index))return true;ApplyRemoteCommandOnce(command_index);state=VCK_CMD_APPLYING;}"
         "if(state==VCK_CMD_APPLYING){if(RemoteCommandEffectSatisfied(command_index)){PersistStateCritical();CommandLedger.MarkApplied(ticket,command_index);}"
         "else{g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_INCOMPLETE\",\"effect not satisfied; no replay\",(double)ticket);}return true;}return true;}"
         "bool ProcessRemoteCommands(){if(!VCK_USE_REMOTE)return false;if(CommandLedger.State()!=VCK_CMD_IDLE)return ContinueRemoteCommand();"
-        "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);if(!RemoteOrderOwned(ticket))continue;int command_index=MatchRemoteCommand();"
+        "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=g_symbol)continue;int command_index=MatchRemoteCommand();"
         "if(command_index<0)continue;if(!CommandLedger.Claim(ticket,command_index))return true;return ContinueRemoteCommand();}return false;}"
     )
 
@@ -270,6 +303,7 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         sessions.append({"enabled": False, "start": "00:00", "end": "00:00"})
     commands = _command_definitions(ir)
     command_ownership = _command_ownership(ir)
+    ownership_mode = _command_ownership_mode(command_ownership)
 
     lines: list[str] = [
         "// digits-tested: 5,4,3,2", f"// Generated from EA-IR {ir.sha256()}", "#pragma once", "",
@@ -439,15 +473,21 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         lines += [f"input bool InpSession{i}Enabled={str(session['enabled']).lower()};", f'input string InpSession{i}Start="{session["start"]}";', f'input string InpSession{i}End="{session["end"]}";']
     if commands:
         lines += ['', 'input group "Remote controls"']
+        mode_code = {"authenticated_ea_order": 1, "manual_comment_token": 2, "legacy_price_only": 3}[ownership_mode]
+        owner_magic = int(command_ownership.get("magic", 0)) if ownership_mode == "authenticated_ea_order" else 0
+        owner_prefix = str(command_ownership.get("comment_prefix", "")) if ownership_mode == "authenticated_ea_order" else ""
         lines += [
-            f"const long VCK_COMMAND_OWNER_MAGIC={int(command_ownership['magic'])};",
-            f'const string VCK_COMMAND_COMMENT_PREFIX="{command_ownership["comment_prefix"]}";',
+            f"const int VCK_COMMAND_OWNERSHIP_MODE={mode_code};",
+            f"const long VCK_COMMAND_OWNER_MAGIC={owner_magic};",
+            f'const string VCK_COMMAND_COMMENT_PREFIX="{owner_prefix}";',
         ]
         for command in commands:
             ident = command["identifier"]
+            token = _command_token(ir, command)
             lines += [
                 f"input double InpCmd_{ident}={command['price']:.8f};",
                 f"const ENUM_ORDER_TYPE VCK_CMD_{ident}_TYPE={command['order_type']};",
+                f'const string VCK_CMD_{ident}_TOKEN="{token}";',
             ]
     lines += [
         '', '// Cross-feature semantic contracts (sealed from EA-IR).',
@@ -487,18 +527,25 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
 
 TRADE_INTENT_LEDGER = r'''// digits-tested: 5,4,3,2
 #pragma once
-enum VCKTradeIntentState { VCK_INTENT_NONE=0,VCK_INTENT_PREPARED,VCK_INTENT_SUBMITTED,VCK_INTENT_ACKNOWLEDGED,VCK_INTENT_PARTIAL,VCK_INTENT_COMPLETED,VCK_INTENT_UNKNOWN };
+enum VCKTradeIntentState { VCK_INTENT_NONE=0,VCK_INTENT_PREPARED,VCK_INTENT_SUBMITTED,VCK_INTENT_ACKNOWLEDGED,VCK_INTENT_PARTIAL,VCK_INTENT_COMPLETED,VCK_INTENT_UNKNOWN,VCK_INTENT_REJECTED,VCK_INTENT_OPERATOR_REQUIRED };
+const VCKTradeIntentState VCK_INTENT_CREATED=VCK_INTENT_PREPARED;
+const VCKTradeIntentState VCK_INTENT_FILLED=VCK_INTENT_COMPLETED;
 class CTradeIntentLedger
   {
 private:
-   string m_prefix,m_symbol;long m_magic;int m_counter,m_timeout,m_lookback;
+   string m_prefix,m_v1_prefix,m_audit_prefix,m_symbol;long m_magic;int m_counter,m_timeout,m_lookback;
    string Key(const int source,const int direction,const string suffix){return m_prefix+(string)source+"_"+(string)direction+"_"+suffix;}
+   string LegacyKey(const int source,const int direction,const string suffix){return m_v1_prefix+(string)source+"_"+(string)direction+"_"+suffix;}
+   string AuditKey(const long id,const string suffix){return m_audit_prefix+(string)id+"_"+suffix;}
    long MakeId(const int source,const int direction){m_counter=(m_counter+1)%1000;return(long)TimeCurrent()*10000+(long)(source+10)*100+(direction>0?50:0)+m_counter;}
    string DiagnosticPrefix(const long id){return"I"+(string)id+"|";}
+   bool LegacyCommentMatches(const string comment,const long id){return StringFind(comment,DiagnosticPrefix(id))==0;}
    void SaveUlong(const int source,const int direction,const string suffix,const ulong value){GlobalVariableSet(Key(source,direction,suffix+"_hi"),(double)(value>>32));GlobalVariableSet(Key(source,direction,suffix+"_lo"),(double)(value&0xFFFFFFFF));}
    ulong LoadUlong(const int source,const int direction,const string suffix){ulong hi=GlobalVariableCheck(Key(source,direction,suffix+"_hi"))?(ulong)GlobalVariableGet(Key(source,direction,suffix+"_hi")):0,lo=GlobalVariableCheck(Key(source,direction,suffix+"_lo"))?(ulong)GlobalVariableGet(Key(source,direction,suffix+"_lo")):0;return(hi<<32)|lo;}
    void SetState(const int source,const int direction,const VCKTradeIntentState state){GlobalVariableSet(Key(source,direction,"state"),(double)state);GlobalVariablesFlush();}
-   void Clear(const int source,const int direction){string fields[]={"id","created","state","request_id","volume","diag_seen","order_hi","order_lo","position_hi","position_lo","deal_hi","deal_lo"};for(int i=0;i<ArraySize(fields);i++)GlobalVariableDel(Key(source,direction,fields[i]));GlobalVariablesFlush();}
+   void RecordTerminal(const int source,const int direction,const VCKTradeIntentState state){long id=GlobalVariableCheck(Key(source,direction,"id"))?(long)GlobalVariableGet(Key(source,direction,"id")):0;if(id<=0)return;GlobalVariableSet(AuditKey(id,"terminal_state"),(double)state);GlobalVariableSet(AuditKey(id,"terminal_at"),(double)TimeCurrent());GlobalVariablesFlush();}
+   void ClearLegacy(const int source,const int direction){string fields[]={"id","sent","state"};for(int i=0;i<ArraySize(fields);i++)GlobalVariableDel(LegacyKey(source,direction,fields[i]));}
+   void Clear(const int source,const int direction){bool migrated=GlobalVariableCheck(Key(source,direction,"legacy_migrated"))&&GlobalVariableGet(Key(source,direction,"legacy_migrated"))>0.5;string fields[]={"id","created","state","request_id","volume","diag_seen","legacy_migrated","legacy_conflict_id","order_hi","order_lo","position_hi","position_lo","deal_hi","deal_lo"};for(int i=0;i<ArraySize(fields);i++)GlobalVariableDel(Key(source,direction,fields[i]));if(migrated)ClearLegacy(source,direction);GlobalVariablesFlush();}
    bool FindByRequest(const uint request_id,int &source,int &direction){if(request_id==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"request_id"))&&(uint)GlobalVariableGet(Key(source,direction,"request_id"))==request_id)return true;return false;}
    bool FindByOrder(const ulong order,int &source,int &direction){if(order==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(LoadUlong(source,direction,"order")==order)return true;return false;}
    bool FindByPosition(const ulong position,int &source,int &direction){if(position==0)return false;for(source=0;source<6;source++)for(direction=-1;direction<=1;direction+=2)if(LoadUlong(source,direction,"position")==position)return true;return false;}
@@ -506,6 +553,27 @@ private:
    bool HistoryDealIdentity(const ulong deal){return deal>0&&HistoryDealSelect(deal)&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic;}
    bool HistoryDealForOrder(const ulong order){if(order==0)return false;for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(deal>0&&(ulong)HistoryDealGetInteger(deal,DEAL_ORDER)==order&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic)return true;}return false;}
    bool DefinitelyRejected(const uint retcode){return retcode==TRADE_RETCODE_REJECT||retcode==TRADE_RETCODE_INVALID||retcode==TRADE_RETCODE_INVALID_VOLUME||retcode==TRADE_RETCODE_INVALID_PRICE||retcode==TRADE_RETCODE_INVALID_STOPS||retcode==TRADE_RETCODE_TRADE_DISABLED||retcode==TRADE_RETCODE_MARKET_CLOSED||retcode==TRADE_RETCODE_NO_MONEY||retcode==TRADE_RETCODE_INVALID_FILL||retcode==TRADE_RETCODE_INVALID_ORDER;}
+   bool CaptureLegacyIdentity(const int source,const int direction,const long legacy_id,bool &terminal)
+     {
+      terminal=false;bool found=false;
+      for(int i=0;i<OrdersTotal();i++){ulong ticket=OrderGetTicket(i);if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=m_symbol||(long)OrderGetInteger(ORDER_MAGIC)!=m_magic||!LegacyCommentMatches(OrderGetString(ORDER_COMMENT),legacy_id))continue;SaveUlong(source,direction,"order",ticket);ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);found=true;}
+      for(int i=0;i<PositionsTotal();i++){ulong ticket=PositionGetTicket(i);if(ticket==0||!PositionSelectByTicket(ticket)||PositionGetString(POSITION_SYMBOL)!=m_symbol||(long)PositionGetInteger(POSITION_MAGIC)!=m_magic||!LegacyCommentMatches(PositionGetString(POSITION_COMMENT),legacy_id))continue;SaveUlong(source,direction,"position",(ulong)PositionGetInteger(POSITION_IDENTIFIER));SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      if(!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return found;
+      for(int i=0;i<HistoryOrdersTotal();i++){ulong ticket=HistoryOrderGetTicket(i);if(ticket==0||(long)HistoryOrderGetInteger(ticket,ORDER_MAGIC)!=m_magic||HistoryOrderGetString(ticket,ORDER_SYMBOL)!=m_symbol||!LegacyCommentMatches(HistoryOrderGetString(ticket,ORDER_COMMENT),legacy_id))continue;SaveUlong(source,direction,"order",ticket);found=true;ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(ticket,ORDER_STATE);if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(ticket)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_FILLED);terminal=true;}else if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){SetState(source,direction,VCK_INTENT_REJECTED);terminal=true;}else if(state==ORDER_STATE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);}
+      for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(deal==0||(long)HistoryDealGetInteger(deal,DEAL_MAGIC)!=m_magic||HistoryDealGetString(deal,DEAL_SYMBOL)!=m_symbol||!LegacyCommentMatches(HistoryDealGetString(deal,DEAL_COMMENT),legacy_id))continue;SaveUlong(source,direction,"deal",deal);ulong order=(ulong)HistoryDealGetInteger(deal,DEAL_ORDER);if(order>0)SaveUlong(source,direction,"order",order);if(!terminal)SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      return found;
+     }
+   bool MigrateLegacySlot(const int source,const int direction)
+     {
+      string legacy_id_key=LegacyKey(source,direction,"id");if(!GlobalVariableCheck(legacy_id_key))return false;long legacy_id=(long)GlobalVariableGet(legacy_id_key);string id_key=Key(source,direction,"id");
+      if(GlobalVariableCheck(id_key))
+        {
+         long current=(long)GlobalVariableGet(id_key);if(current!=legacy_id){GlobalVariableSet(Key(source,direction,"legacy_conflict_id"),(double)legacy_id);SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);return true;}
+         GlobalVariableSet(Key(source,direction,"legacy_migrated"),1.0);bool terminal=false;CaptureLegacyIdentity(source,direction,legacy_id,terminal);if(terminal){RecordTerminal(source,direction,(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")));Clear(source,direction);}return true;
+        }
+      datetime sent=GlobalVariableCheck(LegacyKey(source,direction,"sent"))?(datetime)GlobalVariableGet(LegacyKey(source,direction,"sent")):0;GlobalVariableSet(id_key,(double)legacy_id);GlobalVariableSet(Key(source,direction,"created"),(double)(sent>0?sent:TimeCurrent()));GlobalVariableSet(Key(source,direction,"legacy_migrated"),1.0);SetState(source,direction,VCK_INTENT_UNKNOWN);bool terminal=false;CaptureLegacyIdentity(source,direction,legacy_id,terminal);if(terminal){RecordTerminal(source,direction,(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")));Clear(source,direction);}return true;
+     }
+   void MigrateLegacy(){for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)MigrateLegacySlot(source,direction);}
    bool ReconcileSlot(const int source,const int direction)
      {
       ulong deal=LoadUlong(source,direction,"deal"),position=LoadUlong(source,direction,"position"),order=LoadUlong(source,direction,"order");
@@ -514,28 +582,28 @@ private:
       if(order>0&&HistoryOrderSelect(order))
         {
          ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(order,ORDER_STATE);
-         if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(order)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);return true;}
-         if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){Clear(source,direction);return true;}
+         if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(order)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_FILLED);RecordTerminal(source,direction,VCK_INTENT_FILLED);Clear(source,direction);return true;}
+         if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){SetState(source,direction,VCK_INTENT_REJECTED);RecordTerminal(source,direction,VCK_INTENT_REJECTED);Clear(source,direction);return true;}
          if(state==ORDER_STATE_PARTIAL){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
         }
       if(HistoryDealForOrder(order)||HistoryDealIdentity(deal)||LivePositionIdentity(position)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-      return false;
+      VCKTradeIntentState current=GlobalVariableCheck(Key(source,direction,"state"))?(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")):VCK_INTENT_NONE;datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if((current==VCK_INTENT_UNKNOWN||current==VCK_INTENT_PREPARED||current==VCK_INTENT_SUBMITTED)&&created>0&&TimeCurrent()-created>=m_timeout)SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);return false;
      }
 public:
-   void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_V2_"+(string)magic+"_"+symbol+"_";m_counter=0;}
+   void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_V2_"+(string)magic+"_"+symbol+"_";m_v1_prefix="VCK_INTENT_"+(string)magic+"_"+symbol+"_";m_audit_prefix="VCK_INTENT_AUDIT_V2_"+(string)magic+"_"+symbol+"_";m_counter=0;MigrateLegacy();}
    bool Prepare(const int source,const int direction,const string base_comment,string &wire_comment)
      {
-      string id_key=Key(source,direction,"id");
-      if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key)){datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if(VCK_BLOCK_UNKNOWN_OUTCOME||created==0||TimeCurrent()-created<m_timeout||!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return false;Clear(source,direction);}}
-      long id=MakeId(source,direction);GlobalVariableSet(id_key,(double)id);GlobalVariableSet(Key(source,direction,"created"),(double)TimeCurrent());SetState(source,direction,VCK_INTENT_PREPARED);wire_comment=StringSubstr(DiagnosticPrefix(id)+base_comment,0,31);return true;
+      MigrateLegacySlot(source,direction);string id_key=Key(source,direction,"id");if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key))return false;}
+      long id=MakeId(source,direction);GlobalVariableSet(id_key,(double)id);GlobalVariableSet(Key(source,direction,"created"),(double)TimeCurrent());SetState(source,direction,VCK_INTENT_CREATED);wire_comment=StringSubstr(DiagnosticPrefix(id)+base_comment,0,31);return true;
      }
    void MarkSubmitted(const int source,const int direction,const MqlTradeResult &result,const double requested_volume)
      {
       GlobalVariableSet(Key(source,direction,"request_id"),(double)result.request_id);SaveUlong(source,direction,"order",result.order);SaveUlong(source,direction,"deal",result.deal);GlobalVariableSet(Key(source,direction,"volume"),requested_volume);
-      if(result.retcode==TRADE_RETCODE_DONE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else if(result.retcode==TRADE_RETCODE_DONE){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);}else SetState(source,direction,VCK_INTENT_SUBMITTED);
+      if(result.retcode==TRADE_RETCODE_DONE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else if(result.retcode==TRADE_RETCODE_DONE){SetState(source,direction,VCK_INTENT_FILLED);RecordTerminal(source,direction,VCK_INTENT_FILLED);Clear(source,direction);}else SetState(source,direction,VCK_INTENT_SUBMITTED);
      }
    void MarkUnknown(const int source,const int direction,const MqlTradeResult &result){GlobalVariableSet(Key(source,direction,"request_id"),(double)result.request_id);SaveUlong(source,direction,"order",result.order);SaveUlong(source,direction,"deal",result.deal);SetState(source,direction,VCK_INTENT_UNKNOWN);}
-   void MarkRejected(const int source,const int direction){Clear(source,direction);}
+   void MarkRejected(const int source,const int direction){SetState(source,direction,VCK_INTENT_REJECTED);RecordTerminal(source,direction,VCK_INTENT_REJECTED);Clear(source,direction);}
+   bool OperatorClear(const int source,const int direction,const long audit_code){if(audit_code<=0||!GlobalVariableCheck(Key(source,direction,"id")))return false;long id=(long)GlobalVariableGet(Key(source,direction,"id"));SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);GlobalVariableSet(AuditKey(id,"operator_clear_at"),(double)TimeCurrent());GlobalVariableSet(AuditKey(id,"operator_clear_code"),(double)audit_code);GlobalVariablesFlush();Clear(source,direction);return true;}
    void ObserveDiagnosticComment(const string comment)
      {
       if(StringLen(comment)<3||StringGetCharacter(comment,0)!=73)return;int sep=StringFind(comment,"|");if(sep<2)return;long id=(long)StringToInteger(StringSubstr(comment,1,sep-1));for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2){string key=Key(source,direction,"id");if(GlobalVariableCheck(key)&&(long)GlobalVariableGet(key)==id)GlobalVariableSet(Key(source,direction,"diag_seen"),(double)TimeCurrent());}
@@ -549,11 +617,11 @@ public:
       if(order>0)SaveUlong(source,direction,"order",order);if(trans.position>0)SaveUlong(source,direction,"position",trans.position);if(deal>0)SaveUlong(source,direction,"deal",deal);
       if(request_event&&DefinitelyRejected(result.retcode)){MarkRejected(source,direction);return true;}
       if((request_event&&result.retcode==TRADE_RETCODE_DONE_PARTIAL)||(order_event&&trans.order_state==ORDER_STATE_PARTIAL)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-      if((request_event&&result.retcode==TRADE_RETCODE_DONE)||(order_event&&trans.order_state==ORDER_STATE_FILLED)){SetState(source,direction,VCK_INTENT_COMPLETED);Clear(source,direction);return true;}
+      if((request_event&&result.retcode==TRADE_RETCODE_DONE)||(order_event&&trans.order_state==ORDER_STATE_FILLED)){SetState(source,direction,VCK_INTENT_FILLED);RecordTerminal(source,direction,VCK_INTENT_FILLED);Clear(source,direction);return true;}
       if(trans.type==TRADE_TRANSACTION_DEAL_ADD&&trans.deal>0){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
       if(request_event&&result.retcode==TRADE_RETCODE_PLACED)SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);return true;
      }
-   void Reconcile(){for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"id")))ReconcileSlot(source,direction);}
+   void Reconcile(){MigrateLegacy();for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"id")))ReconcileSlot(source,direction);}
   };
 '''
 
@@ -1099,6 +1167,8 @@ def _risk_contract(ir: EAIR) -> dict[str, Any]:
 
 def _evidence_manifest(ir: EAIR, artifact_manifest: dict[str, Any]) -> dict[str, Any]:
     artifact_hash = hashlib.sha256(json.dumps(artifact_manifest, sort_keys=True).encode("utf-8")).hexdigest()
+    legacy_remote = _command_ownership_mode(_command_ownership(ir)) == "legacy_price_only"
+    unsafe_flags = ["legacy_price_only_command_ownership"] if legacy_remote else []
     pending_compile = {
         "ok": False, "source": "unavailable", "command": "pending Windows MetaEditor runner",
         "tool_version": "pending", "host": "pending", "recorded_at_utc": "pending", "returncode": None,
@@ -1119,12 +1189,25 @@ def _evidence_manifest(ir: EAIR, artifact_manifest: dict[str, Any]) -> dict[str,
         "compile": pending_compile, "backtest": pending_backtest,
         "gates": {"ok": False, "reason": "native gates pending"},
         "matrix": {"ok": False, "reason": "native stress matrix pending"},
-        "artifacts": [], "unsafe_flags_used": [],
+        "artifacts": [], "unsafe_flags_used": unsafe_flags,
         "skipped_stages": ["native_compile", "mt5_strategy_tester"],
         "compile_ok": False, "backtest_ok": False,
         "native_compile_verified": False, "mt5_tester_verified": False,
         "release_eligible": False, "summary": summary,
         "status": "SOURCE-COMPLETE-NATIVE-EVIDENCE-PENDING", "authority": "windows-native",
+    }
+
+
+def _release_trust(ir: EAIR) -> dict[str, Any]:
+    legacy_remote = _command_ownership_mode(_command_ownership(ir)) == "legacy_price_only"
+    blockers = ["legacy_price_only_command_ownership"] if legacy_remote else []
+    reason = "legacy price-only command ownership is compatibility/draft-only" if legacy_remote else "native compile and MT5 tester evidence pending"
+    return {
+        "schema_version": "1.0",
+        "ir_sha256": ir.sha256(),
+        "release_eligible": False,
+        "release_blockers": blockers,
+        "reason": reason,
     }
 
 def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -> Path:
@@ -1161,7 +1244,7 @@ def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -
             "RUNTIME-INPUT-CONTRACTS.json": json.dumps(contract_manifest(ir), ensure_ascii=False, indent=2)+"\n",
             "BROKER-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"account_model":ir.runtime.get("account_model","hedging"),"symbols":list(ir.runtime.get("symbols") or ["_Symbol"]),"digits_tested":[5,4,3,2],"native_validation_required":True}, sort_keys=False),
             "EVIDENCE-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"required":["MetaEditor compile log","EX5 SHA-256","MT5 Strategy Tester report","stress matrix","deep review"],"authority":"windows-native"}, sort_keys=False),
-            "RELEASE-TRUST.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"release_eligible":False,"reason":"native compile and MT5 tester evidence pending"}, sort_keys=False),
+            "RELEASE-TRUST.yaml": yaml.safe_dump(_release_trust(ir), sort_keys=False),
             "AGENTS.md": "# Agent rules\n\nDo not edit EA-IR, governance contracts, evidence, review, or release artifacts. Do not claim ready without Windows-native evidence.\n",
             "requirements-matrix.csv": to_csv(ir, plan, implemented_status="GENERATED"),
             "docs/docs-context.json": json.dumps({"ir_sha256":ir.sha256(),"source_documents":ir.metadata.get("source_documents",[]),"assumptions":ir.metadata.get("assumptions",[])}, ensure_ascii=False, indent=2)+"\n",
