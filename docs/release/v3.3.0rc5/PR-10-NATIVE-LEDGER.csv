@@ -1,0 +1,12 @@
+test_id,scope,environment,result,evidence,status,notes
+T10-001,Task-09 source immutability,GitHub Ubuntu Python 3.12,"All tracked tool/source paths and SHA-256 digests match Task-09 source manifest",scripts/release/verify_rc5_candidate_source.py,PASS,"Prevents Task-10 release tooling from invalidating the package candidate"
+T10-002,Release-only native tooling syntax,GitHub Ubuntu Python 3.12,3 release scripts compile,python -m compileall,PASS,"RC5-specific orchestration lives outside tool/source"
+T10-003,Native evidence adversarial contract,GitHub Ubuntu Python 3.12,10/10 passed,scripts/release/tests/test_rc5_native_gate.py,PASS,"Candidate drift; compile errors; duplicate orders; blind retry; scenario tampering; provenance fail/incomplete"
+T10-004,RC5 source regression,Python 3.10/3.11/3.12,220/220 passed on each version,RC5 Development Gate run 31412209834,PASS,"0 failures; 0 errors; 0 skipped; shipped source preserved"
+T10-005,RC5 selftest,Python 3.10/3.11/3.12,13/13 on each version,RC5 Development Gate run 31412209834,PASS,"Immutable shipped source invariants remain green"
+T10-006,Repository manifest,current PR owner head,Repository manifest verified,Repository Manifest Check run 31412209728,PASS,"Manifest refreshed before owner-sync"
+T10-007,Frozen RC4 artifacts,current PR owner head,Fixed RC4 hashes verified,RC5 Development Gate run 31412209834,PASS,"Task-10 infrastructure does not mutate RC4"
+T10-008,Trusted native compile/backtest evidence,Windows MetaEditor + MT5,Not produced yet,release-evidence/v3.3.0rc5/evidence/manifest.json,BLOCKED_NATIVE_EXECUTION,"GitHub Linux runner explicitly refuses to fabricate MetaEditor/MT5 evidence"
+T10-009,Async partial-fill lifecycle,Windows MT5 native environment,Not produced yet,evidence/native/async-fill.json,BLOCKED_NATIVE_EXECUTION,"Must prove actual partial fill and zero duplicate orders"
+T10-010,Restart/crash recovery,Windows MT5 native environment,Not produced yet,evidence/native/restart-recovery.json,BLOCKED_NATIVE_EXECUTION,"Must prove persisted intent reload and terminal proof/operator-required resolution"
+T10-011,Runner trust root,Windows native runner + GitHub verifier,Not configured yet,RELEASE-TRUST.yaml + VCK_RUNNER_PUBLIC_KEY_B64,PENDING,"Private Ed25519 key stays on native runner; only public material enters GitHub verification"
