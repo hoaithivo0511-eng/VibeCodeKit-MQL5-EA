@@ -187,7 +187,7 @@ def _validate_remote_commands(ir: EAIR) -> list[dict[str, Any]]:
             blockers.append({"id": "INVALID-REMOTE-COMMAND-PRICE", "path": path + ".price", "value": price})
             numeric_price = -1.0
         key = (order_type, numeric_price)
-        if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES and mode == "legacy_price_only":
+        if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES and mode != "manual_comment_token":
             if key in seen:
                 blockers.append({
                     "id": "REMOTE-COMMAND-COLLISION", "path": path,

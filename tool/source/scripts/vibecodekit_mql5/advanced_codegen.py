@@ -593,7 +593,7 @@ public:
    void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_V2_"+(string)magic+"_"+symbol+"_";m_v1_prefix="VCK_INTENT_"+(string)magic+"_"+symbol+"_";m_audit_prefix="VCK_INTENT_AUDIT_V2_"+(string)magic+"_"+symbol+"_";m_counter=0;MigrateLegacy();}
    bool Prepare(const int source,const int direction,const string base_comment,string &wire_comment)
      {
-      MigrateLegacySlot(source,direction);string id_key=Key(source,direction,"id");if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key))return false;}
+      MigrateLegacySlot(source,direction);string id_key=Key(source,direction,"id");if(GlobalVariableCheck(id_key)){ReconcileSlot(source,direction);if(GlobalVariableCheck(id_key)){datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if(VCK_BLOCK_UNKNOWN_OUTCOME||created==0||TimeCurrent()-created<m_timeout)return false;SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);return false;}}
       long id=MakeId(source,direction);GlobalVariableSet(id_key,(double)id);GlobalVariableSet(Key(source,direction,"created"),(double)TimeCurrent());SetState(source,direction,VCK_INTENT_CREATED);wire_comment=StringSubstr(DiagnosticPrefix(id)+base_comment,0,31);return true;
      }
    void MarkSubmitted(const int source,const int direction,const MqlTradeResult &result,const double requested_volume)
