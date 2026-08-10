@@ -4,7 +4,7 @@ e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/work
 5d6a657e610b4e05aba2c95beaec917cee9ef7707430938f381cdb8256daa617  ./.github/workflows/rc5-package-integration.yml
 9538a3f47e43bf4d10388e31ef043c4ab8014ac26464f4e144f0e3b620d1cdc9  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-14ef295c4c63439effcc4457f91befe5f79b513b0fdc42ac2c53b841c4622b84  ./.github/workflows/repo-manifest-refresh.yml
+ee6252360b7a268684dd49b2bbc248a83ecce45e810f850d9e10feb2a01a6657  ./.github/workflows/repo-manifest-refresh.yml
 fe0c9d28212f1ced93a7f23b67ccc5a6d5dfa2e7da6c748ca9d96abdc97b336f  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
