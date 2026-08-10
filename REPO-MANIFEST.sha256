@@ -1,8 +1,9 @@
 0eaa26bd7dd997830dc75be37e8594a224ab79eb273b19389172de03e0390ba2  ./.gitattributes
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
+90860fd29d8232eab6ef5153e336a4a710f56053a8d15aa973c534a5e308fe40  ./.github/workflows/rc5-conformance-verify.yml
 9538a3f47e43bf4d10388e31ef043c4ab8014ac26464f4e144f0e3b620d1cdc9  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-d6fa915da14f4afa65bba78b127e7db028650adbdeba5eb4092cfd4e70627bdb  ./.github/workflows/repo-manifest-refresh.yml
+14ef295c4c63439effcc4457f91befe5f79b513b0fdc42ac2c53b841c4622b84  ./.github/workflows/repo-manifest-refresh.yml
 fe0c9d28212f1ced93a7f23b67ccc5a6d5dfa2e7da6c748ca9d96abdc97b336f  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
@@ -174,6 +175,7 @@ c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd  ./demo/generic
 72df94c5930bfec29f68c1c18613e89cf497e7adde6113ee8b54c9900b269fa2  ./docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md
 63223a78187c8ac44d9b331cdd097bf6e3e97b8a09a39c258cd5fba21fcf786e  ./docs/release/v3.3.0rc4/RELEASE-PREP-SUMMARY.json
 4ceb9dc52bed4ff89b21843571d1c2ee6364688f78dbb944cbeb71d22a0ba01a  ./docs/release/v3.3.0rc4/TEST-LEDGER.csv
+1f83f87b068d218911046e658a08a003bfb26e3f6294464c16f357a453f5a4bc  ./docs/release/v3.3.0rc5/CONFORMANCE-ONLINE-COMPLETION.md
 5bd94f8790519dc275a378d5f8105ca8d73f509eb59aa8f25ddddf3a66eaf7c6  ./docs/release/v3.3.0rc5/HARDENING-PLAN.md
 555546a364c492316613b33ef8e60122aa55a7e16e23c77b5460171b591dae3d  ./docs/release/v3.3.0rc5/PR-00-COMPLETION.md
 3601bd97619bf3b434cd23cb7e83e7d5ed96c23987bc9f08d156605796a8102d  ./docs/release/v3.3.0rc5/PR-01-COMPLETION.md
@@ -405,7 +407,7 @@ cc32f8830c6dd0f4d1a14de5490cda5e4216d2dddbb32b2a2836e746c5df3aba  ./tool/source/
 d95052819c4dbbc30f9c6d88b6bec2126c2eed2dc1e132a8c2819d9ba8d2dd31  ./tool/source/scripts/vibecodekit_mql5/_resources.py
 134fdb1a535e3cbefe1fab344c4ceaa70cdf332a8b7a4a228fe2ef20a855af1a  ./tool/source/scripts/vibecodekit_mql5/_safe_archive.py
 2f0301aa2a8ade4d17964b6551d25cdbb83548b3935ea720544aea494eaab7aa  ./tool/source/scripts/vibecodekit_mql5/_version.py
-5ca4eed0e04d82c5b5af847c32b244026a59d51f674d5a7055a1677e8a301e3e  ./tool/source/scripts/vibecodekit_mql5/advanced_codegen.py
+2a8bf31bf76351798e9b42928ddc8181592515478504bb99e06f11754ba2a872  ./tool/source/scripts/vibecodekit_mql5/advanced_codegen.py
 b7d985b81bd73347e367c02c6cf6758e4a487969e7e2a4269020f4d6723676b0  ./tool/source/scripts/vibecodekit_mql5/agent-contract.json
 e08ed8090a438214c49b63d9b794399aa1764cc356511d66ba41cff5ed987f1a  ./tool/source/scripts/vibecodekit_mql5/agent_cli.py
 c003c45a2d21986e9b4f6c43732500b3a7ef9c088065a2011c06426f99f3db70  ./tool/source/scripts/vibecodekit_mql5/agent_contract.py
@@ -429,7 +431,7 @@ b2a251bc4cb96cecc432449aad90e8e0e43c75929c9bd6b4e47f814a67be6850  ./tool/source/
 51f04f85878bb28726b279f35ebc1fb853ed0c47c427d3bda4852cbf1038af13  ./tool/source/scripts/vibecodekit_mql5/broker_safety.py
 f475db2b92a7c11c780a3681c429e5a6270688a54af46f6febeff9efb1b33460  ./tool/source/scripts/vibecodekit_mql5/bt_engine.py
 65aba55505550ae181729694f308e27b3592e85a4382302ddfe17c3584a19f8d  ./tool/source/scripts/vibecodekit_mql5/build.py
-8ae877906d626fa04ea96795be3a7a037d57340ba88a3f6c7eef601078d61ccc  ./tool/source/scripts/vibecodekit_mql5/build_planner.py
+c24bc912b7c43b4da9844e0e5fa508ed397922ec0e3152188c0c6d59a1329420  ./tool/source/scripts/vibecodekit_mql5/build_planner.py
 04573e6f9a64eaea85efe27d84489a92deb25637b8449415f9ddc7f20bde38b4  ./tool/source/scripts/vibecodekit_mql5/canary.py
 826625ea52fcf4d82ece99a64a2d28dad1c9ebfa4546115b5c251887bd8ceade  ./tool/source/scripts/vibecodekit_mql5/capability.py
 f80c93eb7f5e26610e998ff6429d33a7a0518c6e4b4394b8be19b48fa27be931  ./tool/source/scripts/vibecodekit_mql5/chat_review_pack.py
@@ -488,7 +490,7 @@ e78f0343a810173e39a7aa57ddd22a36fc8593fa5886a4e3696bbd9c948211f2  ./tool/source/
 cdb0e2ebbb5d9b6b4632accf1ebe3915ea1e35fabe6c68f439e024c0a32ea175  ./tool/source/scripts/vibecodekit_mql5/evidence_matrix.py
 930075fd40b3e3a8cbb45871a1a99f9c629d1f4578361898025bf16d084ec171  ./tool/source/scripts/vibecodekit_mql5/evidence_v2.py
 d7b8964dd49491be29bfec19338cf809e6b7526015e8d2e8fe9ec9373042424e  ./tool/source/scripts/vibecodekit_mql5/execution_sources.py
-8ec3c5122f5d04b84dc23a3c9b0821cdd190c1d77092dc186e60efcd4465fc5d  ./tool/source/scripts/vibecodekit_mql5/feature_config.py
+666c6f40afc3968de910e8edf90207fc52fab212648696db3bb41ce2492e0221  ./tool/source/scripts/vibecodekit_mql5/feature_config.py
 9a153cda26eff5fa6e5214d1d3fd1a351e39ccac2c2d7a5395418264473fd028  ./tool/source/scripts/vibecodekit_mql5/feature_invariants.py
 70daf8fa947ba6d70e728816cc3a626725d6a2081cb30ba45fb181f44bd9e8a7  ./tool/source/scripts/vibecodekit_mql5/feature_registry.py
 73ecf6d9ba4de210b8f5b4ef261f76c97847c70bb690ba61d6791bb8fa199912  ./tool/source/scripts/vibecodekit_mql5/fitness.py
@@ -500,7 +502,7 @@ b7dbd2ccd65e640917f412df8581a133c34711f3a65e8c2eb13fc338d0b22da4  ./tool/source/
 13f2ac8215c89524e4dfaff23139caaa884fecc2d2c49242626e3df1a196f946  ./tool/source/scripts/vibecodekit_mql5/golden_flow.py
 eac1077f679a96765dd6c098205bc333c87dcc711d8b728ef22f184036e0ee5e  ./tool/source/scripts/vibecodekit_mql5/init.py
 7ad6d09a5dec5872af60985588f05a37c8f30b87d221ed57ed8154e960032f5c  ./tool/source/scripts/vibecodekit_mql5/install.py
-3bdac26465c97f4e53d4ecd03ef5e9c78709417bcd346a2fde70144aa5ec3f78  ./tool/source/scripts/vibecodekit_mql5/intake.py
+ecd0a57528872b64e3cba302ed53df3ee5850958a6ede66b3b811c4603235642  ./tool/source/scripts/vibecodekit_mql5/intake.py
 64691b54fe985da224a4475b54aa1e076c273b926177304f04c277498dfbf906  ./tool/source/scripts/vibecodekit_mql5/io_contract.py
 030d0f546a154f581ed44152723d0f8834cc5c56bb28b47c053aabbb0ba6a17b  ./tool/source/scripts/vibecodekit_mql5/ir_build.py
 588e10d7b5a92dd5db16259bd65242f73990eb90c6ed42468086d1b918865702  ./tool/source/scripts/vibecodekit_mql5/ir_configure.py
@@ -815,10 +817,11 @@ d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80  ./tool/source/
 401e6d6f12bc46a71266e817d9ce673e71ee41a032bc805f212f9e43a2d7d49f  ./tool/source/tests/test_phase20_generic_command_intake.py
 8edabad32c3cf376ff6cde58e1c447b9aa1581bf227e547a83ce37d825aaac5b  ./tool/source/tests/test_phase21_input_semantics.py
 f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/tests/test_phase22_runtime_contracts.py
-2841c0804ad6a17b2cd330ac26cb2a0771f29be17074a3b3ca989bf7bca5843f  ./tool/source/tests/test_phase23_remote_command_lifecycle.py
-581a38da14b43388b290832db162a73b3ab8981a84ca64988736ce018a76a5b9  ./tool/source/tests/test_phase24_trade_lifecycle_v2.py
+6e1834a8734646ccd9b2a5e8e6fd5e18c38a3cb846ea423d69c3f8f42fe32828  ./tool/source/tests/test_phase23_remote_command_lifecycle.py
+69afac51d1dfaf0db2d5da2db3162ce26be3284735b4d7011622334f25fb8eab  ./tool/source/tests/test_phase24_trade_lifecycle_v2.py
 2bc2dd3a90654c5d5c3cc5930b7e2c6f079d76be77875030361e106375739c9c  ./tool/source/tests/test_phase25_audit_gate_execution.py
 3c1cd47d4f5cad778da236e4f0a547faf14ebcbea5cd26d856e1cd3da3018d34  ./tool/source/tests/test_phase26_review_truthfulness.py
+58d546f8eb7d5dd4ae5170ab60c0d8411bd0effc8461da8b3589364bf84b7113  ./tool/source/tests/test_phase27_conformance_validation.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/tests/test_phase2_planning.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/tests/test_phase4_auto_build_ir.py
