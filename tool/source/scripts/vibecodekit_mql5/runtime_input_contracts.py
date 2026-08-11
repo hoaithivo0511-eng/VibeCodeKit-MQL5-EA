@@ -207,7 +207,7 @@ def contract_manifest(ir: EAIR) -> dict[str, Any]:
 
 
 def render_mql_validator() -> str:
-    lines = ["bool ValidateOperationalInputs()", "  {", "   bool ok=true;"]
+    range_checks: list[str] = []
     for contract in INPUT_CONTRACTS:
         checks: list[str] = []
         if contract.minimum is not None:
@@ -221,8 +221,9 @@ def render_mql_validator() -> str:
             f"VCK_CONFIG_INVALID|{contract.name}|unit={contract.unit}|"
             f"range={contract.range_text()}|zero={contract.zero_semantics}"
         )
-        lines.append(f'   if(!({condition})){{Print("{detail}");ok=false;}}')
-    lines.extend([
+        range_checks.append(f'   if(!({condition})){{Print("{detail}");ok=false;}}')
+
+    relation_checks = [
         '   if(InpBaseLot>InpMaxLot){Print("VCK_CONFIG_INVALID|InpBaseLot|must_not_exceed=InpMaxLot");ok=false;}',
         '   if(InpFreezeDDPct>0&&InpMaxDDPct>0&&InpFreezeDDPct>InpMaxDDPct){Print("VCK_CONFIG_INVALID|InpFreezeDDPct|must_not_exceed=InpMaxDDPct");ok=false;}',
         '   if(VCK_USE_HEDGE&&InpHedgeTriggerPositions<=0&&InpHedgeTriggerLossPct>=0){Print("VCK_CONFIG_INVALID|hedge_trigger|positions_or_negative_loss_required");ok=false;}',
@@ -231,7 +232,25 @@ def render_mql_validator() -> str:
         '   if(VCK_USE_REVERSE_ENTRY&&InpReverseLotPct<=0&&InpReverseFixedLot<=0){Print("VCK_CONFIG_INVALID|reverse_lot|percent_or_fixed_required");ok=false;}',
         '   if(VCK_USE_LOT_BALANCE&&InpBalanceStopLots>InpBalanceTriggerLots){Print("VCK_CONFIG_INVALID|InpBalanceStopLots|must_not_exceed=InpBalanceTriggerLots");ok=false;}',
         '   if(VCK_USE_TRAILING&&(InpTrailingStartPips<=0||InpTrailingDistancePips<=0)){Print("VCK_CONFIG_INVALID|trailing|positive_start_and_distance_required");ok=false;}',
-        "   return ok;",
-        "  }",
-    ])
+    ]
+
+    lines: list[str] = []
+    helper_names: list[str] = []
+    for prefix, checks, batch_size in (
+        ("ValidateOperationalInputRanges", range_checks, 5),
+        ("ValidateOperationalInputRelations", relation_checks, 3),
+    ):
+        for index in range(0, len(checks), batch_size):
+            helper_name = f"{prefix}{index // batch_size}"
+            helper_names.append(helper_name)
+            lines.extend([
+                f"void {helper_name}(bool &ok)",
+                "  {",
+                *checks[index:index + batch_size],
+                "  }",
+            ])
+
+    lines.extend(["bool ValidateOperationalInputs()", "  {", "   bool ok=true;"])
+    lines.extend(f"   {name}(ok);" for name in helper_names)
+    lines.extend(["   return ok;", "  }"])
     return "\n".join(lines)

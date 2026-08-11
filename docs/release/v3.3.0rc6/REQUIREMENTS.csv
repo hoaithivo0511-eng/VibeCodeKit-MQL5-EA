@@ -1,11 +1,11 @@
 ID,Priority,Requirement,Source,Status,Task
-REQ-027,P0,"All generic generated EAs pass the kit senior-review gate",RC5 deep audit,PLANNED,12
-REQ-028,P0,"Runtime refactors preserve lifecycle and configuration semantics",RRI-T Data Integrity,PLANNED,12
+REQ-027,P0,"All generic generated EAs pass the kit senior-review gate",RC5 deep audit,COMPLETED,12
+REQ-028,P0,"Runtime refactors preserve lifecycle and configuration semantics",RRI-T Data Integrity,COMPLETED,12
 REQ-029,P1,"Packaged distribution snapshot exactly matches canonical source inputs",RC5 deep audit,PLANNED,13
 REQ-030,P1,"Wheel builds are byte-for-byte reproducible",RRI-T DevOps,PLANNED,14
 REQ-031,P0,"Native evidence binds EA source EA-IR set and tester configuration",RRI-T Security,PLANNED,15
 REQ-032,P0,"Trusted MetaEditor MT5 and restart evidence is mandatory for release",Release contract,PLANNED,18
 REQ-033,P2,"Version README plan ledger and package metadata remain consistent",RC5 deep audit,PLANNED,16
 REQ-034,P1,"Every task has a completion report and online commit",VibeCode protocol,IN_PROGRESS,11-19
-REQ-035,P1,"CCBSN remains fixture-only with no production defaults",Architecture invariant,PLANNED,12-17
+REQ-035,P1,"CCBSN remains fixture-only with no production defaults",Architecture invariant,IN_PROGRESS,12-17
 REQ-036,P1,"Protect main and merge RC6 only after all gates pass",Repository governance,PLANNED,19

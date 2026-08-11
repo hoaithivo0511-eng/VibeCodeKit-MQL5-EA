@@ -44,5 +44,5 @@ Method: VibeCodeMaster `SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH →
 
 ## Current gate
 
-Task 11 source gate passed. Task 12 is next. Native execution and release
-promotion remain pending.
+Tasks 11 and 12 passed. Task 13 snapshot parity is next. Native execution and
+release promotion remain pending.

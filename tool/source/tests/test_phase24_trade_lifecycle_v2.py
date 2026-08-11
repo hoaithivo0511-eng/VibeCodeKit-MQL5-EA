@@ -169,9 +169,13 @@ def test_migrated_v1_state_is_preserved_until_terminal_or_operator_clear(tmp_pat
     clear = ledger[ledger.index("void Clear("):ledger.index("bool FindByRequest")]
     assert "if(migrated)ClearLegacy" in clear
     reconcile = ledger[ledger.index("bool ReconcileSlot"):ledger.index("public:")]
-    assert "VCK_INTENT_OPERATOR_REQUIRED" in reconcile
-    assert "TimeCurrent()-created>=m_timeout" in reconcile
-    assert "Clear(source,direction)" not in reconcile[reconcile.index("VCK_INTENT_OPERATOR_REQUIRED"):]
+    escalation = ledger[
+        ledger.index("void EscalateExpiredIntent"):ledger.index("bool ReconcileSlot")
+    ]
+    assert "EscalateExpiredIntent(source,direction)" in reconcile
+    assert "VCK_INTENT_OPERATOR_REQUIRED" in escalation
+    assert "TimeCurrent()-created>=m_timeout" in escalation
+    assert "Clear(source,direction)" not in escalation[escalation.index("VCK_INTENT_OPERATOR_REQUIRED"):]
 
 
 def test_operator_clear_records_durable_audit_before_removal(tmp_path: Path):

@@ -553,14 +553,49 @@ private:
    bool HistoryDealIdentity(const ulong deal){return deal>0&&HistoryDealSelect(deal)&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic;}
    bool HistoryDealForOrder(const ulong order){if(order==0)return false;for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(deal>0&&(ulong)HistoryDealGetInteger(deal,DEAL_ORDER)==order&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic)return true;}return false;}
    bool DefinitelyRejected(const uint retcode){return retcode==TRADE_RETCODE_REJECT||retcode==TRADE_RETCODE_INVALID||retcode==TRADE_RETCODE_INVALID_VOLUME||retcode==TRADE_RETCODE_INVALID_PRICE||retcode==TRADE_RETCODE_INVALID_STOPS||retcode==TRADE_RETCODE_TRADE_DISABLED||retcode==TRADE_RETCODE_MARKET_CLOSED||retcode==TRADE_RETCODE_NO_MONEY||retcode==TRADE_RETCODE_INVALID_FILL||retcode==TRADE_RETCODE_INVALID_ORDER;}
+   bool IsClosedOrderState(const ENUM_ORDER_STATE state){return state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED;}
+   bool LegacyLiveOrderMatches(const ulong ticket,const long legacy_id){return ticket>0&&OrderSelect(ticket)&&OrderGetString(ORDER_SYMBOL)==m_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==m_magic&&LegacyCommentMatches(OrderGetString(ORDER_COMMENT),legacy_id);}
+   bool LegacyLivePositionMatches(const ulong ticket,const long legacy_id){return ticket>0&&PositionSelectByTicket(ticket)&&PositionGetString(POSITION_SYMBOL)==m_symbol&&(long)PositionGetInteger(POSITION_MAGIC)==m_magic&&LegacyCommentMatches(PositionGetString(POSITION_COMMENT),legacy_id);}
+   bool LegacyHistoryOrderMatches(const ulong ticket,const long legacy_id){return ticket>0&&(long)HistoryOrderGetInteger(ticket,ORDER_MAGIC)==m_magic&&HistoryOrderGetString(ticket,ORDER_SYMBOL)==m_symbol&&LegacyCommentMatches(HistoryOrderGetString(ticket,ORDER_COMMENT),legacy_id);}
+   bool LegacyHistoryDealMatches(const ulong deal,const long legacy_id){return deal>0&&(long)HistoryDealGetInteger(deal,DEAL_MAGIC)==m_magic&&HistoryDealGetString(deal,DEAL_SYMBOL)==m_symbol&&LegacyCommentMatches(HistoryDealGetString(deal,DEAL_COMMENT),legacy_id);}
+   bool CaptureLegacyLiveOrders(const int source,const int direction,const long legacy_id)
+     {
+      bool found=false;
+      for(int i=0;i<OrdersTotal();i++){ulong ticket=OrderGetTicket(i);if(!LegacyLiveOrderMatches(ticket,legacy_id))continue;SaveUlong(source,direction,"order",ticket);ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);found=true;}
+      return found;
+     }
+   bool CaptureLegacyLivePositions(const int source,const int direction,const long legacy_id)
+     {
+      bool found=false;
+      for(int i=0;i<PositionsTotal();i++){ulong ticket=PositionGetTicket(i);if(!LegacyLivePositionMatches(ticket,legacy_id))continue;SaveUlong(source,direction,"position",(ulong)PositionGetInteger(POSITION_IDENTIFIER));SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      return found;
+     }
+   bool CaptureLegacyHistoryOrders(const int source,const int direction,const long legacy_id,bool &terminal)
+     {
+      bool found=false;
+      for(int i=0;i<HistoryOrdersTotal();i++)
+        {
+         ulong ticket=HistoryOrderGetTicket(i);if(!LegacyHistoryOrderMatches(ticket,legacy_id))continue;
+         SaveUlong(source,direction,"order",ticket);found=true;ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(ticket,ORDER_STATE);
+         if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(ticket)&&IsClosedOrderState(state))){SetState(source,direction,VCK_INTENT_FILLED);terminal=true;}
+         else if(IsClosedOrderState(state)){SetState(source,direction,VCK_INTENT_REJECTED);terminal=true;}
+         else if(state==ORDER_STATE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);
+        }
+      return found;
+     }
+   bool CaptureLegacyHistoryDeals(const int source,const int direction,const long legacy_id,const bool terminal)
+     {
+      bool found=false;
+      for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(!LegacyHistoryDealMatches(deal,legacy_id))continue;SaveUlong(source,direction,"deal",deal);ulong order=(ulong)HistoryDealGetInteger(deal,DEAL_ORDER);if(order>0)SaveUlong(source,direction,"order",order);if(!terminal)SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      return found;
+     }
    bool CaptureLegacyIdentity(const int source,const int direction,const long legacy_id,bool &terminal)
      {
-      terminal=false;bool found=false;
-      for(int i=0;i<OrdersTotal();i++){ulong ticket=OrderGetTicket(i);if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=m_symbol||(long)OrderGetInteger(ORDER_MAGIC)!=m_magic||!LegacyCommentMatches(OrderGetString(ORDER_COMMENT),legacy_id))continue;SaveUlong(source,direction,"order",ticket);ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);found=true;}
-      for(int i=0;i<PositionsTotal();i++){ulong ticket=PositionGetTicket(i);if(ticket==0||!PositionSelectByTicket(ticket)||PositionGetString(POSITION_SYMBOL)!=m_symbol||(long)PositionGetInteger(POSITION_MAGIC)!=m_magic||!LegacyCommentMatches(PositionGetString(POSITION_COMMENT),legacy_id))continue;SaveUlong(source,direction,"position",(ulong)PositionGetInteger(POSITION_IDENTIFIER));SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      terminal=false;bool found=CaptureLegacyLiveOrders(source,direction,legacy_id);
+      if(CaptureLegacyLivePositions(source,direction,legacy_id))found=true;
       if(!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return found;
-      for(int i=0;i<HistoryOrdersTotal();i++){ulong ticket=HistoryOrderGetTicket(i);if(ticket==0||(long)HistoryOrderGetInteger(ticket,ORDER_MAGIC)!=m_magic||HistoryOrderGetString(ticket,ORDER_SYMBOL)!=m_symbol||!LegacyCommentMatches(HistoryOrderGetString(ticket,ORDER_COMMENT),legacy_id))continue;SaveUlong(source,direction,"order",ticket);found=true;ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(ticket,ORDER_STATE);if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(ticket)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_FILLED);terminal=true;}else if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){SetState(source,direction,VCK_INTENT_REJECTED);terminal=true;}else if(state==ORDER_STATE_PARTIAL)SetState(source,direction,VCK_INTENT_PARTIAL);else SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);}
-      for(int i=0;i<HistoryDealsTotal();i++){ulong deal=HistoryDealGetTicket(i);if(deal==0||(long)HistoryDealGetInteger(deal,DEAL_MAGIC)!=m_magic||HistoryDealGetString(deal,DEAL_SYMBOL)!=m_symbol||!LegacyCommentMatches(HistoryDealGetString(deal,DEAL_COMMENT),legacy_id))continue;SaveUlong(source,direction,"deal",deal);ulong order=(ulong)HistoryDealGetInteger(deal,DEAL_ORDER);if(order>0)SaveUlong(source,direction,"order",order);if(!terminal)SetState(source,direction,VCK_INTENT_PARTIAL);found=true;}
+      if(CaptureLegacyHistoryOrders(source,direction,legacy_id,terminal))found=true;
+      if(CaptureLegacyHistoryDeals(source,direction,legacy_id,terminal))found=true;
       return found;
      }
    bool MigrateLegacySlot(const int source,const int direction)
@@ -574,20 +609,70 @@ private:
       datetime sent=GlobalVariableCheck(LegacyKey(source,direction,"sent"))?(datetime)GlobalVariableGet(LegacyKey(source,direction,"sent")):0;GlobalVariableSet(id_key,(double)legacy_id);GlobalVariableSet(Key(source,direction,"created"),(double)(sent>0?sent:TimeCurrent()));GlobalVariableSet(Key(source,direction,"legacy_migrated"),1.0);SetState(source,direction,VCK_INTENT_UNKNOWN);bool terminal=false;CaptureLegacyIdentity(source,direction,legacy_id,terminal);if(terminal){RecordTerminal(source,direction,(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")));Clear(source,direction);}return true;
      }
    void MigrateLegacy(){for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)MigrateLegacySlot(source,direction);}
+   bool ReconcileLiveOrder(const int source,const int direction,const ulong order)
+     {
+      if(order==0||!OrderSelect(order)||OrderGetString(ORDER_SYMBOL)!=m_symbol||(long)OrderGetInteger(ORDER_MAGIC)!=m_magic)return false;
+      ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);return true;
+     }
+   void FinishIntent(const int source,const int direction,const VCKTradeIntentState state){SetState(source,direction,state);RecordTerminal(source,direction,state);Clear(source,direction);}
+   bool ReconcileHistoryOrder(const int source,const int direction,const ulong order)
+     {
+      if(order==0||!HistoryOrderSelect(order))return false;ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(order,ORDER_STATE);
+      if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(order)&&IsClosedOrderState(state))){FinishIntent(source,direction,VCK_INTENT_FILLED);return true;}
+      if(IsClosedOrderState(state)){FinishIntent(source,direction,VCK_INTENT_REJECTED);return true;}
+      if(state==ORDER_STATE_PARTIAL){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
+      return false;
+     }
+   bool HasObservedIdentity(const ulong order,const ulong deal,const ulong position){return HistoryDealForOrder(order)||HistoryDealIdentity(deal)||LivePositionIdentity(position);}
+   void EscalateExpiredIntent(const int source,const int direction)
+     {
+      VCKTradeIntentState current=GlobalVariableCheck(Key(source,direction,"state"))?(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")):VCK_INTENT_NONE;datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;
+      if((current==VCK_INTENT_UNKNOWN||current==VCK_INTENT_PREPARED||current==VCK_INTENT_SUBMITTED)&&created>0&&TimeCurrent()-created>=m_timeout)SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);
+     }
    bool ReconcileSlot(const int source,const int direction)
      {
       ulong deal=LoadUlong(source,direction,"deal"),position=LoadUlong(source,direction,"position"),order=LoadUlong(source,direction,"order");
-      if(order>0&&OrderSelect(order)&&OrderGetString(ORDER_SYMBOL)==m_symbol&&(long)OrderGetInteger(ORDER_MAGIC)==m_magic){ENUM_ORDER_STATE live_state=(ENUM_ORDER_STATE)OrderGetInteger(ORDER_STATE);SetState(source,direction,live_state==ORDER_STATE_PARTIAL?VCK_INTENT_PARTIAL:VCK_INTENT_ACKNOWLEDGED);return true;}
+      if(ReconcileLiveOrder(source,direction,order))return true;
       if(!HistorySelect(TimeCurrent()-m_lookback,TimeCurrent()))return false;
-      if(order>0&&HistoryOrderSelect(order))
-        {
-         ENUM_ORDER_STATE state=(ENUM_ORDER_STATE)HistoryOrderGetInteger(order,ORDER_STATE);
-         if(state==ORDER_STATE_FILLED||(HistoryDealForOrder(order)&&(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED))){SetState(source,direction,VCK_INTENT_FILLED);RecordTerminal(source,direction,VCK_INTENT_FILLED);Clear(source,direction);return true;}
-         if(state==ORDER_STATE_CANCELED||state==ORDER_STATE_REJECTED||state==ORDER_STATE_EXPIRED){SetState(source,direction,VCK_INTENT_REJECTED);RecordTerminal(source,direction,VCK_INTENT_REJECTED);Clear(source,direction);return true;}
-         if(state==ORDER_STATE_PARTIAL){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-        }
-      if(HistoryDealForOrder(order)||HistoryDealIdentity(deal)||LivePositionIdentity(position)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-      VCKTradeIntentState current=GlobalVariableCheck(Key(source,direction,"state"))?(VCKTradeIntentState)(int)GlobalVariableGet(Key(source,direction,"state")):VCK_INTENT_NONE;datetime created=GlobalVariableCheck(Key(source,direction,"created"))?(datetime)GlobalVariableGet(Key(source,direction,"created")):0;if((current==VCK_INTENT_UNKNOWN||current==VCK_INTENT_PREPARED||current==VCK_INTENT_SUBMITTED)&&created>0&&TimeCurrent()-created>=m_timeout)SetState(source,direction,VCK_INTENT_OPERATOR_REQUIRED);return false;
+      if(ReconcileHistoryOrder(source,direction,order))return true;
+      if(HasObservedIdentity(order,deal,position)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
+      EscalateExpiredIntent(source,direction);return false;
+     }
+   bool IsOrderTransaction(const ENUM_TRADE_TRANSACTION_TYPE type)
+     {
+      return type==TRADE_TRANSACTION_ORDER_ADD||type==TRADE_TRANSACTION_ORDER_UPDATE||type==TRADE_TRANSACTION_ORDER_DELETE||type==TRADE_TRANSACTION_HISTORY_ADD||type==TRADE_TRANSACTION_HISTORY_UPDATE||type==TRADE_TRANSACTION_HISTORY_DELETE;
+     }
+   void ResolveTransactionHandles(const bool request_event,const MqlTradeTransaction &trans,const MqlTradeResult &result,uint &request_id,ulong &order,ulong &deal)
+     {
+      request_id=request_event?result.request_id:0;order=trans.order>0?trans.order:(request_event?result.order:0);deal=trans.deal>0?trans.deal:(request_event?result.deal:0);
+     }
+   void CaptureTransactionIdentity(const int source,const int direction,const ulong order,const ulong position,const ulong deal)
+     {
+      if(order>0)SaveUlong(source,direction,"order",order);if(position>0)SaveUlong(source,direction,"position",position);if(deal>0)SaveUlong(source,direction,"deal",deal);
+     }
+   bool ApplyRejectedTransaction(const int source,const int direction,const bool request_event,const uint retcode)
+     {
+      if(!request_event||!DefinitelyRejected(retcode))return false;MarkRejected(source,direction);return true;
+     }
+   bool ApplyPartialTransaction(const int source,const int direction,const bool request_event,const bool order_event,const uint retcode,const ENUM_ORDER_STATE order_state)
+     {
+      if(!((request_event&&retcode==TRADE_RETCODE_DONE_PARTIAL)||(order_event&&order_state==ORDER_STATE_PARTIAL)))return false;SetState(source,direction,VCK_INTENT_PARTIAL);return true;
+     }
+   bool ApplyCompletedTransaction(const int source,const int direction,const bool request_event,const bool order_event,const uint retcode,const ENUM_ORDER_STATE order_state)
+     {
+      if(!((request_event&&retcode==TRADE_RETCODE_DONE)||(order_event&&order_state==ORDER_STATE_FILLED)))return false;FinishIntent(source,direction,VCK_INTENT_FILLED);return true;
+     }
+   bool ApplyDealTransaction(const int source,const int direction,const MqlTradeTransaction &trans)
+     {
+      if(trans.type==TRADE_TRANSACTION_DEAL_ADD&&trans.deal>0){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}return false;
+     }
+   bool ApplyTransactionOutcome(const int source,const int direction,const bool request_event,const bool order_event,const MqlTradeTransaction &trans,const MqlTradeResult &result)
+     {
+      if(ApplyRejectedTransaction(source,direction,request_event,result.retcode))return true;
+      if(ApplyPartialTransaction(source,direction,request_event,order_event,result.retcode,trans.order_state))return true;
+      if(ApplyCompletedTransaction(source,direction,request_event,order_event,result.retcode,trans.order_state))return true;
+      if(ApplyDealTransaction(source,direction,trans))return true;
+      if(request_event&&result.retcode==TRADE_RETCODE_PLACED)SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);return true;
      }
 public:
    void Configure(const long magic,const string symbol,const int timeout_seconds,const int lookback_seconds){m_magic=magic;m_symbol=symbol;m_timeout=MathMax(5,timeout_seconds);m_lookback=MathMax(3600,lookback_seconds);m_prefix="VCK_INTENT_V2_"+(string)magic+"_"+symbol+"_";m_v1_prefix="VCK_INTENT_"+(string)magic+"_"+symbol+"_";m_audit_prefix="VCK_INTENT_AUDIT_V2_"+(string)magic+"_"+symbol+"_";m_counter=0;MigrateLegacy();}
@@ -611,15 +696,10 @@ public:
    bool OnTransaction(const MqlTradeTransaction &trans,const MqlTradeResult &result)
      {
       bool request_event=trans.type==TRADE_TRANSACTION_REQUEST;
-      bool order_event=trans.type==TRADE_TRANSACTION_ORDER_ADD||trans.type==TRADE_TRANSACTION_ORDER_UPDATE||trans.type==TRADE_TRANSACTION_ORDER_DELETE||trans.type==TRADE_TRANSACTION_HISTORY_ADD||trans.type==TRADE_TRANSACTION_HISTORY_UPDATE||trans.type==TRADE_TRANSACTION_HISTORY_DELETE;
-      uint request_id=request_event?result.request_id:0;ulong order=trans.order>0?trans.order:(request_event?result.order:0),deal=trans.deal>0?trans.deal:(request_event?result.deal:0);
+      bool order_event=IsOrderTransaction(trans.type);uint request_id=0;ulong order=0,deal=0;ResolveTransactionHandles(request_event,trans,result,request_id,order,deal);
       int source=0,direction=0;bool matched=FindByRequest(request_id,source,direction);if(!matched)matched=FindByOrder(order,source,direction);if(!matched)matched=FindByPosition(trans.position,source,direction);if(!matched)return false;
-      if(order>0)SaveUlong(source,direction,"order",order);if(trans.position>0)SaveUlong(source,direction,"position",trans.position);if(deal>0)SaveUlong(source,direction,"deal",deal);
-      if(request_event&&DefinitelyRejected(result.retcode)){MarkRejected(source,direction);return true;}
-      if((request_event&&result.retcode==TRADE_RETCODE_DONE_PARTIAL)||(order_event&&trans.order_state==ORDER_STATE_PARTIAL)){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-      if((request_event&&result.retcode==TRADE_RETCODE_DONE)||(order_event&&trans.order_state==ORDER_STATE_FILLED)){SetState(source,direction,VCK_INTENT_FILLED);RecordTerminal(source,direction,VCK_INTENT_FILLED);Clear(source,direction);return true;}
-      if(trans.type==TRADE_TRANSACTION_DEAL_ADD&&trans.deal>0){SetState(source,direction,VCK_INTENT_PARTIAL);return true;}
-      if(request_event&&result.retcode==TRADE_RETCODE_PLACED)SetState(source,direction,VCK_INTENT_ACKNOWLEDGED);return true;
+      CaptureTransactionIdentity(source,direction,order,trans.position,deal);
+      return ApplyTransactionOutcome(source,direction,request_event,order_event,trans,result);
      }
    void Reconcile(){MigrateLegacy();for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"id")))ReconcileSlot(source,direction);}
   };
