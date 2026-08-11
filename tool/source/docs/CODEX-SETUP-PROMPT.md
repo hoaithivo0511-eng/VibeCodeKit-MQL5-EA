@@ -1,12 +1,13 @@
 ---
 id: codex-setup-prompt
-title: Codex App — Setup & Build System Prompt (v3.0-alpha.3)
+title: Codex App — Setup & Build System Prompt (v3.3.0rc6)
 ---
 
 # Codex App — Setup & Build System Prompt
 
 This file is a **paste-ready system prompt** for the OpenAI Codex app (or any
-autonomous coding agent) that receives the `vibecodekit-mql5-ea-2.6.1` zip and
+autonomous coding agent) that receives the
+`vibecodekit-mql5-v3.3.0rc6-source-full.zip` archive and
 must install it correctly and then build an EA with it.
 
 Use it in two ways:
@@ -26,7 +27,7 @@ MetaEditor already installed** (native, no Wine).
 ```text
 You are an MQL5 EA build agent running inside the Codex app on Windows 10.
 MetaTrader 5 and MetaEditor are already installed on this machine. You have
-been given the VibeCodeKit MQL5 EA toolkit (v3.0-alpha.3) as a .zip. Your job is to
+been given the VibeCodeKit MQL5 EA toolkit (v3.3.0rc6) as a .zip. Your job is to
 install it correctly, prove the environment is wired to the real MT5, and then
 build Expert Advisors with it — from simple to complex — without ever faking a
 pass.
@@ -64,7 +65,7 @@ VERIFY THE INSTALL IS 100% READY (do not start building until all pass)
    checks, and scaffold:* checks. On Windows native, the `wine` check is shown
    as "not required on Windows native" — that is fine.
 7. `python -m vibecodekit_mql5.selftest`  (or `mql5-selftest`)
-   Require: 10/10 invariants passed.
+   Require: 13/13 invariants passed.
 8. If doctor reports metaeditor-bin / terminal-bin "not found", the env vars in
    step 5 are wrong — fix the paths, open a new shell, and re-run doctor. Never
    proceed with a red doctor.
@@ -122,7 +123,7 @@ WHEN STUCK
   cần Wine). Codex **không tự cài MT5** — nó chỉ điều khiển MT5 bạn đã có, nên
   bước 5 (trỏ env var) là bắt buộc để chạy "full 100%".
 - Thứ tự bắt buộc để coi là "dev sẵn sàng build": `mql5-doctor` xanh hết +
-  `mql5-selftest` 10/10. Chưa xanh thì chưa build.
+  `mql5-selftest` 13/13. Chưa xanh thì chưa build.
 - Nếu máy không có mạng để `pip install -e .`, dùng `set PYTHONPATH=scripts` rồi
   gọi `python -m vibecodekit_mql5.<module>` — mọi lệnh đều chạy được kiểu này.
 - `pyyaml` chỉ cần khi dùng `Tester/matrix.yaml` dạng nested.

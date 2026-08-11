@@ -1,5 +1,9 @@
 # VibecodeKit MQL5 v3.1 RC2 — EA-IR Compiler
 
+> Tài liệu này mô tả subsystem EA-IR được giới thiệu ở v3.1 RC2. Subsystem vẫn
+> được hỗ trợ trong bản kit hiện hành v3.3.0rc6; version trong tiêu đề là mốc
+> ra mắt tính năng, không phải version package hiện tại.
+
 ## Mục tiêu
 
 Luồng v3.1 không còn build trực tiếp từ một nhãn `preset/stack`. Prompt hoặc tài

@@ -1,8 +1,8 @@
 # Task 18 Status — Trusted Native Execution
 
 **Status:** BLOCKED / NATIVE EVIDENCE PENDING
-**Candidate:** `6dc50827c64bac426e0092291e1dc27330fecf55`
-**Source tree:** `53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`
+**Candidate build input:** `3d83321e48196ec8b5ea165afaf05412406d99ff`
+**Source tree:** `507eb8dae02a47d41a86d224fc8d4d567d06c691`
 **Release eligible:** `false`
 
 ## Verified state
@@ -27,7 +27,7 @@ environment.
 
 1. Generate and approve the Windows runner key, then pin its public-key
    fingerprint in `RELEASE-TRUST.yaml` without committing the private key.
-2. Follow `TASK-18-NATIVE-EVIDENCE-RUNBOOK.md` using the exact Task 17 wheel,
+2. Follow `TASK-18-NATIVE-EVIDENCE-RUNBOOK.md` using the exact current RC6 wheel,
    EA-IR, `.set` and tester configuration.
 3. Capture real MetaEditor compile, Strategy Tester and all four restart case
    logs; sign the schema 2.1 manifest and hash chain.

@@ -31,7 +31,8 @@ Method: VibeCodeMaster `SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH →
 | 16 | Docs and hygiene | Version, lint, modes and traceability | Hygiene gate |
 | 17 | Candidate integration | Source/ZIP/wheel parity and artifacts | Package gate |
 | 18 | Trusted native execution | MetaEditor, MT5 and restart recovery | Native gate |
-| 19 | Release promotion | Final predicate, protection, merge and tag | Owner/release gate |
+| 19 | Release promotion | Final predicate, protection and production tag | Owner/release gate |
+| 20 | Documentation sync | Active docs, packaged docs runtime and three-channel parity | Package/docs gate |
 
 ## Verification policy
 
@@ -44,8 +45,11 @@ Method: VibeCodeMaster `SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH →
 
 ## Current gate
 
-Tasks 11 through 17 passed. The fail-closed RC6 candidate is frozen from online
-commit `6dc50827c64bac426e0092291e1dc27330fecf55`. Task 18 is blocked pending a
-trusted Windows MetaEditor/MT5 runner, a pinned Ed25519 runner key and real
-compile/test/restart evidence. A fail-closed `v3.3.0rc6` tester pre-release is
-authorized, but Task 19 production promotion remains blocked by Task 18.
+Tasks 11 through 17 passed for the original tagged candidate. Task 20 then
+synchronized active documentation and restored the packaged MCP documentation
+runtime. Its build input is `3d83321e48196ec8b5ea165afaf05412406d99ff`,
+source tree is `507eb8dae02a47d41a86d224fc8d4d567d06c691`, and all three package channels
+pass 254/254 tests plus selftest 13/13. The owner authorized this fail-closed
+candidate to be integrated into `main`; that integration is not production
+promotion. Task 18 remains blocked pending a trusted Windows MetaEditor/MT5
+runner, a pinned Ed25519 runner key and real compile/test/restart evidence.

@@ -106,7 +106,7 @@ Wine / no network).
 
 | Tool | Wraps | One-line purpose |
 |------|-------|------------------|
-| `docs.ea_render` | `vibecodekit_mql5.auto_build_docs_stage.write_docs_to_disk` | Render `<EAName>.docs.{html,md,pdf}` (Neo-Retro Dev Deck) for a validated spec + MQL5 source. Vietnamese default (`lang="vi"`); `lang="en"` opts back to English. Accept either `mq5_source` (in-memory) or `mq5_path`. PDF requires headless Chrome — falls back gracefully and reports the reason in `pdf_error`. |
+| `docs.ea_render` | EA documentation renderer used by the build pipeline | Render `<EAName>.docs.{html,md,pdf}` (Neo-Retro Dev Deck) for a validated spec + MQL5 source. Vietnamese default (`lang="vi"`); `lang="en"` opts back to English. Accept either `mq5_source` (in-memory) or `mq5_path`. PDF requires headless Chrome — falls back gracefully and reports the reason in `pdf_error`. |
 
 All seven plan-β rút gọn milestones (PR-1 → PR-5, then PR-7, then
 PR-19) are now in `DISPATCH`. The wire format is unchanged across

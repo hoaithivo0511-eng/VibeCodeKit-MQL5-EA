@@ -2,10 +2,14 @@
 id: huong-dan-toan-tap-vi
 title: VibeCodeKit MQL5 EA — Hướng dẫn toàn tập (tiếng Việt)
 audience: end-user
-kit_version: 2.4.3
+kit_version: 3.3.0rc6
 ---
 
 # VibeCodeKit MQL5 EA — Hướng dẫn toàn tập
+
+Phiên bản tài liệu: **v3.3.0rc6**. Catalog hiện hành có **139 console entry
+point**; dùng `mql5-manifest --emit` hoặc `tool-catalog.json` làm nguồn dữ liệu
+có thẩm quyền thay vì đếm thủ công.
 
 > **Đây là tài liệu DUY NHẤT bạn cần.** Toàn bộ hướng dẫn tiếng Việt (cài đặt,
 > quickstart, build EA từng bước, deep-review code, workflow Chủ nhà–Thầu–Thợ,

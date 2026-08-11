@@ -3,9 +3,9 @@
   "kind": "kit-distribution",
   "kit_version": "3.3.0rc6",
   "flavor": "full",
-  "build_input_commit": "6dc50827c64bac426e0092291e1dc27330fecf55",
-  "source_tree_sha": "53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6",
-  "file_count": 641,
+  "build_input_commit": "3d83321e48196ec8b5ea165afaf05412406d99ff",
+  "source_tree_sha": "507eb8dae02a47d41a86d224fc8d4d567d06c691",
+  "file_count": 645,
   "files": [
     {
       "path": ".dockerignore",
@@ -94,8 +94,8 @@
     },
     {
       "path": "README.md",
-      "size": 8956,
-      "sha256": "d15a761502f56fa58e2f3c849e2046ba4fba588534542a92b8a4dab2b5a18e5c"
+      "size": 9007,
+      "sha256": "1a9c7beebba869d19c5eff87249426606547ce58aadc6b86eee49382804688c6"
     },
     {
       "path": "V3-ALPHA3-FIX-REPORT.md",
@@ -119,33 +119,33 @@
     },
     {
       "path": "docs/CODEX-SETUP-PROMPT.md",
-      "size": 6733,
-      "sha256": "3ac4c43d8427aaaec55bba32299c3e63de2ecb1e2c3318f08b88afa920b8902e"
+      "size": 6748,
+      "sha256": "b073a72abcf7bcc0a106bc7a97e671ace6701cca104c996690ca08d40f81d691"
     },
     {
       "path": "docs/COMMANDS.md",
-      "size": 28191,
-      "sha256": "4be2c69ae9aac0b024faa7bb09452ad1ea783d0066c2753be58738a24c2fdfa3"
+      "size": 28212,
+      "sha256": "43cd6eb3ffd74d4db029ed6390d0dc7b969e49b09a7a29909369db1d17c9ba18"
     },
     {
       "path": "docs/DOC-MAP.md",
-      "size": 2345,
-      "sha256": "0909a03f8855f4fde13824df1664e48129f264266c7e16119205816d0cf22a21"
+      "size": 2899,
+      "sha256": "e70cbb05ffc2375078d01509fd4fddd9df202b17374bfd8bc9cf4c44b6603ee1"
     },
     {
       "path": "docs/E2E-AUDIT-REPORT.html",
-      "size": 8111,
-      "sha256": "ce1692fc944c920bc9d6fca407999a93bb0a76f291153827c215dbba8a138477"
+      "size": 8322,
+      "sha256": "38f0d7d630b608cb571e9bd5b05eadd35aa8f9756beb79fba384cae8684515a8"
     },
     {
       "path": "docs/EA-IR-COMPILER-v3.1-vi.md",
-      "size": 5283,
-      "sha256": "efbc9c2bdd770e117cbeb0c71b05da093073b369fcc777134c5a7fe420187319"
+      "size": 5548,
+      "sha256": "4c00447c894a50debb3e015bd9116e72952efc4926998b36d18e4048bdb73a95"
     },
     {
       "path": "docs/HUONG-DAN-TOAN-TAP-vi.md",
-      "size": 33443,
-      "sha256": "044d24494947a329ee96a3199260374f3e93d54d931e57ef44d4aa472268f6a6"
+      "size": 33671,
+      "sha256": "e893c3d3f1349cca226689d70f8ff07b7cbfa3587fa23b40754b808fbea67bc8"
     },
     {
       "path": "docs/MIGRATE-VPS.md",
@@ -154,8 +154,8 @@
     },
     {
       "path": "docs/OPUS-AUDIT-CROSSCHECK-R2.html",
-      "size": 5380,
-      "sha256": "5110069d61c1098c4e9cf837e74a35438fae2f4d764c466baa187df5faa9f2a8"
+      "size": 5598,
+      "sha256": "de1bf6dba778f32012504c86df574d75ffc3e076ba2749ab92210620f89ce86f"
     },
     {
       "path": "docs/QUICKSTART.md",
@@ -204,13 +204,13 @@
     },
     {
       "path": "docs/USAGE-en.md",
-      "size": 55731,
-      "sha256": "006730f5e26ab5425603cb05b14e24fa5c6b65abe2506bebd5e806c6ca955a87"
+      "size": 55778,
+      "sha256": "37bc687fbfc59e103c4d0f30562e227b9043532c8738b767a9bc34772150b12a"
     },
     {
       "path": "docs/USER-GUIDE-en.md",
-      "size": 33532,
-      "sha256": "85480f4347153ad27b07373877fafd911911299edac4129069e007772a8aa129"
+      "size": 32988,
+      "sha256": "76f1308917d1548bc95c89dd94afafbc1f41f28e7bb8d6b70684bee5fb8c238c"
     },
     {
       "path": "docs/V26-BIG-HARDENING.md",
@@ -364,13 +364,13 @@
     },
     {
       "path": "mcp/vibecodekit-bridge/README.md",
-      "size": 10282,
-      "sha256": "feb5320a387277af24423a7bf6e0f7e02c4a7475a27537d83854d1ddbc9d7e41"
+      "size": 10275,
+      "sha256": "d9fabb02952346563ea12e8181a4297c961551896963f5561c84ac7e611b1c62"
     },
     {
       "path": "mcp/vibecodekit-bridge/bridge_tools.py",
-      "size": 63569,
-      "sha256": "655199a7846064236334e3b6a5f2c4c3cf5d5568e63a0340000a2aef188dd01c"
+      "size": 64359,
+      "sha256": "177c25a09f6d5394a878840644dc20e529e5760624f14494bca040b963dac490"
     },
     {
       "path": "mcp/vibecodekit-bridge/server.py",
@@ -419,8 +419,8 @@
     },
     {
       "path": "scaffolds/arbitrage-stat/python-bridge/README.md",
-      "size": 361,
-      "sha256": "7ca02ae323af3210588a56201c1008741ab3c7aa86b485fc7b9e8943c6a3ee52"
+      "size": 501,
+      "sha256": "84972d536b5e5b160ddd8a54508160c9100fa4f8717310edf9fc6ba7bd1cbf58"
     },
     {
       "path": "scaffolds/arbitrage-stat/python-bridge/Sets/default.set",
@@ -439,8 +439,8 @@
     },
     {
       "path": "scaffolds/breakout/netting/README.md",
-      "size": 314,
-      "sha256": "f66db6270bce9e6f91c217ee603f9a8bf6950018c9a4e121d42ddb7f98225a5e"
+      "size": 454,
+      "sha256": "cf0b6adbe346378608188095e2460c61966239afb4dbb87b5fbf3f8a558b21cb"
     },
     {
       "path": "scaffolds/breakout/netting/Sets/default.set",
@@ -459,8 +459,8 @@
     },
     {
       "path": "scaffolds/dca/hedging/README.md",
-      "size": 322,
-      "sha256": "967baeb8e98b0e37470d4165049e973e5c787f3bde8e02c76c1019a022510d37"
+      "size": 462,
+      "sha256": "7ee138bc72e51e005008e201cb15d00c4fb06b4979520aff931fffae470c436a"
     },
     {
       "path": "scaffolds/dca/hedging/Sets/default.set",
@@ -479,8 +479,8 @@
     },
     {
       "path": "scaffolds/grid/hedging/README.md",
-      "size": 327,
-      "sha256": "6a54b104fd775910fb376df0ccd1c8ba4540d24615ecf958e5a431bac7e2e9bc"
+      "size": 467,
+      "sha256": "2edd40e2e75154a005a71faa0209038e74d9d61c4d3ee8bb7c5f95b7fd1dd264"
     },
     {
       "path": "scaffolds/grid/hedging/Sets/default.set",
@@ -499,8 +499,8 @@
     },
     {
       "path": "scaffolds/hedging-multi/hedging/README.md",
-      "size": 337,
-      "sha256": "e282ab5563d02eb01c4c4e026d7d13cd0a3a28ae4dae75f9b95d3e7e55a9599a"
+      "size": 477,
+      "sha256": "2793bcb96eb8d968fefe490f2f0298d832c19ca189aa08f9e912031b8169abef"
     },
     {
       "path": "scaffolds/hedging-multi/hedging/Sets/default.set",
@@ -539,8 +539,8 @@
     },
     {
       "path": "scaffolds/indicator-only/netting/README.md",
-      "size": 343,
-      "sha256": "4ae0d908c84922a2e94c525fd9e6b567d184bc87506d72c6af21d368f9a37f58"
+      "size": 483,
+      "sha256": "afffd81e799cedbe39e9a52a8bb07aa32eacd64d9eef8577ab46e3f053e9ac6d"
     },
     {
       "path": "scaffolds/indicator-only/netting/Sets/default.set",
@@ -559,8 +559,8 @@
     },
     {
       "path": "scaffolds/library/netting/README.md",
-      "size": 341,
-      "sha256": "e14515f03e1d464385d8169601d8c60f54276faa169e14c946a2eb331258699f"
+      "size": 481,
+      "sha256": "9fcb7c4145c78622b969eb9beeaffa194d59317556cb7e1fd7c86a5757c4ff4e"
     },
     {
       "path": "scaffolds/library/netting/Sets/default.set",
@@ -579,8 +579,8 @@
     },
     {
       "path": "scaffolds/mean-reversion/hedging/README.md",
-      "size": 341,
-      "sha256": "6f2b13c7fd85e4407cbc2c9453909013a0366d34ca26223188deaa63f96730cc"
+      "size": 481,
+      "sha256": "bb7a9e91200e09933328c4787376ad96e0f611a43ddc471a2175d8666d08d324"
     },
     {
       "path": "scaffolds/mean-reversion/hedging/Sets/default.set",
@@ -634,8 +634,8 @@
     },
     {
       "path": "scaffolds/news-trading/netting/README.md",
-      "size": 341,
-      "sha256": "bf82bc91665168c0c83c675b09ada22748adc5f2a668c100955570cec0134df5"
+      "size": 481,
+      "sha256": "70e8b9706a7562965f9e778eed1a51de355fc5a07ca878d758a9a250a30aa7d8"
     },
     {
       "path": "scaffolds/news-trading/netting/Sets/default.set",
@@ -694,8 +694,8 @@
     },
     {
       "path": "scaffolds/scalping/hedging/README.md",
-      "size": 316,
-      "sha256": "1450b32e85cb72c9bb6e9e3a1c6fab1231329f8f4d8f1d6fa5f231b20c471b52"
+      "size": 456,
+      "sha256": "aafafaf86eee2b75e1e99086d5648aec02c96b77c620649f0dce0a3b842e395f"
     },
     {
       "path": "scaffolds/scalping/hedging/Sets/default.set",
@@ -869,8 +869,8 @@
     },
     {
       "path": "scaffolds/trend/netting/README.md",
-      "size": 326,
-      "sha256": "ae1241b6242daead362b83395f6495c09a515bd6d36b623ed6c9edc8bf8714b3"
+      "size": 466,
+      "sha256": "c7ddae509e1a4ced0de34a7e1e590ac7212de34a5d186678fccb9ebdbb5a1fa9"
     },
     {
       "path": "scaffolds/trend/netting/Sets/default.set",
@@ -1038,6 +1038,11 @@
       "sha256": "07e7b8edb379b1c9565c42f102c647a92836d4f68567226f755c32838535fe4b"
     },
     {
+      "path": "scripts/vibecodekit_mql5/auto_build_docs_stage.py",
+      "size": 6243,
+      "sha256": "68823db1d8ceb10e36bc6554505c8edf2407d6bc02291578ef7611ad8227b79e"
+    },
+    {
       "path": "scripts/vibecodekit_mql5/auto_fix.py",
       "size": 16974,
       "sha256": "9018c98588b45039fb0e5a09de77261b48558befaef861a84850cae93de8dca8"
@@ -1199,8 +1204,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/distribution_snapshot.py",
-      "size": 3413,
-      "sha256": "6c83b66a5bcb21c5167f55cc7ad6471f0a290c21615fbdebff4907162d3c9c84"
+      "size": 3499,
+      "sha256": "2a889f8ee36dcefaf52a2819a69a8cc0fe191caa11b01c9548d185cfc84e0f17"
     },
     {
       "path": "scripts/vibecodekit_mql5/docs_assemble.py",
@@ -1256,6 +1261,11 @@
       "path": "scripts/vibecodekit_mql5/ea_doc_verify.py",
       "size": 2607,
       "sha256": "7f07000c43612bdddc90a8604cbdbb8abc132d076b8bd8a4ad663f6fb50bc461"
+    },
+    {
+      "path": "scripts/vibecodekit_mql5/ea_docs.py",
+      "size": 1103,
+      "sha256": "3043a979edca17130f579e906f5891c9bbed9182541e8afea689f678094c9b6e"
     },
     {
       "path": "scripts/vibecodekit_mql5/ea_docs_assets/icons/browser.svg",
@@ -1744,8 +1754,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/distribution/SNAPSHOT-MANIFEST.json",
-      "size": 8070,
-      "sha256": "2821d2098baecd8d962f55617770f1e463175a45361e0232ab9f22b4e9b735d7"
+      "size": 8247,
+      "sha256": "f738c5ed4a8a144dddd0a83a0127b9b6ab65139413b10c501739a4259d2e9f09"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/distribution/agent-contract.json",
@@ -1909,8 +1919,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/distribution/tests/test_phase30_distribution_snapshot.py",
-      "size": 1124,
-      "sha256": "267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219"
+      "size": 1371,
+      "sha256": "45fc778b8a8879957f56244755c79e4cf1f57c8ad1c7734b50350657466b8105"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/distribution/tests/test_phase31_reproducible_wheel.py",
@@ -1926,6 +1936,11 @@
       "path": "scripts/vibecodekit_mql5/resources/distribution/tests/test_phase33_rc6_hygiene.py",
       "size": 5908,
       "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95"
+    },
+    {
+      "path": "scripts/vibecodekit_mql5/resources/distribution/tests/test_phase34_documentation_runtime.py",
+      "size": 2988,
+      "sha256": "9aa0972a6627ff39a138a8abc86bd40cdbb6f45f9839623d05e79766057ba95f"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/distribution/tests/test_phase3_codegen.py",
@@ -2059,8 +2074,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/arbitrage-stat/python-bridge/README.md",
-      "size": 361,
-      "sha256": "7ca02ae323af3210588a56201c1008741ab3c7aa86b485fc7b9e8943c6a3ee52"
+      "size": 501,
+      "sha256": "84972d536b5e5b160ddd8a54508160c9100fa4f8717310edf9fc6ba7bd1cbf58"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/arbitrage-stat/python-bridge/Sets/default.set",
@@ -2079,8 +2094,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/breakout/netting/README.md",
-      "size": 314,
-      "sha256": "f66db6270bce9e6f91c217ee603f9a8bf6950018c9a4e121d42ddb7f98225a5e"
+      "size": 454,
+      "sha256": "cf0b6adbe346378608188095e2460c61966239afb4dbb87b5fbf3f8a558b21cb"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/breakout/netting/Sets/default.set",
@@ -2099,8 +2114,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/dca/hedging/README.md",
-      "size": 322,
-      "sha256": "967baeb8e98b0e37470d4165049e973e5c787f3bde8e02c76c1019a022510d37"
+      "size": 462,
+      "sha256": "7ee138bc72e51e005008e201cb15d00c4fb06b4979520aff931fffae470c436a"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/dca/hedging/Sets/default.set",
@@ -2119,8 +2134,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/grid/hedging/README.md",
-      "size": 327,
-      "sha256": "6a54b104fd775910fb376df0ccd1c8ba4540d24615ecf958e5a431bac7e2e9bc"
+      "size": 467,
+      "sha256": "2edd40e2e75154a005a71faa0209038e74d9d61c4d3ee8bb7c5f95b7fd1dd264"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/grid/hedging/Sets/default.set",
@@ -2139,8 +2154,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/hedging-multi/hedging/README.md",
-      "size": 337,
-      "sha256": "e282ab5563d02eb01c4c4e026d7d13cd0a3a28ae4dae75f9b95d3e7e55a9599a"
+      "size": 477,
+      "sha256": "2793bcb96eb8d968fefe490f2f0298d832c19ca189aa08f9e912031b8169abef"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/hedging-multi/hedging/Sets/default.set",
@@ -2179,8 +2194,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/indicator-only/netting/README.md",
-      "size": 343,
-      "sha256": "4ae0d908c84922a2e94c525fd9e6b567d184bc87506d72c6af21d368f9a37f58"
+      "size": 483,
+      "sha256": "afffd81e799cedbe39e9a52a8bb07aa32eacd64d9eef8577ab46e3f053e9ac6d"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/indicator-only/netting/Sets/default.set",
@@ -2199,8 +2214,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/library/netting/README.md",
-      "size": 341,
-      "sha256": "e14515f03e1d464385d8169601d8c60f54276faa169e14c946a2eb331258699f"
+      "size": 481,
+      "sha256": "9fcb7c4145c78622b969eb9beeaffa194d59317556cb7e1fd7c86a5757c4ff4e"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/library/netting/Sets/default.set",
@@ -2219,8 +2234,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/mean-reversion/hedging/README.md",
-      "size": 341,
-      "sha256": "6f2b13c7fd85e4407cbc2c9453909013a0366d34ca26223188deaa63f96730cc"
+      "size": 481,
+      "sha256": "bb7a9e91200e09933328c4787376ad96e0f611a43ddc471a2175d8666d08d324"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/mean-reversion/hedging/Sets/default.set",
@@ -2274,8 +2289,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/news-trading/netting/README.md",
-      "size": 341,
-      "sha256": "bf82bc91665168c0c83c675b09ada22748adc5f2a668c100955570cec0134df5"
+      "size": 481,
+      "sha256": "70e8b9706a7562965f9e778eed1a51de355fc5a07ca878d758a9a250a30aa7d8"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/news-trading/netting/Sets/default.set",
@@ -2334,8 +2349,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/scalping/hedging/README.md",
-      "size": 316,
-      "sha256": "1450b32e85cb72c9bb6e9e3a1c6fab1231329f8f4d8f1d6fa5f231b20c471b52"
+      "size": 456,
+      "sha256": "aafafaf86eee2b75e1e99086d5648aec02c96b77c620649f0dce0a3b842e395f"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/scalping/hedging/Sets/default.set",
@@ -2509,8 +2524,8 @@
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/trend/netting/README.md",
-      "size": 326,
-      "sha256": "ae1241b6242daead362b83395f6495c09a515bd6d36b623ed6c9edc8bf8714b3"
+      "size": 466,
+      "sha256": "c7ddae509e1a4ced0de34a7e1e590ac7212de34a5d186678fccb9ebdbb5a1fa9"
     },
     {
       "path": "scripts/vibecodekit_mql5/resources/scaffolds/trend/netting/Sets/default.set",
@@ -3119,8 +3134,8 @@
     },
     {
       "path": "tests/test_phase30_distribution_snapshot.py",
-      "size": 1124,
-      "sha256": "267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219"
+      "size": 1371,
+      "sha256": "45fc778b8a8879957f56244755c79e4cf1f57c8ad1c7734b50350657466b8105"
     },
     {
       "path": "tests/test_phase31_reproducible_wheel.py",
@@ -3136,6 +3151,11 @@
       "path": "tests/test_phase33_rc6_hygiene.py",
       "size": 5908,
       "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95"
+    },
+    {
+      "path": "tests/test_phase34_documentation_runtime.py",
+      "size": 2988,
+      "sha256": "9aa0972a6627ff39a138a8abc86bd40cdbb6f45f9839623d05e79766057ba95f"
     },
     {
       "path": "tests/test_phase3_codegen.py",

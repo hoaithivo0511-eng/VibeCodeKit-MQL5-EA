@@ -70,7 +70,10 @@ def verify_distribution_snapshot(root: Path) -> list[str]:
     actual = {
         path.relative_to(root).as_posix()
         for path in root.rglob("*")
-        if path.is_file() and path.name != SNAPSHOT_MANIFEST
+        if path.is_file()
+        and path.name != SNAPSHOT_MANIFEST
+        and "__pycache__" not in path.parts
+        and path.suffix != ".pyc"
     }
     declared = set(records)
     for rel in sorted(declared - actual):

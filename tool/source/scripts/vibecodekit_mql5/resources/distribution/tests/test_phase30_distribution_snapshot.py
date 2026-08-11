@@ -19,11 +19,16 @@ def test_distribution_snapshot_detects_missing_and_modified_tests(tmp_path: Path
     snapshot = tmp_path / "snapshot"
     shutil.copytree(source, snapshot)
 
+    cache = snapshot / "tests/__pycache__/runtime-generated.pyc"
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_bytes(b"runtime cache is not distribution input")
+
     target = snapshot / "tests/test_phase29_generated_review_parity.py"
     target.write_text(target.read_text(encoding="utf-8") + "# mutation\n", encoding="utf-8")
     (snapshot / "tests/test_phase28_rc6_baseline.py").unlink()
 
     errors = verify_distribution_snapshot(snapshot)
+    assert not any("__pycache__" in error for error in errors)
     assert "snapshot hash mismatch: tests/test_phase29_generated_review_parity.py" in errors
     assert "snapshot size mismatch: tests/test_phase29_generated_review_parity.py" in errors
     assert "snapshot file missing: tests/test_phase28_rc6_baseline.py" in errors

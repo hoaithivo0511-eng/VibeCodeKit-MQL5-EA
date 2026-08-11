@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -118,8 +119,17 @@ def build_source_archive(build_input_sha: str) -> dict:
 
 def build_wheel(destination: Path = WHEEL) -> None:
     with tempfile.TemporaryDirectory(prefix="rc6-wheel-") as temp:
+        temp_root = Path(temp)
+        build_source = temp_root / "source"
+        wheel_dir = temp_root / "wheel"
+        for rel, source in tracked_source_files():
+            target = build_source / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+        wheel_dir.mkdir()
         env = os.environ.copy()
         env["SOURCE_DATE_EPOCH"] = SOURCE_DATE_EPOCH
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
         subprocess.check_call(
             [
                 sys.executable,
@@ -130,15 +140,15 @@ def build_wheel(destination: Path = WHEEL) -> None:
                 "--no-deps",
                 "--no-build-isolation",
                 "--wheel-dir",
-                temp,
-                str(SOURCE),
+                str(wheel_dir),
+                str(build_source),
             ],
             cwd=ROOT,
             env=env,
         )
-        built = Path(temp) / WHEEL.name
+        built = wheel_dir / WHEEL.name
         if not built.is_file():
-            candidates = sorted(Path(temp).glob("*.whl"))
+            candidates = sorted(wheel_dir.glob("*.whl"))
             raise SystemExit(
                 f"expected wheel {WHEEL.name} not produced; got {[p.name for p in candidates]}"
             )
