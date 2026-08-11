@@ -45,6 +45,7 @@ def test_intent_v2_uses_request_order_position_and_deal_identity(tmp_path: Path)
 def test_broker_comment_is_diagnostic_and_never_authority(tmp_path: Path):
     ledger, executor, _ = generated_runtime(tmp_path)
 
+    assert "LegacyCommentMatches" in ledger  # RC4 migration bootstrap only
     assert "CommentHas" not in ledger
     assert "FindLive" not in ledger
     diagnostic_start = ledger.index("void ObserveDiagnosticComment")
@@ -52,6 +53,8 @@ def test_broker_comment_is_diagnostic_and_never_authority(tmp_path: Path):
     diagnostic_body = ledger[diagnostic_start:transaction_start]
     assert "diag_seen" in diagnostic_body
     assert "Clear(" not in diagnostic_body
+    transaction_body = ledger[transaction_start:ledger.index("void Reconcile", transaction_start)]
+    assert "LegacyCommentMatches" not in transaction_body
     assert "m_intents.OnTransaction(trans,result)" in executor
     assert "ObserveDiagnosticComment" in executor
 
@@ -60,12 +63,16 @@ def test_submission_partial_and_completion_are_distinct_states(tmp_path: Path):
     ledger, executor, _ = generated_runtime(tmp_path)
 
     for state in (
+        "VCK_INTENT_CREATED",
         "VCK_INTENT_PREPARED",
         "VCK_INTENT_SUBMITTED",
         "VCK_INTENT_ACKNOWLEDGED",
         "VCK_INTENT_PARTIAL",
+        "VCK_INTENT_FILLED",
         "VCK_INTENT_COMPLETED",
         "VCK_INTENT_UNKNOWN",
+        "VCK_INTENT_REJECTED",
+        "VCK_INTENT_OPERATOR_REQUIRED",
     ):
         assert state in ledger
     assert "TRADE_RETCODE_DONE_PARTIAL)SetState" in ledger
@@ -128,7 +135,63 @@ def test_unknown_submission_stays_sealed_until_identity_reconciliation(
 ):
     ledger, executor, _ = generated_runtime(tmp_path)
 
-    assert "VCK_BLOCK_UNKNOWN_OUTCOME||created==0" in ledger
+    assert "VCK_INTENT_OPERATOR_REQUIRED" in ledger
+    prepare = ledger[ledger.index("bool Prepare"):ledger.index("void MarkSubmitted")]
+    assert "MigrateLegacySlot(source,direction)" in prepare
     assert "m_intents.MarkUnknown(source,direction,submit_result)" in executor
     assert "retry_after_timeout" not in ledger
     assert "HistoryDealForOrder(order)" in ledger
+
+
+def test_rc4_intent_namespace_is_dual_read_and_single_write_v2(tmp_path: Path):
+    ledger, _, _ = generated_runtime(tmp_path)
+
+    assert 'm_prefix="VCK_INTENT_V2_"' in ledger
+    assert 'm_v1_prefix="VCK_INTENT_"' in ledger
+    assert "LegacyKey" in ledger
+    assert "MigrateLegacySlot" in ledger
+    assert "MigrateLegacy();" in ledger
+    prepare = ledger[ledger.index("bool Prepare"):ledger.index("void MarkSubmitted")]
+    assert "MigrateLegacySlot(source,direction)" in prepare
+    assert 'GlobalVariableSet(Key(source,direction,"legacy_migrated"),1.0)' in ledger
+    assert "VCK_INTENT_UNKNOWN" in ledger
+    # New submissions only write Key(...), never LegacyKey(...).
+    new_write = prepare[prepare.index("long id=MakeId"):]
+    assert "LegacyKey" not in new_write
+
+
+def test_migrated_v1_state_is_preserved_until_terminal_or_operator_clear(tmp_path: Path):
+    ledger, _, _ = generated_runtime(tmp_path)
+
+    migrate = ledger[ledger.index("bool MigrateLegacySlot"):ledger.index("void MigrateLegacy()")]
+    assert "ClearLegacy" not in migrate
+    assert "if(terminal)" in migrate
+    clear = ledger[ledger.index("void Clear("):ledger.index("bool FindByRequest")]
+    assert "if(migrated)ClearLegacy" in clear
+    reconcile = ledger[ledger.index("bool ReconcileSlot"):ledger.index("public:")]
+    escalation = ledger[
+        ledger.index("void EscalateExpiredIntent"):ledger.index("bool ReconcileSlot")
+    ]
+    assert "EscalateExpiredIntent(source,direction)" in reconcile
+    assert "VCK_INTENT_OPERATOR_REQUIRED" in escalation
+    assert "TimeCurrent()-created>=m_timeout" in escalation
+    assert "Clear(source,direction)" not in escalation[escalation.index("VCK_INTENT_OPERATOR_REQUIRED"):]
+
+
+def test_operator_clear_records_durable_audit_before_removal(tmp_path: Path):
+    ledger, _, _ = generated_runtime(tmp_path)
+
+    operator = ledger[ledger.index("bool OperatorClear"):ledger.index("void ObserveDiagnosticComment")]
+    assert 'AuditKey(id,"operator_clear_at")' in operator
+    assert 'AuditKey(id,"operator_clear_code")' in operator
+    assert operator.index("GlobalVariablesFlush") < operator.index("Clear(source,direction)")
+
+
+def test_v2_state_numbers_remain_compatible_while_new_terminal_states_append(tmp_path: Path):
+    ledger, _, _ = generated_runtime(tmp_path)
+
+    enum_line = next(line for line in ledger.splitlines() if line.startswith("enum VCKTradeIntentState"))
+    assert "VCK_INTENT_NONE=0,VCK_INTENT_PREPARED,VCK_INTENT_SUBMITTED" in enum_line
+    assert "VCK_INTENT_COMPLETED,VCK_INTENT_UNKNOWN,VCK_INTENT_REJECTED,VCK_INTENT_OPERATOR_REQUIRED" in enum_line
+    assert "const VCKTradeIntentState VCK_INTENT_CREATED=VCK_INTENT_PREPARED;" in ledger
+    assert "const VCKTradeIntentState VCK_INTENT_FILLED=VCK_INTENT_COMPLETED;" in ledger

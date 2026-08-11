@@ -80,7 +80,9 @@ def test_generated_handler_claims_deletes_then_applies_once(tmp_path: Path):
     assert "VCK_COMMAND_OWNER_MAGIC=880001" in config
     assert 'VCK_COMMAND_COMMENT_PREFIX="ORIONCMD"' in config
     assert "OrderGetInteger(ORDER_MAGIC)==VCK_COMMAND_OWNER_MAGIC" in main
-    assert "StringFind(comment,VCK_COMMAND_COMMENT_PREFIX)==0" in main
+    assert "comment==VCK_CMD_PAUSE_ENGINE_TOKEN" in main
+    assert "comment==VCK_CMD_RESUME_ENGINE_TOKEN" in main
+    assert "StringFind(comment,VCK_COMMAND_COMMENT_PREFIX)==0" not in main
     assert (
         "CommandLedger.Claim(ticket,command_index))return true;"
         "return ContinueRemoteCommand()" in main
@@ -123,3 +125,61 @@ def test_generated_command_protocol_remains_project_defined(tmp_path: Path):
     assert "ORIONCMD" in first_config and "880001" in first_config
     assert "SECONDCMD" in second_config and "992244" in second_config
     assert "SECONDCMD" not in first_config
+
+
+def test_manual_comment_token_does_not_require_magic_and_disambiguates_same_price(tmp_path: Path):
+    ir = generic_ir()
+    ir.controls["pending_command_ownership"] = {
+        "mode": "manual_comment_token",
+        "symbol_scope": "managed_symbol",
+    }
+    ir.controls["pending_commands"]["pause_engine"]["comment_token"] = "PAUSE_01"
+    ir.controls["pending_commands"]["resume_engine"]["comment_token"] = "RESUME_01"
+    ir.controls["pending_commands"]["resume_engine"]["order_type"] = "buy_limit"
+    ir.controls["pending_commands"]["resume_engine"]["price"] = 12345.25
+    build = plan(ir)
+    assert build.ok, build.blockers
+    out = generate(ir, build, tmp_path / "manual-token")
+    main = (out / "Experts/OrionRecovery/OrionRecovery.mq5").read_text(encoding="utf-8")
+    config = (out / "Include/OrionRecovery/Config.mqh").read_text(encoding="utf-8")
+    assert 'VCK_CMD_PAUSE_ENGINE_TOKEN="PAUSE_01"' in config
+    assert 'VCK_CMD_RESUME_ENGINE_TOKEN="RESUME_01"' in config
+    assert "comment==VCK_CMD_PAUSE_ENGINE_TOKEN" in main
+    assert "comment==VCK_CMD_RESUME_ENGINE_TOKEN" in main
+    match = main[main.index("int MatchRemoteCommand"):main.index("bool RemoteCommandTicketMatches")]
+    assert "ORDER_MAGIC" not in match
+
+
+def test_legacy_price_only_is_draft_only_and_collision_sensitive(tmp_path: Path):
+    ir = generic_ir()
+    ir.controls["pending_command_ownership"] = {
+        "mode": "legacy_price_only",
+        "symbol_scope": "managed_symbol",
+    }
+    first = plan(ir)
+    assert first.ok, first.blockers
+    assert any(w["id"] == "LEGACY-REMOTE-COMMAND-DRAFT-ONLY" for w in first.warnings)
+    out = generate(ir, first, tmp_path / "legacy")
+    evidence = (out / "evidence/manifest.json").read_text(encoding="utf-8")
+    trust = (out / "RELEASE-TRUST.yaml").read_text(encoding="utf-8")
+    assert "legacy_price_only_command_ownership" in evidence
+    assert "legacy_price_only_command_ownership" in trust
+
+    ir.controls["pending_commands"]["resume_engine"]["order_type"] = "buy_limit"
+    ir.controls["pending_commands"]["resume_engine"]["price"] = 12345.25
+    blocked = plan(ir)
+    assert any(b["id"] == "REMOTE-COMMAND-COLLISION" for b in blocked.blockers)
+
+
+def test_explicit_authenticated_mode_uses_exact_per_command_tokens(tmp_path: Path):
+    ir = generic_ir()
+    ir.controls["pending_command_ownership"]["mode"] = "authenticated_ea_order"
+    build = plan(ir)
+    assert build.ok, build.blockers
+    out = generate(ir, build, tmp_path / "auth")
+    config = (out / "Include/OrionRecovery/Config.mqh").read_text(encoding="utf-8")
+    main = (out / "Experts/OrionRecovery/OrionRecovery.mq5").read_text(encoding="utf-8")
+    assert "VCK_COMMAND_OWNERSHIP_MODE=1" in config
+    assert "OrderGetInteger(ORDER_MAGIC)==VCK_COMMAND_OWNER_MAGIC" in main
+    assert "comment==VCK_CMD_PAUSE_ENGINE_TOKEN" in main
+    assert "StringFind(comment,VCK_COMMAND_COMMENT_PREFIX)==0" not in main

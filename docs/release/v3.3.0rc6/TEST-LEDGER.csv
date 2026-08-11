@@ -9,3 +9,8 @@ T12-004,RC6 source regression,Python 3.12,232/232 tests passed,rc6-task12.xml,PA
 T12-005,Generator and input-contract coverage,coverage.py,98.08% combined,pytest-cov,PASS,"advanced_codegen 97%; runtime_input_contracts 100%"
 T12-006,Touched Python lint,Ruff,No findings,ruff check,PASS,"generator contracts and tests"
 T12-007,RC6 selftest,Python 3.12,13/13 invariants passed,mql5-selftest,PASS,"36 canonical test modules detected"
+T13-001,Canonical snapshot verification,Python 3.12,44/44 files matched,sync_distribution_snapshot.py verify,PASS,"inventory size and SHA-256"
+T13-002,Snapshot adversarial mutation,Python 3.12,2/2 tests passed,test_phase30_distribution_snapshot.py,PASS,"missing and modified tests rejected"
+T13-003,RC6 source regression,Python 3.12,234/234 tests passed,rc6-task13.xml,PASS,"zero failures errors skips"
+T13-004,RC6 selftest,Python 3.12,13/13 invariants passed,mql5-selftest,PASS,"37 canonical test modules detected"
+T13-005,Touched Python lint,Ruff,No findings,ruff check,PASS,"snapshot sync verifier and selftest"
