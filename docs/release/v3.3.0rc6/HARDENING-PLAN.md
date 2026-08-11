@@ -47,4 +47,5 @@ Method: VibeCodeMaster `SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH →
 Tasks 11 through 17 passed. The fail-closed RC6 candidate is frozen from online
 commit `6dc50827c64bac426e0092291e1dc27330fecf55`. Task 18 is blocked pending a
 trusted Windows MetaEditor/MT5 runner, a pinned Ed25519 runner key and real
-compile/test/restart evidence. Task 19 promotion is blocked by Task 18.
+compile/test/restart evidence. A fail-closed `v3.3.0rc6` tester pre-release is
+authorized, but Task 19 production promotion remains blocked by Task 18.

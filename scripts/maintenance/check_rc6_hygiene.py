@@ -15,6 +15,7 @@ REQUIRED_PATHS = (
     ".github/workflows/release-gate.yml",
     ".github/workflows/rc6-native-evidence-verify.yml",
     ".github/workflows/rc6-package-integration.yml",
+    ".github/workflows/rc6-prerelease-publish.yml",
     "docs/release/v3.3.0rc6/HARDENING-PLAN.md",
     "docs/release/v3.3.0rc6/REQUIREMENTS.csv",
     "docs/release/v3.3.0rc6/TEST-LEDGER.csv",
@@ -30,6 +31,7 @@ REQUIRED_PATHS = (
     "docs/release/v3.3.0rc6/TASK-19-DECISION.md",
     "docs/release/v3.3.0rc6/RC6-ARTIFACTS.sha256",
     "docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json",
+    "docs/release/v3.3.0rc6/PRERELEASE-NOTES.md",
     "scripts/maintenance/build_rc6_candidate.py",
     "scripts/maintenance/check_rc6_hygiene.py",
     "scripts/maintenance/sync_distribution_snapshot.py",
@@ -124,6 +126,7 @@ def evaluate() -> dict[str, object]:
         ".github/workflows/release-gate.yml",
         ".github/workflows/rc6-native-evidence-verify.yml",
         ".github/workflows/rc6-package-integration.yml",
+        ".github/workflows/rc6-prerelease-publish.yml",
     ):
         text = (ROOT / rel).read_text(encoding="utf-8")
         if "RC6" not in text:

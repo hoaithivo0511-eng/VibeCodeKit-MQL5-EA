@@ -5,6 +5,7 @@ d7a230623eddc002fcde320ba6e161affa5ea3ac069e5235362286c05388f3a5  ./.github/work
 0591a89a59b2975af3776aa30a32c3e25dbae4d2028371c0ef4a1572990fef0f  ./.github/workflows/rc5-package-integration.yml
 f4bec6e472e7dbfee0536c2c4895f4cd941bf295ae9b967b807928315814f83b  ./.github/workflows/rc6-native-evidence-verify.yml
 17b9134a0c482440e23070e3ef0542438c924cd4edd986a8ab818f42b65739c7  ./.github/workflows/rc6-package-integration.yml
+f5c2a818df60c9f47add7315ca139d35bb4c8c0eda5d15433f095fde6651acbf  ./.github/workflows/rc6-prerelease-publish.yml
 6ec9982cabb6255551492fa18dbf546c33c1f792ac8059be7a2b4db19e21aace  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
 1df2b1bf247640a186df7b0e20d0b8d2c7f65b3b628336cf3db399879b93eaed  ./.github/workflows/repo-manifest-refresh.yml
@@ -210,7 +211,8 @@ e567e28bb77eb89ae1167cfa206a255445b594da4753234d5f0e6fecba21601f  ./docs/release
 88f1062cf9a26db25342983496eae0009c282f40763b7dfc453dfd51d97f6c25  ./docs/release/v3.3.0rc5/WAVE-2-COMPLETION.md
 b6b35e49f5356198f33be13a037d2b1759d044402a1903dc311584e3d37a07e0  ./docs/release/v3.3.0rc5/native-evidence/templates/deep-review.template.json
 622482980db7d05aca7b7b7fcb2fc11869bf94f9adbb1bdb21b2d466a69661ec  ./docs/release/v3.3.0rc5/native-evidence/templates/restart-recovery.template.json
-aed2b3605d577d05822476d7813872be761bab37faa7eb593d3e5f60e9834c07  ./docs/release/v3.3.0rc6/HARDENING-PLAN.md
+2a8de3ddf6836011c04e4bcacc6ab23cf8c0a352582e219503a6e3c339ac1a3d  ./docs/release/v3.3.0rc6/HARDENING-PLAN.md
+4875c2b839667c80c9f4ffdf42111c7d3663ed1024698a9d68ba7603a4984fe5  ./docs/release/v3.3.0rc6/PRERELEASE-NOTES.md
 ebfcae879f4de53d436be7bd22917454a4ab88cabe80f7c05495746b6c9d1261  ./docs/release/v3.3.0rc6/RC5-SUPERSEDED-NOTICE.md
 18c893bc389ca04a5da6bc672e429476176bebdff74497b6cbb11e8012990c4e  ./docs/release/v3.3.0rc6/RC6-ARTIFACTS.sha256
 6e5e70a10869af8ccd2ae184226f85ef3ca2cc793ab014aaebf031c26cdc0ec1  ./docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json
@@ -224,7 +226,7 @@ ff61ab5193fcdfa649b89f49f9a2347229db3fb87a40157c3db6aed0b6ab422b  ./docs/release
 24f33ef1bfaf6bf2f3de79ebfa050a2da0245035b89116883085396a55439985  ./docs/release/v3.3.0rc6/TASK-17-COMPLETION.md
 49baa96a6a3baf325b168cb6933dfc925fcc64d828a3be3283e1c724257b34b6  ./docs/release/v3.3.0rc6/TASK-18-NATIVE-EVIDENCE-RUNBOOK.md
 f3832e75a7daf3cb0573189583906d8443cf07f15e5c18b032de2125e52ff5aa  ./docs/release/v3.3.0rc6/TASK-18-STATUS.md
-3f1151fa18c8fbdde0b71dc0a01703ea50435ab88d107b7e2f9d6fbbed78429e  ./docs/release/v3.3.0rc6/TASK-19-DECISION.md
+cb2fbcf0fdc86a54055add80757a0872c06ecdec9d410301bc937be0ef550938  ./docs/release/v3.3.0rc6/TASK-19-DECISION.md
 a5be838f57f981aa30d5f8d35d6020907ed892569439eeb52f8428bbf5ed25f5  ./docs/release/v3.3.0rc6/TEST-LEDGER.csv
 a572d698c97c90376c6468a3a24cb76dfd5df33feba048c681a0b57aa99def9a  ./docs/release/v3.3.0rc6/native-evidence/templates/restart-recovery.template.json
 d12a4ecbfacd5be64ffcfed7f0402df961ec1f3b9339bcaafb13dd002d5b81b9  ./native/NATIVE-VALIDATION-HANDOFF.md
@@ -254,7 +256,7 @@ f273199a69a7e15413391813ecef9a228e54477beb1d2362eb9f258ecf4a33f0  ./scripts/main
 dba1ce0fe7acaf3a88c6bf90660a78c80aa3055f4024b1104aebf15a91dd2f6c  ./scripts/maintenance/build_rc5_candidate.py
 a603cff198ec586ece861d68a2594c23bf646e38f24827c4944b35d678b57173  ./scripts/maintenance/build_rc5_ship.py
 4c84937f9cd1064a6f199b09a40dca93ecd1f82cb3a178aaef679b23c2506e32  ./scripts/maintenance/build_rc6_candidate.py
-d60c53b0d20747eeb0ba0b234397fb2278d46d027d30c8867123f3be11f35ba8  ./scripts/maintenance/check_rc6_hygiene.py
+69dbef9c4eaa05e8d69bc517a3d3de1ae7dc64754809866350e614e78d9e0fb9  ./scripts/maintenance/check_rc6_hygiene.py
 1d1334a44378e411a74b772fdb794d4fbf360845c808c173524a838dc4c741f9  ./scripts/maintenance/import-release-bundle.sh
 603fa594b8241e51a63eea34da9ce2cc0ec417baa93376b2c268624081c30056  ./scripts/maintenance/repo_manifest.py
 5d6714b3f75d73394b94df12e4f7f6137853b632e5806baffabde24236b3a4a9  ./scripts/maintenance/sync_distribution_snapshot.py
