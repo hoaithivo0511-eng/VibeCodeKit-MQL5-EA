@@ -1,5 +1,5 @@
 {
-  "file_count": 44,
+  "file_count": 45,
   "files": [
     {
       "path": "agent-contract.json",
@@ -165,6 +165,11 @@
       "path": "tests/test_phase30_distribution_snapshot.py",
       "sha256": "267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219",
       "size": 1124
+    },
+    {
+      "path": "tests/test_phase31_reproducible_wheel.py",
+      "sha256": "cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac",
+      "size": 2415
     },
     {
       "path": "tests/test_phase3_codegen.py",

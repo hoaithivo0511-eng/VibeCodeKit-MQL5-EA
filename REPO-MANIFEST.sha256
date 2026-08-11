@@ -207,13 +207,14 @@ e567e28bb77eb89ae1167cfa206a255445b594da4753234d5f0e6fecba21601f  ./docs/release
 88f1062cf9a26db25342983496eae0009c282f40763b7dfc453dfd51d97f6c25  ./docs/release/v3.3.0rc5/WAVE-2-COMPLETION.md
 b6b35e49f5356198f33be13a037d2b1759d044402a1903dc311584e3d37a07e0  ./docs/release/v3.3.0rc5/native-evidence/templates/deep-review.template.json
 622482980db7d05aca7b7b7fcb2fc11869bf94f9adbb1bdb21b2d466a69661ec  ./docs/release/v3.3.0rc5/native-evidence/templates/restart-recovery.template.json
-950a1dea014dad5327615e9cd54ed8d367d93ecf33ffbcaccc6c26cf6162b384  ./docs/release/v3.3.0rc6/HARDENING-PLAN.md
+6810eb6e1585d391f0dcd087691a247a5468292382db61af96ad91e54424f609  ./docs/release/v3.3.0rc6/HARDENING-PLAN.md
 ebfcae879f4de53d436be7bd22917454a4ab88cabe80f7c05495746b6c9d1261  ./docs/release/v3.3.0rc6/RC5-SUPERSEDED-NOTICE.md
-983e59e755499a0a03c2edee8bd5bd27b93eb1707142e97fe32a77f9f39c6a72  ./docs/release/v3.3.0rc6/REQUIREMENTS.csv
+0cb1f9ce395b904960f90192b35ab3bd3489a281d7327eef7cfc49b26f47f493  ./docs/release/v3.3.0rc6/REQUIREMENTS.csv
 8ae686df89f8c89b8d7c134de097a2b01d5710deaae3adcc7c338cbba8947e3b  ./docs/release/v3.3.0rc6/TASK-11-COMPLETION.md
 fc59d66be836e46178109a0fac3f7c52a3864dcc3f75c404879772cf09b86820  ./docs/release/v3.3.0rc6/TASK-12-COMPLETION.md
 0f687747c35cc5b2cf2caacd3ca81718218fd32447eedb4d781c5588d9dd2c66  ./docs/release/v3.3.0rc6/TASK-13-COMPLETION.md
-f991c2918d99631539349b9103467358f0c236f2ff7299c1eb77c1702ab6d767  ./docs/release/v3.3.0rc6/TEST-LEDGER.csv
+e393cc92949a63cbdbdcefe2fb57191a0dd55a7ea337355d82114dcfee950cf6  ./docs/release/v3.3.0rc6/TASK-14-COMPLETION.md
+c4f50f3dd51ff65e0b921dc7d2240277c3a266418acc36fd295df58ea9f5239f  ./docs/release/v3.3.0rc6/TEST-LEDGER.csv
 991e7c9038ea5d7587a4eed257517197301d8009f214687d2ef99e36ab38f440  ./native/NATIVE-VALIDATION-HANDOFF.md
 f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6  ./native/workers-windows/run_backtest.ps1
 4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7  ./native/workers-windows/run_compile.ps1
@@ -240,6 +241,7 @@ ce86d079672d59face437b051a8ce6fd3d88597541598b244edae2caeb490348  ./reports/whee
 f273199a69a7e15413391813ecef9a228e54477beb1d2362eb9f258ecf4a33f0  ./scripts/maintenance/assert_junit_clean.py
 dba1ce0fe7acaf3a88c6bf90660a78c80aa3055f4024b1104aebf15a91dd2f6c  ./scripts/maintenance/build_rc5_candidate.py
 a603cff198ec586ece861d68a2594c23bf646e38f24827c4944b35d678b57173  ./scripts/maintenance/build_rc5_ship.py
+8ec5434e3d411576f305ad544199d5eff46b2cee9e4a499729b2c7c9575c6e5c  ./scripts/maintenance/build_rc6_candidate.py
 1d1334a44378e411a74b772fdb794d4fbf360845c808c173524a838dc4c741f9  ./scripts/maintenance/import-release-bundle.sh
 603fa594b8241e51a63eea34da9ce2cc0ec417baa93376b2c268624081c30056  ./scripts/maintenance/repo_manifest.py
 5d6714b3f75d73394b94df12e4f7f6137853b632e5806baffabde24236b3a4a9  ./scripts/maintenance/sync_distribution_snapshot.py
@@ -592,7 +594,7 @@ a398bd107252f873bb1bfc9a2c80087a1f30f53b8fbf1ea3363c16977b37edbd  ./tool/source/
 e3703a3422d075e6a0f8037a330b4c94e648e62aceb685924a444191dda4ed9e  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CRiskGuard.mqh
 306a7cc4fda374e2789e1662219f4dd2ad6eee3b9ed863622b7533eef9ab6e3c  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CSafeTradeManager.mqh
 0ad7b5a3ad26256111ef83deb98a26a4515d76933ee2aba28632ba0a0fb8b20b  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CSpreadGuard.mqh
-d965c134276f0dd9c16be58752f110e9656863c1d17af3266fa098cb77d5c58e  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/SNAPSHOT-MANIFEST.json
+855b89d0641f15548d17e688334433f6df9f76912057ad02008fc3879c82ba5d  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/SNAPSHOT-MANIFEST.json
 97442276ffaa1e9429d41c081575b74d95a9085fb8a46b80b302118292f0c331  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/agent-contract.json
 04a4dbef381d7725077de9d3becedd552659fd2fd4d87b245107df8c4d677b80  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/pyproject.toml
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/__init__.py
@@ -626,6 +628,7 @@ f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/
 4902912e6d99ea6670ebc4906bb047c9be8b63cc1c65845b8caaa91be565f6f2  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase29_generated_review_parity.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase2_planning.py
 267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase30_distribution_snapshot.py
+cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase31_reproducible_wheel.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase4_auto_build_ir.py
 28dac7b849c322a55445bd648fca4e3d0b44cefc37ff929e46c4f67738bedcef  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase4_legacy_bridge.py
@@ -824,6 +827,7 @@ abd0a17bb86ed21e3dbc5851894600052241db7fabd0b4958216a91e1e8c6c9f  ./tool/source/
 bf78868abd99b3a372bfddd763c3e5c33757375605620085e0cfa85fd19ccada  ./tool/source/scripts/vibecodekit_mql5/vkmql.py
 111d4987fb38aa4d4d2ad33fdaf2f150304df540ed1426b600af72f996be51e8  ./tool/source/scripts/vibecodekit_mql5/walkforward.py
 f8cf13d9612e2c07c30ae0d1f0aed0bcef680eca4a230dac37989fa4c97efdea  ./tool/source/scripts/vibecodekit_mql5/walkforward_runner.py
+b3668c850763caa686fb87063124e68e2531c2dfe106b78d52650820b1b66778  ./tool/source/scripts/vibecodekit_mql5/wheel_repro.py
 b7edb8d25b7f05f8c4aca957052993701c6038da2b0b640d161b01cd13c73cf2  ./tool/source/scripts/vibecodekit_mql5/wizard.py
 177534512bccbbc49475149746166787e8c039816a89e827e7bbc5dac86c44c3  ./tool/source/scripts/vibecodekit_mql5/worker_protocol.py
 d55c0ede4977fa73827f4ebed895f7c2798592ead859af0ceb6bf599c636b2d4  ./tool/source/scripts/vibecodekit_mql5/workflow_mode.py
@@ -864,6 +868,7 @@ f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09  ./tool/source/
 4902912e6d99ea6670ebc4906bb047c9be8b63cc1c65845b8caaa91be565f6f2  ./tool/source/tests/test_phase29_generated_review_parity.py
 52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14  ./tool/source/tests/test_phase2_planning.py
 267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219  ./tool/source/tests/test_phase30_distribution_snapshot.py
+cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac  ./tool/source/tests/test_phase31_reproducible_wheel.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/tests/test_phase4_auto_build_ir.py
 28dac7b849c322a55445bd648fca4e3d0b44cefc37ff929e46c4f67738bedcef  ./tool/source/tests/test_phase4_legacy_bridge.py
