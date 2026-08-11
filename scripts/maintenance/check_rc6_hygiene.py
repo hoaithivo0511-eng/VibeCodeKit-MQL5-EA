@@ -17,6 +17,7 @@ REQUIRED_PATHS = (
     ".github/workflows/rc6-package-integration.yml",
     ".github/workflows/rc6-prerelease-publish.yml",
     "docs/release/v3.3.0rc6/HARDENING-PLAN.md",
+    "docs/release/v3.3.0rc6/DOCUMENTATION-AUDIT.md",
     "docs/release/v3.3.0rc6/REQUIREMENTS.csv",
     "docs/release/v3.3.0rc6/TEST-LEDGER.csv",
     "docs/release/v3.3.0rc6/TASK-11-COMPLETION.md",
