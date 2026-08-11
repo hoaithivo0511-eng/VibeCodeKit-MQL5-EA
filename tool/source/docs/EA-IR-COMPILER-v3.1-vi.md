@@ -77,6 +77,22 @@ beta bị cấm, account mode không tương thích, multi-symbol/multi-timefram
 có runtime tương ứng, hoặc nhiều signal chưa rõ composition đều block source
 generation.
 
+Với `controls.pending_order_remote`, profile phải khai báo ownership độc lập với
+giá/type dùng để chọn command:
+
+```yaml
+controls:
+  pending_command_ownership:
+    magic: 881234
+    comment_prefix: MYEACMD
+    symbol_scope: managed_symbol
+```
+
+EA chỉ claim order khi symbol, magic và prefix cùng khớp. Sau khi claim, EA xóa
+pending order thành công rồi mới áp dụng action. Ledger bền vững ngăn action bị
+phát lại nếu terminal dừng giữa các bước; trạng thái không chứng minh được sẽ
+khóa để operator reconciliation.
+
 ### 3. Verify semantic binding
 
 ```bash

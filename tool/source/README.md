@@ -11,7 +11,7 @@ Mở đúng file này là nắm trọn cách build EA từ đầu đến package
 workflow Chủ nhà–Thầu–Thợ, remote worker, MCP/IDE và catalog lệnh.
 
 
-# VibeCodeKit MQL5 EA – v3.3.0 RC4 EA specification compiler
+# VibeCodeKit MQL5 EA – v3.3.0 RC6 EA specification compiler
 
 Bản v3.1 RC2 bổ sung pipeline lossless `document/prompt → EA-IR → capability
 plan → composable codegen → hash-bound evidence`. Xem hướng dẫn mới tại

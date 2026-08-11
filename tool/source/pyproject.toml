@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vibecodekit-mql5-ea"
-version = "3.3.0rc4"
+version = "3.3.0rc6"
 description = "Vibecode methodology kit for MQL5 Expert Advisor development"
 readme = "README.md"
 license = {text = "MIT"}
@@ -13,10 +13,9 @@ authors = [{name = "vibecodekit-mql5-ea contributors"}]
 
 dependencies = [
     # Keep minimal; add extras as needed.
-    # PyYAML lives in core because `mql5-auto-build` accepts a YAML spec by
-    # default and the documented quickstart pipes `mql5-spec-from-prompt`
-    # YAML output straight into it; without PyYAML the first chat-driven
-    # build after a fresh `pip install -e .` fails on `load_spec`.
+    # PyYAML remains core for explicit `--legacy` prompt output and existing
+    # `mql5-auto-build --spec *.yaml` projects. The canonical prompt flow uses
+    # EA-IR JSON by default.
     "pyyaml>=6.0",
     # Ed25519 verification of native-runner release attestations. Core, not
     # optional: without it the release gate cannot check its own trust root.
@@ -35,6 +34,10 @@ dependencies = [
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
+    # PDF-ingest regression is part of the mandatory source/wheel suite.
+    # Keep ReportLab in the declared dev surface so `pip install -e .[dev]`
+    # cannot silently turn that test into an importorskip.
+    "reportlab>=4",
     "ruff>=0.1",
 ]
 ml = [

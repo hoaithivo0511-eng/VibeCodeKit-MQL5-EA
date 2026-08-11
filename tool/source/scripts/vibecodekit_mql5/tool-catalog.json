@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "kit": "vibecodekit-mql5-ea",
-  "kit_version": "3.3.0rc4",
+  "kit_version": "3.3.0rc6",
   "generated_by": "mql5-manifest",
   "tools": [
     {
@@ -1262,10 +1262,10 @@
       "name": "mql5-spec-from-prompt",
       "module": "vibecodekit_mql5.spec_from_prompt",
       "entry_point": "vibecodekit_mql5.spec_from_prompt:main",
-      "description": "Translate a free-text description into a valid ``ea-spec.yaml``.",
+      "description": "Translate a free-text description into canonical EA-IR 3.1 JSON.",
       "tier": "advanced",
       "maturity": "release-grade",
-      "supports_json": false,
+      "supports_json": true,
       "supports_sarif": false,
       "supports_gate_report": false
     },

@@ -1,0 +1,65 @@
+test_id,scope,environment,result,evidence,status,notes
+T00-001,RC5 editable install,Python 3.12 fresh venv,"vibecodekit-mql5-ea 3.3.0rc5; reportlab 5.0.0; pytest 9.1.1",pip install -e ./tool/source[dev],PASS,Dev dependency closure includes ReportLab
+T00-002,RC5 source regression,Python 3.12 fresh venv,126 passed in 2.23s,rc5-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T00-003,RC5 source selftest,Python 3.12 fresh venv,13/13 invariants passed,mql5-selftest output,PASS,Version triple reports 3.3.0rc5
+T00-004,RC4 source archive regression,Python 3.12 isolated extraction,126 passed,rc4-source-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T00-005,RC4 source archive selftest,Python 3.12 isolated extraction,13/13 invariants passed,mql5-selftest output,PASS,Version triple remains 3.3.0rc4
+T00-006,RC4 wheel import isolation,Python 3.12 fresh venv,Package imported from site-packages,import origin assertion,PASS,Version metadata remains 3.3.0rc4
+T00-007,RC4 wheel regression,Python 3.12 fresh venv,126 passed in 4.49s,rc4-wheel-tests.xml validated by assert_junit_clean.py,PASS,"Tests copied from frozen RC4 source archive; 0 failures; 0 errors; 0 skipped"
+T00-008,RC4 wheel selftest,Python 3.12 fresh venv,13/13 invariants passed,mql5-selftest output,PASS,Executed outside active source checkout
+T00-009,RC4 bundle immutability,SHA-256,33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c,sha256sum,PASS,Matches frozen release contract
+T00-010,RC4 source archive immutability,SHA-256,a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f,sha256sum,PASS,Matches frozen release contract
+T00-011,RC4 wheel immutability,SHA-256,5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a,sha256sum,PASS,Matches frozen release contract
+T00-012,Workflow syntax,PyYAML BaseLoader,4 workflow files parsed,local structure validation,PASS,Mapping shapes validated without evaluating GitHub expressions
+T00-013,Metadata syntax,Python json parser,All changed JSON documents parsed,local structure validation,PASS,Agent contracts and tool catalogs remain valid JSON
+T00-014,JUnit gate script,Ruff,No lint findings,ruff check scripts/maintenance/assert_junit_clean.py,PASS,Checked after import ordering and shebang correction
+T00-015,Repository integrity,Git and manifest,Manifest regenerated and verified,repo_manifest.py --check,PASS,Final tracked-file digest inventory is current
+T00-016,Native MQL5 evidence,MetaEditor and MT5,Not run,Release Task 10,DEFERRED,PR-00 changes no generated MQL5 runtime behavior
+T01-001,Worker artifact security,Python 3.12,18/18 targeted tests passed,tests/test_worker_artifact_security.py,PASS,"Traversal; symlink; duplicate; hash; size; staging; rollback"
+T01-002,Worker module coverage,coverage.py,94.87% combined,pytest-cov --cov-fail-under=90,PASS,"worker_protocol 98%; remote_worker_client 93%"
+T01-003,RC5 source regression after Task 01,Python 3.12,144/144 tests passed,task01-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T01-004,RC5 selftest after Task 01,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,25 shipped test modules detected
+T02-001,Canonical prompt and compatibility flow,Python 3.12,20/20 focused tests passed,test_phase4_legacy_bridge.py and test_phase4_auto_build_ir.py,PASS,"Default EA-IR; legacy flag; relabel rejection; release blocker; end-to-end build"
+T02-002,Prompt parser coverage,coverage.py,94%,pytest-cov,PASS,Minimum target 80%
+T02-003,Auto-build coverage,coverage.py,84%,pytest-cov,PASS,Minimum target 75%
+T02-004,Wave 0 RC5 source regression,Python 3.12,159/159 tests passed,wave0-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T02-005,Installed CLI quickstart smoke,Python 3.12 editable install,Canonical EA-IR generated and source_complete true,mql5-spec-from-prompt then mql5-auto-build,PASS,release_eligible remains false without native evidence
+T02-006,RC5 selftest after Wave 0,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,25 shipped test modules detected
+T02-007,Touched Python lint,Ruff,No findings,ruff check touched modules and mirrored tests,PASS,Includes EA-IR and release policy changes
+T03-001,Input semantics focused tests,Python 3.12,4/4 tests passed,test_phase21_input_semantics.py,PASS,"Exact counts; input/sinput classification; comments; quoted delimiters"
+T03-002,Input parser coverage,coverage.py,96.34%,pytest-cov --cov-fail-under=90,PASS,ea_docs_inputs.py target exceeded
+T03-003,RC5 source regression after Task 03,Python 3.12,163/163 tests passed,task03-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T03-004,RC5 selftest after Task 03,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,26 shipped test modules detected
+T04-001,Runtime contract focused suite,Python 3.12,6/6 tests passed,test_phase22_runtime_contracts.py,PASS,"Registry; ranges; signs; zero semantics; prebuild; OnInit; artifact binding"
+T04-002,Advanced generator and contract coverage,coverage.py,96.76% combined,pytest-cov --cov-fail-under=95,PASS,"advanced_codegen 95%; runtime_input_contracts 100%"
+T04-003,RC5 source regression after Task 04,Python 3.12,169/169 tests passed,task04-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T04-004,RC5 selftest after Task 04,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,27 shipped test modules detected
+T05-001,Remote command lifecycle focused suite,Python 3.12,7/7 tests passed,test_phase23_remote_command_lifecycle.py,PASS,"Ownership factors; ambiguity; claim/delete/apply; replay stop; project isolation"
+T05-002,Affected remote and generator suite,Python 3.12,35/35 tests passed,phase10/12/16/18/19/20/23 tests,PASS,Generic and CCBSN fixture profiles both pass
+T05-003,Touched runtime pipeline coverage,coverage.py,85.68% combined,pytest-cov --cov-fail-under=85,PASS,"advanced_codegen 97%; feature_config/intake/profile branches included"
+T05-004,Generated EA static lint,Python 3.12,mql5-lint ok with 0 errors,generated OrionRecovery main,PASS,One unrelated UX panel warning
+T05-005,RC5 source regression after Task 05,Python 3.12,176/176 tests passed,task05-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T05-006,RC5 selftest after Task 05,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,28 shipped test modules detected
+T06-001,Trade lifecycle v2 focused suite,Python 3.12,6/6 tests passed,test_phase24_trade_lifecycle_v2.py,PASS,"Identity authority; diagnostic comments; state transitions; retcodes; durability"
+T06-002,Affected runtime lifecycle suite,Python 3.12,23/23 tests passed,phase17/23/24 tests,PASS,"Runtime safety; remote commands; trade intent lifecycle"
+T06-003,Advanced generator coverage,coverage.py,96.94%,pytest-cov --cov-fail-under=95,PASS,50/50 affected generator tests passed
+T06-004,Generated EA static lint,Python 3.12,mql5-lint ok with 0 errors,generated RuntimeSafeEA main,PASS,One unrelated UX panel warning
+T06-005,Wave 1 RC5 source regression,Python 3.12,182/182 tests passed,task06-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T06-006,RC5 selftest after Wave 1,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,29 shipped test modules detected
+T06-007,Touched Python lint,Ruff,No findings,ruff check generator and mirrored tests,PASS,Task 06 source and distribution tests checked
+T06-008,Native trade lifecycle evidence,MetaEditor and MT5,Not run,Release Task 10,DEFERRED,"Compile; async fills; restart and crash recovery remain release blockers"
+T06-009,Generated EA method-hiding scan,Target MQL5 build 5260,No issues,mql5-method-hiding-check,PASS,Static scan of generated RuntimeSafeEA main
+T06-010,Generated EA enterprise Trader-17 scan,Python 3.12,"6/17 PASS; 3 WARN; 8 N/A; 0 FAIL; exit 1",mql5-trader-check --mode enterprise,BLOCKED,"Operational and native evidence is incomplete; release remains ineligible"
+T07-001,Audit gate focused suite,Python 3.12,15/15 tests passed,test_phase25_audit_gate_execution.py,PASS,"Real lint/review; mandatory stages; status separation; evidence branches; CLI"
+T07-002,Check-all and release-policy coverage,coverage.py,98.75% combined,pytest-cov,PASS,"check_all 99%; release_policy 98%; minimums 80% and 90%"
+T07-003,Generic project check-all execution,Python 3.12,"lint PASS; review PASS; code_quality_ok true",OrionRecovery copied audit run,PASS,"release_ready and release_eligible remain false without native evidence"
+T07-004,RC5 source regression after Task 07,Python 3.12,197/197 tests passed,task07-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T07-005,RC5 selftest after Task 07,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,30 shipped test modules detected
+T07-006,Touched Python lint,Ruff,No findings,ruff check check-all release policy and mirrored tests,PASS,Task 07 source and distribution tests checked
+T08-001,Review truthfulness focused suite,Python 3.12,11/11 tests passed,test_phase26_review_truthfulness.py,PASS,"Stage execution; EA-IR priority; generated flags; heuristic fallback; file isolation"
+T08-002,Deep-review analyzer coverage,coverage.py,83.26% combined,pytest-cov --cov-fail-under=80,PASS,"deep_review 84%; ea_senior_review 83%"
+T08-003,Generic strategy detection cross-project,Python 3.12,4/4 project families matched EA-IR,NorthTrend BandReturn RangePulse OrionRecovery,PASS,"trend-following; mean-reversion; breakout; hedge"
+T08-004,Fast deep-review stage ledger,Python 3.12,"Stages 0-6 EXECUTED; Stage 7 SKIPPED",programmatic generic project runs,PASS,Only seven executed categories reported
+T08-005,Wave 2 RC5 source regression,Python 3.12,208/208 tests passed,wave2-tests.xml validated by assert_junit_clean.py,PASS,"0 failures; 0 errors; 0 skipped"
+T08-006,RC5 selftest after Wave 2,Python 3.12,13/13 invariants passed,mql5-selftest output,PASS,31 shipped test modules detected
+T08-007,Touched Python lint,Ruff,No findings,ruff check deep review senior analyzer and mirrored tests,PASS,Task 08 source and distribution tests checked

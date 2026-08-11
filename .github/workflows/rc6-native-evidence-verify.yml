@@ -1,0 +1,87 @@
+name: RC6 Native Evidence Gate
+
+on:
+  push:
+    branches:
+      - 'release/**'
+      - 'hardening/v3.3.0rc6'
+    paths:
+      - '.github/workflows/rc6-native-evidence-verify.yml'
+      - 'scripts/maintenance/verify_rc6_native_evidence.py'
+      - 'scripts/native/Invoke-RC6NativeEvidence.ps1'
+      - 'tool/source/scripts/vibecodekit_mql5/evidence_attestation.py'
+      - 'tool/source/scripts/vibecodekit_mql5/provenance.py'
+      - 'tool/source/scripts/vibecodekit_mql5/execution_sources.py'
+      - 'tool/source/scripts/vibecodekit_mql5/runner_key.py'
+      - 'tool/source/tests/test_phase25_native_release_contract.py'
+      - 'tool/source/tests/test_phase26_native_evidence_semantics.py'
+      - 'tool/source/tests/test_phase32_rc6_native_provenance.py'
+      - 'docs/release/v3.3.0rc6/**'
+      - 'RELEASE-TRUST.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/rc6-native-evidence-verify.yml'
+      - 'scripts/maintenance/verify_rc6_native_evidence.py'
+      - 'scripts/native/Invoke-RC6NativeEvidence.ps1'
+      - 'tool/source/scripts/vibecodekit_mql5/**'
+      - 'tool/source/tests/test_phase25_native_release_contract.py'
+      - 'tool/source/tests/test_phase26_native_evidence_semantics.py'
+      - 'tool/source/tests/test_phase32_rc6_native_provenance.py'
+      - 'docs/release/v3.3.0rc6/**'
+      - 'RELEASE-TRUST.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-evidence-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install RC6 source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Run provenance compatibility and adversarial gates
+        run: |
+          cd tool/source
+          python -m pytest -q \
+            tests/test_phase25_native_release_contract.py \
+            tests/test_phase26_native_evidence_semantics.py \
+            tests/test_phase32_rc6_native_provenance.py
+      - name: Parse PowerShell native runner
+        shell: pwsh
+        run: |
+          $text = Get-Content -Raw scripts/native/Invoke-RC6NativeEvidence.ps1
+          [void][scriptblock]::Create($text)
+          Write-Host "RC6 native PowerShell runner syntax: PASS"
+      - name: Verify fail-closed candidate and native evidence state
+        shell: bash
+        run: |
+          set -euo pipefail
+          project='docs/release/v3.3.0rc6/native-evidence/project'
+          if [ -f "$project/evidence/manifest.json" ]; then
+            python scripts/maintenance/verify_rc6_native_evidence.py \
+              --native-project "$project" --require-pass
+          else
+            python scripts/maintenance/verify_rc6_native_evidence.py \
+              --native-project "$project"
+          fi
+          if [ -f docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json')
+          candidate = json.loads(path.read_text(encoding='utf-8'))
+          if candidate.get('release_eligible') is not False:
+              raise SystemExit('RC6 candidate became eligible without trusted native evidence')
+          print('RC6 candidate remains fail-closed: PASS')
+          PY
+          fi

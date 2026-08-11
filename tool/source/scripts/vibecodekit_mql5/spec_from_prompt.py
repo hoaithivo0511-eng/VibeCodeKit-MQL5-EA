@@ -1,10 +1,10 @@
-"""Translate a free-text description into a valid ``ea-spec.yaml``.
+"""Translate a free-text description into canonical EA-IR 3.1 JSON.
 
 This module is the bridge between the Devin **chat-driven build** playbook
 (P2.2) and ``mql5-auto-build``. The playbook captures a single English (or
 Vietnamese) sentence from the user — ``"build EA trend EURUSD H1 risk 0.5%
-SL 30 TP 60 macd + sar"`` — and turns it into a YAML spec that
-``spec_schema.validate`` accepts.
+SL 30 TP 60 macd + sar"`` — and turns it into the EA-IR consumed by
+``mql5-auto-build`` and ``mql5-ir-build``.
 
 Design choices
 --------------
@@ -14,12 +14,12 @@ Design choices
   Anything it can't parse is left at its schema default rather than
   hallucinated; ``--strict`` makes those gaps an error.
 
-* **Stdlib only** — no ``pyyaml`` import here; the output is rendered via
-  the same minimalist emitter used elsewhere in the kit so the module is
-  safe to import in environments where pyyaml is missing.
+* **Canonical by default** — the normal CLI path emits the complete EA-IR
+  object. The old single-preset YAML view exists only behind ``--legacy`` and
+  carries an explicit non-release compatibility marker.
 
-* **Idempotent**. Re-running the parser on its own emitted YAML produces
-  the same YAML (the round-trip is covered by tests).
+* **Idempotent**. Canonical EA-IR content has a stable hash; the explicit
+  legacy emitter also produces stable YAML for compatibility callers.
 
 Module layout — kept under the 400-LOC audit ceiling via two siblings:
 
@@ -34,11 +34,11 @@ CLI
 
 ::
 
-    mql5-spec-from-prompt "build EA trend EURUSD H1 risk 0.5%"
+    mql5-spec-from-prompt "EA named TrendEA account netting EURUSD H1 trend"
 
-Writes the resulting spec to stdout. Use ``--out PATH`` to write to a file
-and ``--strict`` to require every schema-mandatory field be inferable from
-the prompt (default: fall back to schema defaults silently).
+Writes canonical JSON to stdout. Use ``--out PATH`` to write to a file and
+``--strict`` to make unresolved planning fields block the command. Use
+``--legacy`` only for callers that still require the older scaffold YAML.
 """
 
 from __future__ import annotations
@@ -73,6 +73,11 @@ from .spec_from_prompt_recognisers import (
 )
 from .spec_from_prompt_yaml import emit_yaml_block
 
+LEGACY_COMPATIBILITY = {
+    "mode": "legacy_scaffold",
+    "release_eligible": False,
+}
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Parser
@@ -96,7 +101,7 @@ class PromptParseResult:
 
 
 def parse(prompt: str) -> PromptParseResult:
-    """Return a structured spec for ``prompt``.
+    """Return the explicit legacy compatibility spec for ``prompt``.
 
     The parser never raises; gaps in the prompt are filled with the same
     defaults ``spec_schema.RiskConfig`` uses so the output is always
@@ -130,7 +135,7 @@ def parse(prompt: str) -> PromptParseResult:
     if allowed and stack not in allowed:
         result.errors.append(
             f"legacy preset {preset!r} cannot represent explicit stack {stack!r}; "
-            "use --ir / mql5-ea-intake-ir instead of allowing a silent clamp"
+            "remove --legacy or use mql5-ea-intake-ir instead of allowing a silent clamp"
         )
     symbol = all_symbols[0] if all_symbols else match_symbol(text)
     timeframe = match_timeframe(text)
@@ -144,6 +149,7 @@ def parse(prompt: str) -> PromptParseResult:
         "stack": stack,
         "symbol": symbol,
         "timeframe": timeframe,
+        "compatibility": dict(LEGACY_COMPATIBILITY),
     }
     if risk:
         spec["risk"] = risk
@@ -183,7 +189,8 @@ def parse(prompt: str) -> PromptParseResult:
     if ir.strategy.get("topology") == "multi_engine":
         result.warnings.append(
             "multi-engine EA detected; legacy ea-spec.yaml is only a compatibility "
-            "view and cannot preserve every subsystem. Use --ir and mql5-ir-build."
+            "view and cannot preserve every subsystem. Remove --legacy and use "
+            "mql5-ir-build."
         )
     for conflict in ir.conflicts:
         result.errors.append(str(conflict.get("message") or conflict))
@@ -215,6 +222,7 @@ def _default_spec() -> dict[str, object]:
         "stack": "netting",
         "symbol": "EURUSD",
         "timeframe": "H1",
+        "compatibility": dict(LEGACY_COMPATIBILITY),
     }
 
 
@@ -229,6 +237,13 @@ def to_yaml(spec: dict[str, object]) -> str:
     for key in ("name", "preset", "stack", "symbol", "timeframe", "mode"):
         if key in spec:
             lines.append(f"{key}: {spec[key]}")
+    if "compatibility" in spec:
+        compatibility = spec["compatibility"]
+        assert isinstance(compatibility, dict)
+        lines.append("compatibility:")
+        lines.append(f"  mode: {compatibility['mode']}")
+        release_eligible = str(bool(compatibility["release_eligible"])).lower()
+        lines.append(f"  release_eligible: {release_eligible}")
     if "risk" in spec:
         risk = spec["risk"]
         assert isinstance(risk, dict)
@@ -278,7 +293,7 @@ def to_yaml(spec: dict[str, object]) -> str:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="mql5-spec-from-prompt",
-        description="Translate a free-text EA description into ea-spec.yaml.",
+        description="Translate a free-text EA description into canonical EA-IR JSON.",
     )
     p.add_argument("prompt", help="Natural-language description of the EA")
     p.add_argument(
@@ -287,19 +302,24 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument(
         "--strict", action="store_true",
-        help="Exit non-zero if the prompt is missing schema-mandatory fields.",
+        help="Exit non-zero when required planning fields remain unresolved.",
     )
     p.add_argument(
         "--explain", action="store_true",
-        help="Print a one-line summary of what was inferred vs defaulted.",
+        help="Print a one-line parse summary for the selected output mode.",
     )
-    p.add_argument(
+    output_mode = p.add_mutually_exclusive_group()
+    output_mode.add_argument(
         "--ir", action="store_true",
-        help="Emit canonical EA-IR JSON instead of the legacy single-preset YAML view.",
+        help="Compatibility alias for the canonical default EA-IR output.",
+    )
+    output_mode.add_argument(
+        "--legacy", action="store_true",
+        help="Emit the non-release legacy single-preset YAML compatibility view.",
     )
     args = p.parse_args(argv)
 
-    if args.ir:
+    if not args.legacy:
         ir = parse_ir_text(args.prompt, source="prompt", strict=args.strict)
         payload = json.dumps(ir.to_dict(), ensure_ascii=False, indent=2) + "\n"
         if args.out:
@@ -308,6 +328,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"wrote {args.out}")
         else:
             sys.stdout.write(payload)
+        if args.explain:
+            print(
+                "canonical EA-IR: "
+                f"requirements={len(ir.requirements)} "
+                f"ambiguities={len(ir.ambiguities)} conflicts={len(ir.conflicts)}",
+                file=sys.stderr,
+            )
         return 0 if ir.ready_for_planning else 1
 
     result = parse(args.prompt)
@@ -354,7 +381,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 1
         if any("multi-engine EA detected" in w for w in result.warnings):
-            print("legacy schema cannot represent this multi-engine EA under --strict; use --ir", file=sys.stderr)
+            print(
+                "legacy schema cannot represent this multi-engine EA under "
+                "--strict; remove --legacy to emit canonical EA-IR",
+                file=sys.stderr,
+            )
             return 1
 
     yaml_text = to_yaml(result.spec)

@@ -48,11 +48,10 @@ from . import auto_build_docs_ship_stage as docs_ship_stage_mod
 from . import build as build_mod
 from . import compile as compile_mod
 from . import dashboard as dashboard_mod
+from . import ir_build as ir_build_mod
 from . import lint as lint_mod
 from . import package as package_mod
-from . import release_policy
-from . import spec_schema
-from . import ir_build as ir_build_mod
+from . import release_policy, spec_schema
 from .ea_ir import from_dict as ir_from_dict
 
 # Kept for backward compat with anything that imported these constants from
@@ -126,7 +125,10 @@ def load_spec(path: Path) -> dict[str, Any]:
     else:
         data = json.loads(text)
     if not isinstance(data, dict):
-        raise ValueError(f"spec must be a mapping, got {type(data).__name__}")
+        # Keep ValueError for the established CLI/API contract.
+        raise ValueError(  # noqa: TRY004
+            f"spec must be a mapping, got {type(data).__name__}"
+        )
     return data
 
 
@@ -269,6 +271,13 @@ def run_pipeline(
     draft: bool = False,
 ) -> PipelineReport:
     report = PipelineReport(spec=spec, out_dir=str(out_dir))
+    compatibility = spec.get("compatibility")
+    if (
+        isinstance(compatibility, dict)
+        and compatibility.get("mode") == "legacy_scaffold"
+        and compatibility.get("release_eligible") is False
+    ):
+        report.unsafe_flags_used.append("--legacy-scaffold")
     if draft:
         report.unsafe_flags_used.append("--draft")
     if skip_compile:

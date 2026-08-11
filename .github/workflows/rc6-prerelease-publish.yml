@@ -1,0 +1,86 @@
+name: RC6 Pre-release Publisher
+
+on:
+  push:
+    branches:
+      - 'hardening/v3.3.0rc6'
+    paths:
+      - '.github/workflows/rc6-prerelease-publish.yml'
+      - 'docs/release/v3.3.0rc6/PRERELEASE-NOTES.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rc6-prerelease-v3.3.0rc6
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'hoaithivo0511-eng/VibeCodeKit-MQL5-EA'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify fail-closed RC6 candidate
+        run: |
+          set -euo pipefail
+          python scripts/maintenance/repo_manifest.py --check
+          python scripts/maintenance/build_rc6_candidate.py verify
+          python scripts/maintenance/check_rc6_hygiene.py
+          sha256sum -c docs/release/v3.3.0rc6/RC6-ARTIFACTS.sha256
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(
+              Path('docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json').read_text(
+                  encoding='utf-8'
+              )
+          )
+          if manifest.get('kit_version') != '3.3.0rc6':
+              raise SystemExit('candidate version is not 3.3.0rc6')
+          if manifest.get('release_eligible') is not False:
+              raise SystemExit('pre-release candidate must remain release_eligible=false')
+          if manifest.get('status') != 'package-integrated-native-pending':
+              raise SystemExit('candidate is not in the reviewed native-pending state')
+          print('RC6 pre-release safety predicate: PASS')
+          PY
+
+      - name: Create immutable pre-release and upload artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v3.3.0rc6
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            existing_sha="$(
+              gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq '.object.sha'
+            )"
+            if [ "$existing_sha" != "$GITHUB_SHA" ]; then
+              echo "Refusing to retarget immutable tag $TAG: $existing_sha != $GITHUB_SHA"
+              exit 1
+            fi
+          else
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title 'VibeCodeKit MQL5 v3.3.0rc6 — tester pre-release' \
+              --notes-file docs/release/v3.3.0rc6/PRERELEASE-NOTES.md \
+              --prerelease
+          fi
+          gh release upload "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber \
+            VibecodeKit-MQL5-v3.3.0rc6-runtime-candidate-bundle.zip \
+            tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip \
+            tool/vibecodekit-mql5-v3.3.0rc6-source-full.manifest.json \
+            tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl \
+            docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json \
+            docs/release/v3.3.0rc6/RC6-ARTIFACTS.sha256
+          gh release view "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json tagName,isPrerelease,url,targetCommitish

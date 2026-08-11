@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "status": "PENDING",
+  "candidate_source_tree_sha": "1d06c5132855f8d33dc829a1de72256907b63f51",
+  "reviewer": "",
+  "reviewed_at_utc": "",
+  "release_blockers": [
+    "Complete native-candidate deep review before release certification"
+  ],
+  "findings": []
+}

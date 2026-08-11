@@ -21,6 +21,7 @@ Outputs into the project dir:
     evidence/attestation/signature.json
     release/ship-manifest.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,12 +30,12 @@ import json
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from ._agent_io import Envelope, add_gate_report_flag, add_json_flag, maybe_emit
+from .provenance import BOUND_INPUT_SCHEMA, artifact_paths_for_manifest, validate_release_provenance
 from .release_policy import sha256_file
-from .provenance import validate_release_provenance
 
 TOOL = "mql5-evidence-attestation"
 ATTEST_SUBDIR = "evidence/attestation"
@@ -67,6 +68,27 @@ CORE_EVIDENCE_REQUIRED: tuple[str, ...] = (
     "evidence/manifest.json",
 )
 EVIDENCE_MANIFEST = "evidence/manifest.json"
+
+
+def _manifest_object(project_dir: Path) -> dict[str, Any] | None:
+    path = project_dir / EVIDENCE_MANIFEST
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _evidence_files_for_project(project_dir: Path) -> list[str]:
+    manifest = _manifest_object(project_dir)
+    if manifest is not None and manifest.get("schema_version") == BOUND_INPUT_SCHEMA:
+        try:
+            return [*artifact_paths_for_manifest(manifest), EVIDENCE_MANIFEST]
+        except (TypeError, ValueError):
+            pass
+    return list(DEFAULT_EVIDENCE)
 
 
 @dataclass
@@ -132,6 +154,19 @@ def _link_hash(prev: str, rel_path: str, file_sha: str) -> str:
     return h.hexdigest()
 
 
+def _safe_evidence_path(value: object) -> str:
+    rel = str(value or "").strip()
+    parsed = PurePosixPath(rel)
+    if (
+        not rel
+        or "\\" in rel
+        or parsed.is_absolute()
+        or any(part in {"", ".", ".."} for part in parsed.parts)
+    ):
+        raise ValueError("evidence path must be a safe POSIX relative path")
+    return rel
+
+
 def build_hash_chain(
     project_dir: Path | str,
     evidence_files: list[str] | None = None,
@@ -140,21 +175,32 @@ def build_hash_chain(
 ) -> HashChain:
     """Build a tamper-evident hash chain over the project's evidence files."""
     project_dir = Path(project_dir)
-    files = list(evidence_files) if evidence_files is not None else list(DEFAULT_EVIDENCE)
+    files = (
+        list(evidence_files)
+        if evidence_files is not None
+        else _evidence_files_for_project(project_dir)
+    )
 
     prev = hashlib.sha256(b"vibecodekit-mql5-ea/evidence-chain/v2.6").hexdigest()
     links: list[dict[str, Any]] = []
-    for rel in files:
+    seen: set[str] = set()
+    for raw_rel in files:
+        rel = _safe_evidence_path(raw_rel)
+        if rel in seen:
+            raise ValueError(f"duplicate evidence path in hash chain: {rel}")
+        seen.add(rel)
         abs_path = project_dir / rel
         exists = abs_path.is_file()
         file_sha = sha256_file(abs_path) if exists else ""
         chained = _link_hash(prev, rel, file_sha)
-        links.append({
-            "path": rel,
-            "exists": exists,
-            "sha256": file_sha,
-            "chained": chained,
-        })
+        links.append(
+            {
+                "path": rel,
+                "exists": exists,
+                "sha256": file_sha,
+                "chained": chained,
+            }
+        )
         prev = chained
 
     chain = HashChain(
@@ -165,7 +211,9 @@ def build_hash_chain(
     if write:
         out_dir = project_dir / ATTEST_SUBDIR
         out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / HASH_CHAIN).write_text(json.dumps(chain.to_dict(), indent=2) + "\n", encoding="utf-8")
+        (out_dir / HASH_CHAIN).write_text(
+            json.dumps(chain.to_dict(), indent=2) + "\n", encoding="utf-8"
+        )
     return chain
 
 
@@ -187,13 +235,42 @@ def verify_hash_chain(project_dir: Path | str) -> VerifyResult:
     errors: list[str] = []
     warnings: list[str] = []
     prev = hashlib.sha256(b"vibecodekit-mql5-ea/evidence-chain/v2.6").hexdigest()
-    for link in stored.get("links", []):
-        rel = link.get("path", "")
-        abs_path = project_dir / rel
-        exists_now = abs_path.is_file()
-        sha_now = sha256_file(abs_path) if exists_now else ""
+    links = stored.get("links", [])
+    if not isinstance(links, list):
+        return VerifyResult(ok=False, errors=["hash-chain links must be a list"])
+    link_paths = [str(link.get("path") or "") for link in links if isinstance(link, dict)]
+    manifest = _manifest_object(project_dir)
+    if manifest is not None and manifest.get("schema_version") == BOUND_INPUT_SCHEMA:
+        try:
+            expected_paths = [*artifact_paths_for_manifest(manifest), EVIDENCE_MANIFEST]
+            if link_paths != expected_paths:
+                errors.append("hash chain does not cover the exact schema 2.1 signed artifact set")
+        except (TypeError, ValueError) as exc:
+            errors.append(f"cannot derive schema 2.1 hash-chain coverage: {exc}")
+    seen: set[str] = set()
+    for link in links:
+        if not isinstance(link, dict):
+            errors.append("hash chain contains a non-object link")
+            continue
+        raw_rel = link.get("path", "")
+        try:
+            rel = _safe_evidence_path(raw_rel)
+        except ValueError as exc:
+            rel = str(raw_rel or "")
+            errors.append(f"unsafe hash-chain evidence path {rel!r}: {exc}")
+            exists_now = False
+            sha_now = ""
+        else:
+            if rel in seen:
+                errors.append(f"duplicate hash-chain evidence path: {rel}")
+            seen.add(rel)
+            abs_path = project_dir / rel
+            exists_now = abs_path.is_file() and not abs_path.is_symlink()
+            sha_now = sha256_file(abs_path) if exists_now else ""
         if exists_now != bool(link.get("exists")):
-            errors.append(f"evidence presence changed for {rel} (existed={link.get('exists')}, now={exists_now})")
+            errors.append(
+                f"evidence presence changed for {rel} (existed={link.get('exists')}, now={exists_now})"
+            )
         if sha_now != link.get("sha256", ""):
             errors.append(f"evidence changed after attestation: {rel}")
         prev = _link_hash(prev, rel, sha_now)
@@ -260,8 +337,16 @@ def evaluate_release_evidence(project_dir: Path | str) -> ReleaseEvidenceResult:
     if chain_present:
         res.errors.extend(verify.errors)
 
-    # 1) core evidence presence
-    res.missing = [rel for rel in CORE_EVIDENCE_REQUIRED if not (project_dir / rel).is_file()]
+    # 1) core evidence presence. Schema 2.1 expands this to every signed input,
+    # generated source and native case log declared by the manifest.
+    required_evidence = list(CORE_EVIDENCE_REQUIRED)
+    manifest_obj = _manifest_object(project_dir)
+    if manifest_obj is not None and manifest_obj.get("schema_version") == BOUND_INPUT_SCHEMA:
+        try:
+            required_evidence = [*artifact_paths_for_manifest(manifest_obj), EVIDENCE_MANIFEST]
+        except (TypeError, ValueError) as exc:
+            res.errors.append(f"invalid schema 2.1 artifact set: {exc}")
+    res.missing = [rel for rel in required_evidence if not (project_dir / rel).is_file()]
     res.core_evidence_present = not res.missing
 
     # 2) manifest validity + eligibility.  A manifest is only meaningful when
@@ -287,10 +372,7 @@ def evaluate_release_evidence(project_dir: Path | str) -> ReleaseEvidenceResult:
     res.manifest_valid = res.manifest_valid and prov.status == "PASS"
 
     res.release_eligible_consistent = (
-        res.chain_valid
-        and res.core_evidence_present
-        and res.manifest_valid
-        and manifest_eligible
+        res.chain_valid and res.core_evidence_present and res.manifest_valid and manifest_eligible
     )
 
     # 3) derive status
@@ -396,24 +478,33 @@ def create_release_attestation(
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog=TOOL, description="Evidence hash-chain + release attestation.")
+    ap = argparse.ArgumentParser(
+        prog=TOOL, description="Evidence hash-chain + release attestation."
+    )
     ap.add_argument("project_dir", type=Path, help="Path to the EA project directory.")
     sub = ap.add_subparsers(dest="action", required=True)
     sub.add_parser("build", help="Build the evidence hash chain.")
     sub.add_parser("verify", help="Verify the stored hash chain.")
     att = sub.add_parser("attest", help="Create a release attestation + ship manifest.")
-    att.add_argument("--release-eligible", action="store_true",
-                     help="Assert release-eligibility (downgraded if chain invalid).")
+    att.add_argument(
+        "--release-eligible",
+        action="store_true",
+        help="Assert release-eligibility (downgraded if chain invalid).",
+    )
     add_json_flag(ap)
     add_gate_report_flag(ap)
     args = ap.parse_args(argv)
 
     if args.action == "build":
         chain = build_hash_chain(args.project_dir)
-        env = Envelope(tool=TOOL, ok=True, exit_code=0,
-                       summary=f"built hash chain root={chain.root[:12]}…",
-                       data={"root": chain.root, "links": chain.links},
-                       evidence=[str(args.project_dir)])
+        env = Envelope(
+            tool=TOOL,
+            ok=True,
+            exit_code=0,
+            summary=f"built hash chain root={chain.root[:12]}…",
+            data={"root": chain.root, "links": chain.links},
+            evidence=[str(args.project_dir)],
+        )
         if not args.emit_json:
             sys.stdout.write("hash-chain built\n")
         maybe_emit(args, env)
@@ -421,23 +512,37 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.action == "verify":
         res = verify_hash_chain(args.project_dir)
-        env = Envelope(tool=TOOL, ok=res.ok, exit_code=0 if res.ok else 1,
-                       summary="hash chain valid" if res.ok else f"hash chain INVALID: {len(res.errors)} error(s)",
-                       data=res.to_dict(), evidence=[str(args.project_dir)],
-                       matrix_dim="governance", matrix_axis="attestation",
-                       matrix_status="PASS" if res.ok else "FAIL")
+        env = Envelope(
+            tool=TOOL,
+            ok=res.ok,
+            exit_code=0 if res.ok else 1,
+            summary="hash chain valid"
+            if res.ok
+            else f"hash chain INVALID: {len(res.errors)} error(s)",
+            data=res.to_dict(),
+            evidence=[str(args.project_dir)],
+            matrix_dim="governance",
+            matrix_axis="attestation",
+            matrix_status="PASS" if res.ok else "FAIL",
+        )
         if not args.emit_json:
-            sys.stdout.write(("OK\n" if res.ok else "INVALID:\n" + "\n".join(res.errors) + "\n"))
+            sys.stdout.write("OK\n" if res.ok else "INVALID:\n" + "\n".join(res.errors) + "\n")
         maybe_emit(args, env)
         return 0 if res.ok else 1
 
     # attest
     res = create_release_attestation(args.project_dir, release_eligible=args.release_eligible)
-    env = Envelope(tool=TOOL, ok=res.ok, exit_code=0 if res.ok else 1,
-                   summary=(f"attestation: release_eligible={res.release_eligible}"),
-                   data=res.to_dict(), evidence=[str(args.project_dir)],
-                   matrix_dim="governance", matrix_axis="attestation",
-                   matrix_status="PASS" if res.ok else "FAIL")
+    env = Envelope(
+        tool=TOOL,
+        ok=res.ok,
+        exit_code=0 if res.ok else 1,
+        summary=(f"attestation: release_eligible={res.release_eligible}"),
+        data=res.to_dict(),
+        evidence=[str(args.project_dir)],
+        matrix_dim="governance",
+        matrix_axis="attestation",
+        matrix_status="PASS" if res.ok else "FAIL",
+    )
     if not args.emit_json:
         sys.stdout.write(f"release_eligible={res.release_eligible}\n")
     maybe_emit(args, env)
@@ -475,7 +580,8 @@ def verify_main(argv: list[str] | None = None) -> int:
         ok=ok,
         exit_code=0 if ok else 1,
         summary=(
-            "release evidence complete" if ok
+            "release evidence complete"
+            if ok
             else f"evidence {res.status}: {len(res.missing)} missing, {len(res.errors)} error(s)"
         ),
         data=res.to_dict(),

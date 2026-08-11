@@ -1,0 +1,28 @@
+requirement_id,priority,requirement,source,status,target_task
+REQ-000,P0,"Preserve RC4 artifact bytes and bind RC5 work to a new versioned branch",Repo scan,COMPLETED,00
+REQ-001,P0,"Reject artifact filenames that escape the destination",Security cross-check,COMPLETED,01
+REQ-002,P0,"Reject symlink-based artifact escapes",Security cross-check,COMPLETED,01
+REQ-003,P0,"Stage and verify all worker artifacts before atomic commit",RRI-T DevOps,COMPLETED,01
+REQ-004,P0,"Make mock worker behavior preserve the production trust boundary",RRI-T QA,COMPLETED,01
+REQ-005,P0,"Emit a complete canonical EA-IR from the default prompt flow",Quickstart review,COMPLETED,02
+REQ-006,P0,"Never relabel a legacy mapping as EA-IR by adding schema_version only",Architecture review,COMPLETED,02
+REQ-007,P0,"Require an explicit compatibility flag for legacy scaffold output",Operator review,COMPLETED,02
+REQ-008,P0,"Prevent legacy scaffold output from becoming release eligible",Release review,COMPLETED,02
+REQ-009,P1,"Parse both input and sinput declarations accurately",Documentation review,COMPLETED,03
+REQ-010,P1,"Define field-level units ranges sign and zero semantics",Runtime review,COMPLETED,04
+REQ-011,P1,"Fail OnInit for invalid operational configuration",Runtime review,COMPLETED,04
+REQ-012,P1,"Require explicit ownership for pending-order commands",Security review,COMPLETED,05
+REQ-013,P1,"Prevent replayed commands from executing twice",Security review,COMPLETED,05
+REQ-014,P1,"Apply command effects only after successful claim and delete",Data integrity review,COMPLETED,05
+REQ-015,P1,"Use request ticket order and position identity for intent lifecycle",Execution review,COMPLETED,06
+REQ-016,P1,"Treat broker comments as diagnostic correlation rather than authority",Execution review,COMPLETED,06
+REQ-017,P1,"Use operation-specific trade retcode policies",Execution review,COMPLETED,06
+REQ-018,P1,"Separate async submission acknowledgement partial fill and completion",Execution review,COMPLETED,06
+REQ-019,P1,"Flush persistent state only at critical transaction boundaries",DevOps review,COMPLETED,06
+REQ-020,P1,"Execute real lint and review stages in check-all",Audit review,COMPLETED,07
+REQ-021,P1,"Treat mandatory skipped or untestable stages as release blockers",Release review,COMPLETED,07
+REQ-022,P2,"Report only deep-review stages that actually executed",Audit review,COMPLETED,08
+REQ-023,P2,"Detect strategy from explicit enabled features before source heuristics",Audit precision review,COMPLETED,08
+REQ-024,P2,"Separate code quality release readiness and release eligibility",Operator review,COMPLETED,07
+REQ-025,P0,"Require trusted MetaEditor and MT5 Strategy Tester evidence for release",Release contract,PLANNED,10
+REQ-026,P0,"Keep CCBSN as a fixture and forbid fixture-specific production defaults",Architecture invariant,PLANNED,00-10

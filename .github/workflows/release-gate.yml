@@ -1,10 +1,12 @@
-name: RC4 Release Gate
+name: RC6 Development Gate
 
 on:
   push:
     branches:
       - main
       - 'release-prep/**'
+      - 'hardening/**'
+      - 'release/**'
   pull_request:
   workflow_dispatch:
 
@@ -14,61 +16,40 @@ permissions:
 jobs:
   source-regression:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: tool/source/pyproject.toml
       - name: Install source + dev dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install './tool/source[dev]' 'reportlab>=4'
+          python -m pip install './tool/source[dev]'
       - name: Source regression
-        working-directory: tool/source
-        run: python -m pytest -q
+        run: |
+          cd tool/source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/source-tests.xml"
+          cd ../..
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/source-tests.xml"
       - name: Source selftest
         run: python -m vibecodekit_mql5.selftest
 
-  artifact-parity:
+  frozen-rc4-artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.11'
       - name: Verify fixed RC4 artifact hashes
         shell: bash
         run: |
           test "$(sha256sum VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip | awk '{print $1}')" = "33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c"
           test "$(sha256sum tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip | awk '{print $1}')" = "a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f"
           test "$(sha256sum tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl | awk '{print $1}')" = "5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a"
-      - name: Verify expanded source is byte-identical to source ZIP
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import zipfile
-
-          archive = Path('tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip')
-          expanded = Path('tool/source')
-          with zipfile.ZipFile(archive) as zf:
-              members = sorted(i.filename for i in zf.infolist() if not i.is_dir())
-              disk = sorted(str(p.relative_to(expanded)).replace('\\', '/') for p in expanded.rglob('*') if p.is_file())
-              if members != disk:
-                  missing = sorted(set(members) - set(disk))
-                  extra = sorted(set(disk) - set(members))
-                  raise SystemExit(f'source tree mismatch: missing={missing[:10]} extra={extra[:10]}')
-              for name in members:
-                  if zf.read(name) != (expanded / name).read_bytes():
-                      raise SystemExit(f'byte mismatch: {name}')
-          print(f'expanded source parity: PASS ({len(members)} files)')
-          PY
-      - name: Wheel selftest
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
-          mql5-selftest
 
   repository-hygiene:
     runs-on: ubuntu-latest
@@ -107,8 +88,21 @@ jobs:
           required = [
               '.gitignore', 'LICENSE', 'README.md', 'STRUCTURE.md',
               'docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md',
+              'docs/release/v3.3.0rc5/HARDENING-PLAN.md',
+              'docs/release/v3.3.0rc6/HARDENING-PLAN.md',
+              'docs/release/v3.3.0rc6/REQUIREMENTS.csv',
+              'docs/release/v3.3.0rc6/TEST-LEDGER.csv',
+              'docs/release/v3.3.0rc6/TASK-11-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-12-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-13-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-14-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-15-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-16-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-18-NATIVE-EVIDENCE-RUNBOOK.md',
               'docs/maintenance/INITIAL-IMPORT.md',
               'scripts/maintenance/import-release-bundle.sh',
+              'scripts/maintenance/assert_junit_clean.py',
+              'scripts/maintenance/check_rc6_hygiene.py',
           ]
           missing = [path for path in required if path not in tracked or not Path(path).is_file()]
           print(f'tracked files checked: {len(tracked)}')
@@ -118,3 +112,5 @@ jobs:
               raise SystemExit(1)
           print('repository hygiene: PASS')
           PY
+      - name: Check RC6 version workflow and executable-mode contract
+        run: python scripts/maintenance/check_rc6_hygiene.py

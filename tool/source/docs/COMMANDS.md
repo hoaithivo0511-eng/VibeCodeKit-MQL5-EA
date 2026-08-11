@@ -195,7 +195,7 @@ blocked in non-draft mode. Draft is distinct from `--soft` (used by
 - `/mql5-build` — render a scaffold
 - `/mql5-auto-build` — single-shot spec → scan → build → lint → compile → gate → dashboard → docs
 - `/mql5-auto-fix` — close 8 critical anti-patterns automatically
-- `/mql5-spec-from-prompt` — free-text description → `ea-spec.yaml` (chat-driven build)
+- `/mql5-spec-from-prompt` — free-text description → canonical `EA-IR.json`; use `--legacy` only for the non-release single-preset YAML compatibility view
 - `/mql5-dashboard` — render + publish the quality-matrix HTML
 - `/mql5-docs-bundle` — emit `docs-context.json` + `docs-prompt.md` so an external LLM agent can author the EA user-guide markdown (Pattern A — kit-light `.docx` ship). Bundles spec + parsed inputs (semantic-library enriched) + scaffold FLOW + build/lint metrics. Auto-runs inside `mql5-auto-build`.
 - `/mql5-docs-assemble` — convert the LLM-authored `guide.md` → Word `<EA>.docs.docx` (embedded images from `images/`, F9-refreshable ToC, Vietnamese diacritics). Auto-runs inside `mql5-auto-build` when `guide.md` is present in the build dir.

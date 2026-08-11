@@ -39,8 +39,9 @@ import re
 import sys
 import tempfile
 import zipfile
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from . import _version
 from ._agent_io import Envelope, add_json_flag, emit
@@ -120,7 +121,7 @@ def _check_entrypoints_import(root: Path) -> tuple[bool, str]:
                 continue
             bad.append(f"{module_name}: import failed ({exc})")
             continue
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
             bad.append(f"{module_name}: import failed ({exc.__class__.__name__})")
             continue
         if not callable(getattr(mod, func_name, None)):
@@ -205,7 +206,7 @@ def _check_version_triple_match(root: Path) -> tuple[bool, str]:
             contract_versions[str(cpath.relative_to(root))] = (
                 data.get("kit", {}).get("version")
             )
-        except Exception:  # pragma: no cover - defensive
+        except Exception:  # noqa: BLE001  # pragma: no cover - defensive
             contract_versions[str(cpath.relative_to(root))] = "<unreadable>"
     contract_mismatch = {
         p: v for p, v in contract_versions.items() if v != pyproject_v
@@ -318,7 +319,7 @@ def _check_public_surface_stable(root: Path) -> tuple[bool, str]:
         mod_name, _, func = entry.partition(":")
         try:
             mod = importlib.import_module(mod_name)
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
             return False, f"public command {name} import failed: {exc}"
         if not callable(getattr(mod, func, None)):
             return False, f"public command {name} entry {entry} not callable"
@@ -330,7 +331,7 @@ def _check_maturity_labeled(root: Path) -> tuple[bool, str]:
     is a placeholder, and every registered placeholder/scaffold module imports.
     Stops a stub (ONNX/LLM bridge) from masquerading as finished logic.
     """
-    from . import maturity, surface
+    from . import maturity
 
     catalog = _load_catalog(root)
     valid = {maturity.RELEASE_GRADE, maturity.SCAFFOLD, maturity.PLACEHOLDER}
@@ -356,7 +357,7 @@ def _check_maturity_labeled(root: Path) -> tuple[bool, str]:
             if missing_top and missing_top != _OWN_PACKAGE:
                 continue  # external dep gap, not a code defect
             return False, f"maturity module {mod_name} import failed: {exc}"
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
             return False, f"maturity module {mod_name} import failed: {exc}"
     labeled = len(catalog.get("tools", []))
     return True, f"{labeled} tools maturity-labeled; {len(maturity.placeholders())} placeholders honest"
@@ -478,6 +479,13 @@ def _check_tests_shipped(root: Path) -> tuple[bool, str]:
     )
     if references_fixture and not fixture.is_file():
         return False, "tests reference fixtures_ccbsn.txt but the fixture is absent"
+    snapshot_manifest = root / "SNAPSHOT-MANIFEST.json"
+    if snapshot_manifest.is_file():
+        from .distribution_snapshot import verify_distribution_snapshot
+
+        errors = verify_distribution_snapshot(root)
+        if errors:
+            return False, f"distribution snapshot integrity failed: {errors[:3]}"
     return True, f"{len(modules)} test module(s) plus required fixtures shipped and runnable"
 
 
@@ -525,7 +533,7 @@ def run_selftest(root: Path | None = None) -> dict[str, Any]:
     for name, fn in CHECKS.items():
         try:
             ok, detail = fn(root)
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
             ok, detail = False, f"raised {exc.__class__.__name__}: {exc}"
         results.append({"name": name, "ok": ok, "detail": detail})
     passed = sum(1 for r in results if r["ok"])

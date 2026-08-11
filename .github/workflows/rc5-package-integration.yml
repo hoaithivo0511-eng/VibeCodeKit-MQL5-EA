@@ -1,0 +1,155 @@
+name: RC5 Package Integration Gate
+
+on:
+  push:
+    branches:
+      - 'integration/**'
+    paths:
+      - '.github/workflows/rc5-package-integration.yml'
+      - 'scripts/maintenance/build_rc5_candidate.py'
+      - 'scripts/maintenance/build_rc5_ship.py'
+      - 'scripts/maintenance/verify_rc5_native_evidence.py'
+      - 'scripts/native/Invoke-RC5NativeEvidence.ps1'
+      - 'RELEASE-TRUST.yaml'
+      - 'docs/release/v3.3.0rc5/SHIP-README.md'
+      - 'docs/release/v3.3.0rc5/TASK-10-NATIVE-EVIDENCE-RUNBOOK.md'
+      - 'tool/source/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-verify-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+
+      - name: Install candidate build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+
+      - name: Build RC5 candidate artifacts
+        run: |
+          python scripts/maintenance/build_rc5_candidate.py build --build-input-sha "$GITHUB_SHA"
+          python scripts/maintenance/build_rc5_candidate.py verify
+
+      - name: Live source regression
+        run: |
+          set -euo pipefail
+          python -m pip install './tool/source[dev]'
+          cd tool/source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/rc5-live.xml"
+          python -m vibecodekit_mql5.selftest 2>&1 | tee "${RUNNER_TEMP}/rc5-live-selftest.txt"
+
+      - name: Extract and test source ZIP
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vkmql-rc5-source
+          mkdir -p /tmp/vkmql-rc5-source
+          unzip -q tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip -d /tmp/vkmql-rc5-source
+          python -m pip install '/tmp/vkmql-rc5-source[dev]'
+          cd /tmp/vkmql-rc5-source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/rc5-source-zip.xml"
+          python -m vibecodekit_mql5.selftest 2>&1 | tee "${RUNNER_TEMP}/rc5-source-zip-selftest.txt"
+
+      - name: Test installed wheel outside source checkout
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vkmql-rc5-wheel-suite /tmp/vkmql-rc5-wheel-venv
+          mkdir -p /tmp/vkmql-rc5-wheel-suite
+          unzip -q tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip 'tests/*' -d /tmp/vkmql-rc5-wheel-suite
+          python -m venv /tmp/vkmql-rc5-wheel-venv
+          /tmp/vkmql-rc5-wheel-venv/bin/python -m pip install --upgrade pip
+          /tmp/vkmql-rc5-wheel-venv/bin/python -m pip install \
+            'pytest>=7.4' 'pytest-cov>=4.1' 'ruff>=0.1' 'reportlab>=4' \
+            tool/vibecodekit_mql5_ea-3.3.0rc5-py3-none-any.whl
+          cd /tmp
+          /tmp/vkmql-rc5-wheel-venv/bin/python - <<'PY'
+          from pathlib import Path
+          import vibecodekit_mql5
+          package_file = Path(vibecodekit_mql5.__file__).resolve()
+          print(f'wheel import origin: {package_file}')
+          if 'site-packages' not in package_file.parts:
+              raise SystemExit(f'wheel isolation failed: {package_file}')
+          PY
+          cd /tmp/vkmql-rc5-wheel-suite
+          PYTHONPATH=/tmp/vkmql-rc5-wheel-suite/tests \
+            /tmp/vkmql-rc5-wheel-venv/bin/python -m pytest -q tests \
+            --junitxml="${RUNNER_TEMP}/rc5-wheel.xml"
+          cd /tmp
+          PYTHONPATH='' /tmp/vkmql-rc5-wheel-venv/bin/mql5-selftest 2>&1 \
+            | tee "${RUNNER_TEMP}/rc5-wheel-selftest.txt"
+
+      - name: Verify JUnit has zero skips and candidate hashes still match
+        run: |
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc5-live.xml"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc5-source-zip.xml"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc5-wheel.xml"
+          python scripts/maintenance/build_rc5_candidate.py verify
+
+      - name: Generate Task 09 completion evidence
+        run: |
+          python scripts/maintenance/build_rc5_candidate.py report \
+            --run-id "$GITHUB_RUN_ID" \
+            --live-junit "${RUNNER_TEMP}/rc5-live.xml" \
+            --zip-junit "${RUNNER_TEMP}/rc5-source-zip.xml" \
+            --wheel-junit "${RUNNER_TEMP}/rc5-wheel.xml" \
+            --live-selftest "${RUNNER_TEMP}/rc5-live-selftest.txt" \
+            --zip-selftest "${RUNNER_TEMP}/rc5-source-zip-selftest.txt" \
+            --wheel-selftest "${RUNNER_TEMP}/rc5-wheel-selftest.txt"
+          sed -i 's/[[:space:]]\+$//' docs/release/v3.3.0rc5/PR-09-COMPLETION.md
+
+      - name: Build and verify complete RC5 SHIP handoff
+        run: |
+          set -euo pipefail
+          python scripts/maintenance/build_rc5_ship.py build --run-id "$GITHUB_RUN_ID"
+          python scripts/maintenance/build_rc5_ship.py verify
+          python scripts/maintenance/verify_rc5_native_evidence.py
+
+      - name: Stage candidate, SHIP handoff and refresh repository manifest
+        run: |
+          git add \
+            tool/vibecodekit-mql5-v3.3.0rc5-source-full.zip \
+            tool/vibecodekit-mql5-v3.3.0rc5-source-full.manifest.json \
+            tool/vibecodekit_mql5_ea-3.3.0rc5-py3-none-any.whl \
+            VibecodeKit-MQL5-v3.3.0rc5-runtime-candidate-bundle.zip \
+            VibeCodeKit-MQL5-v3.3.0rc5-SHIP.zip \
+            docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json \
+            docs/release/v3.3.0rc5/RC5-ARTIFACTS.sha256 \
+            docs/release/v3.3.0rc5/PR-09-COMPLETION.md \
+            docs/release/v3.3.0rc5/RC5-SHIP-MANIFEST.json \
+            docs/release/v3.3.0rc5/RC5-SHIP.sha256 \
+            docs/release/v3.3.0rc5/SHIP-COMPLETION.md \
+            docs/release/v3.3.0rc5/native-evidence/templates/restart-recovery.template.json \
+            docs/release/v3.3.0rc5/native-evidence/templates/deep-review.template.json
+          python scripts/maintenance/repo_manifest.py --write
+          git add REPO-MANIFEST.sha256
+          git diff --cached --check
+
+      - name: Final pre-commit SHIP verification
+        run: |
+          python scripts/maintenance/build_rc5_candidate.py verify
+          python scripts/maintenance/build_rc5_ship.py verify
+          python scripts/maintenance/verify_rc5_native_evidence.py
+
+      - name: Commit verified candidate and SHIP artifacts
+        run: |
+          if git diff --cached --quiet; then
+            echo 'candidate and SHIP artifacts already current'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'build(rc5): materialize verified final SHIP handoff'
+          git push

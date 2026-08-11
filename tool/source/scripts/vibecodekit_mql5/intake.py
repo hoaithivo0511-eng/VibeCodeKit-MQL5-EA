@@ -251,7 +251,11 @@ def _parse_structured_pending_commands(text: str) -> dict[str, dict[str, Any]]:
         if price is None:
             continue
         if action_type == "set_state":
-            state = re.fullmatch(r"\s*([A-Za-z][A-Za-z0-9_.]*)\s*=\s*(true|false)\s*", payload, re.I)
+            state = re.fullmatch(
+                r"\s*([A-Za-z][A-Za-z0-9_.]*)\s*=\s*(true|false)\s*",
+                payload,
+                re.IGNORECASE,
+            )
             if not state:
                 continue
             action = {"type": "set_state", "path": state.group(1), "value": state.group(2).lower() == "true"}
@@ -489,6 +493,12 @@ def parse_text(text: str, *, source: str = "prompt", strict: bool = False) -> EA
         })
     if pending_commands:
         controls_features = sorted(set(controls_features) | {"controls.pending_order_remote"})
+        ambiguities.append({
+            "id": "AMB-REMOTE-COMMAND-OWNERSHIP",
+            "severity": "blocking" if strict else "warning",
+            "path": "controls.pending_command_ownership",
+            "message": "Choose authenticated_ea_order, manual_comment_token or legacy_price_only ownership and a managed-symbol scope. Legacy price-only is draft-only.",
+        })
 
     explicit_signal_logic: str | None = None
     if components.get("strategy.entry.signal_selectable"):
@@ -531,6 +541,7 @@ def parse_text(text: str, *, source: str = "prompt", strict: bool = False) -> EA
             "features": controls_features,
             "new_cycle_semantics": new_cycle_semantics,
             "pending_command_transport": "pending_order_v1" if pending_commands else None,
+            "pending_command_ownership": {},
             "pending_commands": pending_commands,
         },
         requirements=reqs,

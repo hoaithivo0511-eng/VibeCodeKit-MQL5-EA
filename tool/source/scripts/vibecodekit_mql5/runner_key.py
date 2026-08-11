@@ -22,6 +22,7 @@ Subcommands::
     mql5-runner-key fingerprint --key ~/.vck/runner.key
     mql5-runner-key sign <project_dir> --key ~/.vck/runner.key --key-id windows-runner-01
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,8 +50,10 @@ def _require_crypto():
     try:
         from cryptography.hazmat.primitives import serialization
         from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-            Ed25519PrivateKey, Ed25519PublicKey,
+            Ed25519PrivateKey,
+            Ed25519PublicKey,
         )
+
         return serialization, Ed25519PrivateKey, Ed25519PublicKey
     except ImportError:
         sys.stderr.write(
@@ -60,7 +63,7 @@ def _require_crypto():
 
 
 def _load_private(path: Path):
-    serialization, Ed25519PrivateKey, _ = _require_crypto()
+    _serialization, Ed25519PrivateKey, _ = _require_crypto()
     raw = base64.b64decode(path.read_text(encoding="utf-8").strip())
     return Ed25519PrivateKey.from_private_bytes(raw)
 
@@ -115,15 +118,20 @@ def cmd_generate(args: argparse.Namespace) -> int:
 def cmd_fingerprint(args: argparse.Namespace) -> int:
     private = _load_private(Path(args.key).expanduser())
     pub_raw = _public_raw(private)
-    print(json.dumps({
-        "public_key_b64": base64.b64encode(pub_raw).decode(),
-        "public_key_sha256": fingerprint(pub_raw),
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "public_key_b64": base64.b64encode(pub_raw).decode(),
+                "public_key_sha256": fingerprint(pub_raw),
+            },
+            indent=2,
+        )
+    )
     return 0
 
 
 def cmd_sign(args: argparse.Namespace) -> int:
-    from .provenance import attestation_payload
+    from .provenance import artifact_paths_for_manifest, attestation_payload
 
     project = Path(args.project_dir)
     manifest_path = project / "evidence/manifest.json"
@@ -137,14 +145,19 @@ def cmd_sign(args: argparse.Namespace) -> int:
     records = {str(a.get("path")): a for a in manifest.get("artifacts", []) if isinstance(a, dict)}
     hashes: dict[str, str] = {}
     problems: list[str] = []
-    for rel in CORE_ARTIFACTS:
+    try:
+        paths_to_sign = artifact_paths_for_manifest(manifest)
+    except (TypeError, ValueError) as exc:
+        sys.stderr.write(f"refusing to sign: {exc}\n")
+        return 1
+    for rel in paths_to_sign:
         path = project / rel
-        if not path.is_file():
+        if not path.is_file() or path.is_symlink():
             problems.append(f"missing artifact {rel}")
             continue
         actual = sha256_file(path)
         record = records.get(rel)
-        if not record or record.get("sha256") != actual:
+        if not record or record.get("exists") is not True or record.get("sha256") != actual:
             problems.append(f"manifest hash does not match bytes on disk for {rel}")
             continue
         hashes[rel] = actual
@@ -161,13 +174,18 @@ def cmd_sign(args: argparse.Namespace) -> int:
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     pub_raw = _public_raw(private)
-    print(json.dumps({
-        "ok": True,
-        "signed": str(manifest_path),
-        "key_id": args.key_id,
-        "public_key_sha256": fingerprint(pub_raw),
-        "artifacts_signed": len(hashes),
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "signed": str(manifest_path),
+                "key_id": args.key_id,
+                "public_key_sha256": fingerprint(pub_raw),
+                "artifacts_signed": len(hashes),
+            },
+            indent=2,
+        )
+    )
     return 0
 
 

@@ -1,3 +1,107 @@
+## [3.3.0rc6] - Unreleased
+
+- Close RC5 audit findings for generated-code review parity, distribution
+  snapshot integrity, reproducible packaging and native-evidence provenance.
+
+## [3.3.0rc5] - 2026-08-10
+
+### Hardening foundation
+
+- Opened the RC5 hardening line from the immutable RC4 pre-release baseline.
+- Made the PDF-ingest regression dependency part of the declared development
+  environment so the full suite cannot silently skip after `.[dev]` install.
+- Separated active RC5 source validation from frozen RC4 artifact validation;
+  runtime/security fixes and RC5 candidate artifacts are delivered in later
+  reviewed tasks.
+- Production release remains blocked pending the planned security/runtime
+  fixes and trusted MetaEditor plus MT5 Strategy Tester evidence.
+
+### Worker artifact security
+
+- Reject worker-controlled absolute, traversal, Windows drive/UNC/stream and
+  duplicate artifact paths before network download.
+- Reject source or destination paths that cross symlinks.
+- Download into an isolated transaction directory, validate every declared
+  artifact hash and size, then atomically replace destination files with batch
+  rollback on commit failure.
+- Apply the same path boundary to the deterministic mock transport used by
+  regression tests.
+
+### Canonical prompt quickstart
+
+- Make `mql5-spec-from-prompt` emit complete EA-IR 3.1 JSON by default and
+  preserve `--ir` as an alias for existing callers.
+- Require `--legacy` for the older single-preset YAML view.
+- Mark legacy prompt output as `legacy_scaffold` with
+  `release_eligible: false` and propagate that marker into the canonical
+  release blocker list.
+- Reject attempts to convert a legacy mapping into EA-IR by adding only a
+  `schema_version` field.
+- Update quickstart and operator documentation to use the canonical
+  `EA-IR.json → mql5-auto-build` flow.
+
+### Input semantics
+
+- Preserve `input` versus `sinput` storage semantics in generated parameter
+  documentation.
+- Ignore declarations inside line and block comments without corrupting quoted
+  URL/comment markers, semicolons or arithmetic defaults.
+- Bind parser behavior to exact-count regression fixtures.
+
+### Runtime input contracts
+
+- Define field-level units, ranges, sign conventions and zero behavior once and
+  reuse them for EA-IR validation, generated project contracts and MQL5 runtime
+  checks.
+- Reject invalid explicitly supplied EA-IR values before code generation.
+- Make generated EAs return `INIT_PARAMETERS_INCORRECT` with a structured
+  `VCK_CONFIG_INVALID` diagnostic when operational inputs violate the contract.
+- Emit `RUNTIME-INPUT-CONTRACTS.json` bound to the canonical EA-IR hash.
+
+### Remote command lifecycle
+
+- Require every pending-order command channel to declare a positive owner
+  magic, portable comment prefix and managed-symbol scope.
+- Match all ownership factors before claiming a command; price and order type
+  alone are never authority.
+- Persist a compare-and-swap command ledger across `CLAIMED`, `DELETED`,
+  `APPLYING` and `APPLIED` boundaries.
+- Delete a claimed pending order before applying its effect and verify effects
+  without replaying an action after an uncertain interruption.
+
+### Trade lifecycle v2
+
+- Correlate trade intents by terminal-assigned request, order, position and
+  deal identity; broker comments are retained only as diagnostic metadata.
+- Model prepared, submitted, acknowledged, partial, completed and unknown
+  outcomes separately so asynchronous submission is not mistaken for fill.
+- Interpret request results only for `TRADE_TRANSACTION_REQUEST` and reconcile
+  terminal history when transaction events arrive out of order.
+- Apply operation-specific accepted retcodes for open, modify, close and order
+  deletion paths.
+- Flush global-variable persistence at intent transitions and other critical
+  transaction boundaries instead of every trade event.
+
+### Executable audit gate
+
+- Replace `check-all` lint and senior-review placeholders with the real static
+  analyzers over every MQL source in the project.
+- Treat every mandatory `FAIL`, `UNTESTABLE` or `SKIPPED` stage as a release
+  readiness and eligibility blocker through the canonical predicate.
+- Report `code_quality_ok`, `release_ready` and `release_eligible` separately
+  so source quality cannot be confused with native release evidence.
+
+### Truthful deep-review precision
+
+- Add a structured Stage 0–7 execution ledger and exclude skipped stages from
+  the checked-category list.
+- Describe Stage 7 as grounded packet preparation and never imply an LLM
+  verdict was produced; `--fast` records it explicitly as `SKIPPED`.
+- Detect strategy from canonical EA-IR first, then generated enabled-feature
+  contracts, and use source-name heuristics only when neither contract exists.
+- Prevent disabled generic grid/hedge library names from activating strategy
+  risk classification.
+
 ## [3.3.0rc4] - 2026-08-06
 
 ### Runtime-safety and semantic-isolation hardening

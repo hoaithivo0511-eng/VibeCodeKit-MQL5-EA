@@ -160,8 +160,10 @@ trong lúc bạn viết logic chiến lược.
 Một lệnh chạy cả pipeline:
 
 ```bash
-mql5-spec-from-prompt "EA trend EURUSD H1, risk 0.5% mỗi lệnh" --out ea-spec.yaml
-mql5-auto-build --spec ea-spec.yaml --out-dir build/MyEA
+mql5-spec-from-prompt \
+  "EA named TrendEA account netting EURUSD H1 trend, risk 0.5% mỗi lệnh" \
+  --strict --out EA-IR.json
+mql5-auto-build --spec EA-IR.json --out-dir build/MyEA
 ```
 
 `mql5-auto-build` chain: scan → build → lint → compile → permission-gate →
@@ -367,8 +369,9 @@ mql5-mt5-python probe --json          # cần MT5 thật
 
 ## 6. Schema `ea-spec.yaml` (8 block)
 
-Tất cả block đều **optional**; chỉ khai báo khi cần. `mql5-spec-from-prompt`
-sinh spec từ free-text; `mql5-init` là wizard 5 câu hỏi.
+Tất cả block đều **optional**; chỉ khai báo khi cần. Đây là schema legacy cho
+consumer cũ; `mql5-spec-from-prompt` mặc định sinh canonical `EA-IR.json`.
+Muốn sinh YAML này phải dùng rõ `--legacy`; `mql5-init` vẫn là wizard 5 câu hỏi.
 
 | Block | Nhóm | Mục đích |
 |---|---|---|
@@ -385,8 +388,11 @@ Validate spec (8 block): `mql5-auto-build` tự validate; chạy riêng để so
 nào suy từ prompt vs default:
 
 ```bash
-mql5-spec-from-prompt "..." --out ea-spec.yaml --explain --strict
+mql5-spec-from-prompt "..." --legacy --out ea-spec.yaml --explain --strict
 ```
+
+Output legacy luôn mang `compatibility.release_eligible: false` và không được
+dùng làm bằng chứng release.
 
 ---
 

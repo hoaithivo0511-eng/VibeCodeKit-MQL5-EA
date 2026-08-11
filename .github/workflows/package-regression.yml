@@ -1,11 +1,24 @@
-name: RC4 Package Regression
+name: Frozen RC4 Package Regression
 
 on:
   push:
     branches:
       - main
       - 'release-prep/**'
+      - 'hardening/**'
+    paths:
+      - 'VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip'
+      - 'tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip'
+      - 'tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl'
+      - '.github/workflows/package-regression.yml'
+      - 'scripts/maintenance/assert_junit_clean.py'
   pull_request:
+    paths:
+      - 'VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip'
+      - 'tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip'
+      - 'tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl'
+      - '.github/workflows/package-regression.yml'
+      - 'scripts/maintenance/assert_junit_clean.py'
   workflow_dispatch:
 
 permissions:
@@ -31,7 +44,9 @@ jobs:
       - name: Run extracted source regression
         run: |
           cd /tmp/vkmql-source-zip
-          python -m pytest -q
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/rc4-source-tests.xml"
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc4-source-tests.xml"
       - name: Run extracted source selftest
         run: |
           cd /tmp/vkmql-source-zip
@@ -53,7 +68,7 @@ jobs:
         run: |
           rm -rf /tmp/vkmql-wheel-suite
           mkdir -p /tmp/vkmql-wheel-suite
-          cp -R tool/source/tests /tmp/vkmql-wheel-suite/tests
+          unzip -q tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip 'tests/*' -d /tmp/vkmql-wheel-suite
       - name: Verify package import origin
         run: |
           cd /tmp
@@ -71,7 +86,9 @@ jobs:
           PYTHONPATH: /tmp/vkmql-wheel-suite/tests
         run: |
           cd /tmp/vkmql-wheel-suite
-          python -m pytest -q tests
+          python -m pytest -q tests --junitxml="${RUNNER_TEMP}/rc4-wheel-tests.xml"
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc4-wheel-tests.xml"
       - name: Run installed wheel selftest
         env:
           PYTHONPATH: ''

@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 from .ea_ir import EAIR
 from .feature_registry import get
@@ -78,17 +79,93 @@ _ALLOWED_STATE_PATHS = {
 }
 _ALLOWED_CLOSE_SCOPES = {"managed_all", "managed_buy", "managed_sell", "account_all"}
 _ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+_COMMENT_PREFIX_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{2,15}$")
+_COMMENT_TOKEN_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{2,30}$")
+_REMOTE_OWNERSHIP_MODES = {
+    "authenticated_ea_order",
+    "manual_comment_token",
+    "legacy_price_only",
+}
+
+
+def _remote_ownership_mode(ownership: dict[str, Any]) -> str | None:
+    mode = ownership.get("mode")
+    if mode is None and {"magic", "comment_prefix"} <= set(ownership):
+        # RC5 compatibility: PR-05 shipped before the explicit mode field.
+        return "authenticated_ea_order"
+    return str(mode) if mode is not None else None
+
+
+def _validate_remote_ownership(ir: EAIR) -> list[dict[str, Any]]:
+    path = "controls.pending_command_ownership"
+    ownership = ir.controls.get("pending_command_ownership")
+    if not isinstance(ownership, dict) or not ownership:
+        return [{
+            "id": "MISSING-REMOTE-COMMAND-OWNERSHIP",
+            "path": path,
+            "message": "Pending-order commands require an explicit ownership mode and managed-symbol scope.",
+        }]
+    blockers: list[dict[str, Any]] = []
+    mode = _remote_ownership_mode(ownership)
+    if mode not in _REMOTE_OWNERSHIP_MODES:
+        return [{
+            "id": "INVALID-REMOTE-COMMAND-OWNERSHIP-MODE",
+            "path": path + ".mode",
+            "value": ownership.get("mode"),
+            "supported": sorted(_REMOTE_OWNERSHIP_MODES),
+        }]
+    if mode == "authenticated_ea_order":
+        expected = {"magic", "comment_prefix", "symbol_scope"}
+        if "mode" in ownership:
+            expected.add("mode")
+    else:
+        expected = {"mode", "symbol_scope"}
+    unknown = sorted(set(ownership) - expected)
+    missing = sorted(expected - set(ownership))
+    if unknown or missing:
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-OWNERSHIP-SHAPE",
+            "path": path,
+            "missing": missing,
+            "unknown": unknown,
+        })
+    if mode == "authenticated_ea_order":
+        magic = ownership.get("magic")
+        if isinstance(magic, bool) or not isinstance(magic, int) or magic <= 0:
+            blockers.append({
+                "id": "INVALID-REMOTE-COMMAND-OWNER-MAGIC",
+                "path": path + ".magic",
+                "value": magic,
+            })
+        prefix = ownership.get("comment_prefix")
+        if not isinstance(prefix, str) or not _COMMENT_PREFIX_RE.fullmatch(prefix):
+            blockers.append({
+                "id": "INVALID-REMOTE-COMMAND-COMMENT-PREFIX",
+                "path": path + ".comment_prefix",
+                "value": prefix,
+                "message": "Use a portable 3-16 character ownership prefix.",
+            })
+    if ownership.get("symbol_scope") != "managed_symbol":
+        blockers.append({
+            "id": "INVALID-REMOTE-COMMAND-SYMBOL-SCOPE",
+            "path": path + ".symbol_scope",
+            "value": ownership.get("symbol_scope"),
+        })
+    return blockers
 
 
 def _validate_remote_commands(ir: EAIR) -> list[dict[str, Any]]:
-    blockers: list[dict[str, Any]] = []
+    blockers = _validate_remote_ownership(ir)
+    ownership = ir.controls.get("pending_command_ownership") or {}
+    mode = _remote_ownership_mode(ownership) if isinstance(ownership, dict) else None
     commands = ir.controls.get("pending_commands") or {}
     if not isinstance(commands, dict) or not commands:
-        return [{
+        return [*blockers, {
             "id": "MISSING-REMOTE-COMMAND-MAP", "path": "controls.pending_commands",
             "message": "Remote control requires at least one explicit data-driven command.",
         }]
     seen: dict[tuple[str, float], str] = {}
+    seen_tokens: dict[str, str] = {}
     for command_id, config in sorted(commands.items()):
         path = f"controls.pending_commands.{command_id}"
         if not isinstance(command_id, str) or not _ID_RE.fullmatch(command_id):
@@ -110,7 +187,7 @@ def _validate_remote_commands(ir: EAIR) -> list[dict[str, Any]]:
             blockers.append({"id": "INVALID-REMOTE-COMMAND-PRICE", "path": path + ".price", "value": price})
             numeric_price = -1.0
         key = (order_type, numeric_price)
-        if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES:
+        if numeric_price > 0 and order_type in _ALLOWED_ORDER_TYPES and mode != "manual_comment_token":
             if key in seen:
                 blockers.append({
                     "id": "REMOTE-COMMAND-COLLISION", "path": path,
@@ -119,6 +196,24 @@ def _validate_remote_commands(ir: EAIR) -> list[dict[str, Any]]:
                 })
             else:
                 seen[key] = command_id
+        if mode == "manual_comment_token":
+            token = config.get("comment_token")
+            if not isinstance(token, str) or not _COMMENT_TOKEN_RE.fullmatch(token):
+                blockers.append({
+                    "id": "INVALID-REMOTE-COMMAND-COMMENT-TOKEN",
+                    "path": path + ".comment_token",
+                    "value": token,
+                    "message": "Manual command tokens must be exact portable 3-31 character values.",
+                })
+            elif token in seen_tokens:
+                blockers.append({
+                    "id": "REMOTE-COMMAND-TOKEN-COLLISION",
+                    "path": path + ".comment_token",
+                    "conflicts_with": seen_tokens[token],
+                    "value": token,
+                })
+            else:
+                seen_tokens[token] = command_id
         if not isinstance(action, dict):
             blockers.append({"id": "MISSING-REMOTE-COMMAND-ACTION", "path": path + ".action"})
             continue
@@ -144,8 +239,8 @@ def validate(ir: EAIR, requested: Iterable[str]) -> list[dict[str, Any]]:
     blockers: list[dict[str, Any]] = []
 
     executable = any(
-        p.startswith("strategy.entry.") or p.startswith("strategy.dca.") or
-        p.startswith("strategy.hedge.") for p in paths
+        p.startswith(("strategy.entry.", "strategy.dca.", "strategy.hedge."))
+        for p in paths
     )
     required_groups: dict[tuple[str, ...], set[str]] = {}
     if executable:

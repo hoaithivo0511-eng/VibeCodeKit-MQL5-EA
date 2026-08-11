@@ -1,0 +1,242 @@
+{
+  "file_count": 47,
+  "files": [
+    {
+      "path": "agent-contract.json",
+      "sha256": "97442276ffaa1e9429d41c081575b74d95a9085fb8a46b80b302118292f0c331",
+      "size": 1445
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "04a4dbef381d7725077de9d3becedd552659fd2fd4d87b245107df8c4d677b80",
+      "size": 11423
+    },
+    {
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "tests/_util.py",
+      "sha256": "94846e78ade4b590f68e3ded853e25f468807f545878519bdf80bb30bdc80446",
+      "size": 6000
+    },
+    {
+      "path": "tests/fixtures/ccbsn_demo_profile.yaml",
+      "sha256": "23da9dbdf5ad5fb2d9033c292e33b560f0e34f464b81132f2d3a6c64f2f3a2d6",
+      "size": 9041
+    },
+    {
+      "path": "tests/fixtures_ccbsn.txt",
+      "sha256": "ef776181a0809f0d6a16ae487fee5cb2afa39d88499bd2efbd7ae3df13a7f34e",
+      "size": 32410
+    },
+    {
+      "path": "tests/test_adversarial_release_gate.py",
+      "sha256": "8cbabb60140a24dadfc88b04639ab1e4ee7200a153c8d9b3ca3d841060aa307e",
+      "size": 7265
+    },
+    {
+      "path": "tests/test_phase0_security.py",
+      "sha256": "daa3982127e0f0990a1d9b6865ff43abc3182f28cae0184ec8efc69ed1b9e62a",
+      "size": 1078
+    },
+    {
+      "path": "tests/test_phase10_ir_configure.py",
+      "sha256": "d5c7879132782e3e9eca24b60691cbfbe70991dd36b2c7ea71a5516dfa2801a6",
+      "size": 3652
+    },
+    {
+      "path": "tests/test_phase11_manual_ontology.py",
+      "sha256": "5b2a3be91b07b72a8fdefca85e94730d3e143ddcf131b200a26471c6d7fe1251",
+      "size": 1718
+    },
+    {
+      "path": "tests/test_phase12_advanced_builder.py",
+      "sha256": "13e268eb8854168a57be8c23d11e7b2e36172886bcb57946cc3eaf3acf245a80",
+      "size": 3378
+    },
+    {
+      "path": "tests/test_phase13_ship_candidate.py",
+      "sha256": "68238bccb50c28a66094e8087ee9248f3089bd2d9f800c612cf8908974097136",
+      "size": 2950
+    },
+    {
+      "path": "tests/test_phase14_ship_hardening.py",
+      "sha256": "4b600bb525e535cc9acbdd302fbdb06bb9ac68f688a67fdb004aea10232f5a48",
+      "size": 2569
+    },
+    {
+      "path": "tests/test_phase15_audit_precision.py",
+      "sha256": "07d5bba86048b8cecac3a3148b07b08e843ca5efc41584a526d52e49078f9089",
+      "size": 4881
+    },
+    {
+      "path": "tests/test_phase16_semantic_isolation.py",
+      "sha256": "b608371e74cd4eba6f907e87128dfaae3b5a554cb0207f46996b1c4d7fedbe82",
+      "size": 4471
+    },
+    {
+      "path": "tests/test_phase17_runtime_safety.py",
+      "sha256": "a1452895ca881a869244ae071107efbf3181e1f21bd779d8dae19296fd7d7cc1",
+      "size": 8643
+    },
+    {
+      "path": "tests/test_phase18_cross_feature_invariants.py",
+      "sha256": "fb6d43e5806fe7a593cd5d6e01ecea0dfbdfe2ebc143d1490c0205e983610227",
+      "size": 4974
+    },
+    {
+      "path": "tests/test_phase19_cross_project_acceptance.py",
+      "sha256": "d984244c0d0437ab021356f07a00e973e85491fb49212fe0b9217d0881e40e80",
+      "size": 3587
+    },
+    {
+      "path": "tests/test_phase1_intake_ir.py",
+      "sha256": "638c09260b29902138cdc33e8f19e9710f6b8a08fa6d735337b917e974ffafa1",
+      "size": 3029
+    },
+    {
+      "path": "tests/test_phase20_generic_command_intake.py",
+      "sha256": "401e6d6f12bc46a71266e817d9ce673e71ee41a032bc805f212f9e43a2d7d49f",
+      "size": 3543
+    },
+    {
+      "path": "tests/test_phase21_input_semantics.py",
+      "sha256": "8edabad32c3cf376ff6cde58e1c447b9aa1581bf227e547a83ce37d825aaac5b",
+      "size": 2024
+    },
+    {
+      "path": "tests/test_phase22_runtime_contracts.py",
+      "sha256": "f0ac224dccb5ac62eab64f14463d934005ee0f3fb9e7366013c6f4b499a19a09",
+      "size": 4835
+    },
+    {
+      "path": "tests/test_phase23_remote_command_lifecycle.py",
+      "sha256": "6e1834a8734646ccd9b2a5e8e6fd5e18c38a3cb846ea423d69c3f8f42fe32828",
+      "size": 7569
+    },
+    {
+      "path": "tests/test_phase24_trade_lifecycle_v2.py",
+      "sha256": "1c14f2b40432d8d9241690ac89ed65b9bfee3bb2bec008f5ac4eecd671f6a5e2",
+      "size": 8490
+    },
+    {
+      "path": "tests/test_phase25_audit_gate_execution.py",
+      "sha256": "2bc2dd3a90654c5d5c3cc5930b7e2c6f079d76be77875030361e106375739c9c",
+      "size": 16001
+    },
+    {
+      "path": "tests/test_phase25_native_release_contract.py",
+      "sha256": "55356a0c7b5d6694452a1c09afc855eb784d83dbadb3fd61aac74f17e1e954d5",
+      "size": 1614
+    },
+    {
+      "path": "tests/test_phase26_native_evidence_semantics.py",
+      "sha256": "846f9dd65314ba29dd7f8f0b8786fa0deaecf0d30ddd0c612e79cb49603ce3cf",
+      "size": 3124
+    },
+    {
+      "path": "tests/test_phase26_review_truthfulness.py",
+      "sha256": "3c1cd47d4f5cad778da236e4f0a547faf14ebcbea5cd26d856e1cd3da3018d34",
+      "size": 7530
+    },
+    {
+      "path": "tests/test_phase27_conformance_validation.py",
+      "sha256": "58d546f8eb7d5dd4ae5170ab60c0d8411bd0effc8461da8b3589364bf84b7113",
+      "size": 4088
+    },
+    {
+      "path": "tests/test_phase28_rc6_baseline.py",
+      "sha256": "aa24ea348b69962ebe103c1073a21038e14bbfa4759ac6ee253563f860f81f50",
+      "size": 1890
+    },
+    {
+      "path": "tests/test_phase29_generated_review_parity.py",
+      "sha256": "4902912e6d99ea6670ebc4906bb047c9be8b63cc1c65845b8caaa91be565f6f2",
+      "size": 2483
+    },
+    {
+      "path": "tests/test_phase2_planning.py",
+      "sha256": "52b4d42cee23f0fecb12301baa5ebd37b1668024b4b4df5ebbffa5dbbf3b3e14",
+      "size": 2209
+    },
+    {
+      "path": "tests/test_phase30_distribution_snapshot.py",
+      "sha256": "267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219",
+      "size": 1124
+    },
+    {
+      "path": "tests/test_phase31_reproducible_wheel.py",
+      "sha256": "cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac",
+      "size": 2415
+    },
+    {
+      "path": "tests/test_phase32_rc6_native_provenance.py",
+      "sha256": "b5fc69225c973ef2b7e76bd0ec8255daa41b568dfd2439b28a3fb6adb74482d7",
+      "size": 13527
+    },
+    {
+      "path": "tests/test_phase33_rc6_hygiene.py",
+      "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
+      "size": 5908
+    },
+    {
+      "path": "tests/test_phase3_codegen.py",
+      "sha256": "e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c",
+      "size": 2964
+    },
+    {
+      "path": "tests/test_phase4_auto_build_ir.py",
+      "sha256": "474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54",
+      "size": 9831
+    },
+    {
+      "path": "tests/test_phase4_legacy_bridge.py",
+      "sha256": "28dac7b849c322a55445bd648fca4e3d0b44cefc37ff929e46c4f67738bedcef",
+      "size": 5261
+    },
+    {
+      "path": "tests/test_phase4_lint_callgraph.py",
+      "sha256": "dbfc710ddc16df9dd1d5e5219af52ce20a1a2255a7a919bdfb544a0f1521f439",
+      "size": 490
+    },
+    {
+      "path": "tests/test_phase5_ir_evidence.py",
+      "sha256": "f930498b69beec13dfbf87298e922d246cd9498f4c8db2d07787b508e76afa9c",
+      "size": 3003
+    },
+    {
+      "path": "tests/test_phase6_document_ingest.py",
+      "sha256": "452a743df4d67213d314cfce3e496ee0d39f4b0ead94b251c6317049a32a00c1",
+      "size": 2362
+    },
+    {
+      "path": "tests/test_phase8_lossless_stress.py",
+      "sha256": "3ce6f3d34c3941be66f0c62b9022abc85f5993039370656a0ad0a9d97301ba17",
+      "size": 3447
+    },
+    {
+      "path": "tests/test_phase9_distribution_hygiene.py",
+      "sha256": "587153c566f0fb30a1f62aa8e6d4d8e534a727b406cf42a8123bd5089214ecb2",
+      "size": 1508
+    },
+    {
+      "path": "tests/test_ui_lint_detectors.py",
+      "sha256": "f0199d12159520ac788c7d41928e42267ca36e2d96b2af0b6ae01e15ead86b56",
+      "size": 3995
+    },
+    {
+      "path": "tests/test_worker_artifact_security.py",
+      "sha256": "e87c39c8f64ba53b0bfd0ac8d8c836dcbd18a858324346dd66bd2c86ced81add",
+      "size": 9231
+    },
+    {
+      "path": "tool-catalog.json",
+      "sha256": "85a6ee0c1978348228133b30401bad49bf3f92b6564558e508396fcfb1534954",
+      "size": 55295
+    }
+  ],
+  "kind": "wheel-verification-snapshot",
+  "schema_version": "1.0"
+}
