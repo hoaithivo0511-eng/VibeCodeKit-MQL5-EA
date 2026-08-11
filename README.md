@@ -1,14 +1,14 @@
 # VibeCodeKit-MQL5-EA
 
-Hardening repository for **VibeCodeKit MQL5 EA v3.3.0rc6**. The active
-`tool/source/` tree supersedes the retained RC5 candidate and is not a release
-artifact until the RC6 candidate is rebuilt, regression-tested and bound to
-fresh evidence.
+Hardening repository for **VibeCodeKit MQL5 EA v3.3.0rc6**. Task 17 has frozen
+a deterministic fail-closed candidate from the active `tool/source/` tree. It
+is not a production release until trusted native evidence is bound and the
+Task 19 promotion predicate passes.
 
-> Release status: **hardening / `release_eligible=false`**. RC4 and RC5
-> artifacts remain historical inputs. RC6 production eligibility is blocked
-> until candidate parity and trusted MetaEditor, MT5 Strategy Tester and
-> restart/recovery evidence all pass.
+> Release status: **candidate-integrated / `release_eligible=false`**. RC4 and
+> RC5 artifacts remain historical inputs. RC6 package parity is complete;
+> production eligibility is blocked on trusted MetaEditor, MT5 Strategy Tester
+> and restart/recovery evidence.
 
 ## Repository layout
 
@@ -57,8 +57,20 @@ a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f  tool/vibecodek
 ```
 
 The RC4 and RC5 artifacts remain immutable. The active RC6 `tool/source/` tree
-is intentionally allowed to diverge; Task 17 establishes new source ZIP and
-wheel parity under RC6-specific filenames.
+is frozen for Task 17 at source tree
+`53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`; the RC6 source ZIP and wheel
+passed identical 252-test suites and 13/13 selftests in all three channels.
+
+## RC6 fail-closed candidate identities
+
+```text
+3bc4ce857613c7f82f2aecb0648b84e1971939f282a1fd056d93440d21305059  tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip
+a2ba69f0b568d7362017d3e81f28feea80ddb71f33494989089c4669136578d6  tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl
+f13cc038ce6187543e6e556b257ec109990a3646c3c16eea8ca67489c1ac9396  VibecodeKit-MQL5-v3.3.0rc6-runtime-candidate-bundle.zip
+```
+
+These hashes identify a package-integrated candidate, not a production
+release. `release_eligible` remains `false` until Task 18 and Task 19 pass.
 
 ## Local deterministic verification
 

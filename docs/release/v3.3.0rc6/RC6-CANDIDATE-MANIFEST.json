@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "kind": "rc6-candidate",
+  "kit_version": "3.3.0rc6",
+  "status": "package-integrated-native-pending",
+  "release_eligible": false,
+  "release_blockers": [
+    "Task 18 trusted native MetaEditor/MT5 compile evidence is pending",
+    "Task 18 Strategy Tester evidence is pending",
+    "Task 18 crash/restart recovery evidence is pending"
+  ],
+  "build_input_commit": "6dc50827c64bac426e0092291e1dc27330fecf55",
+  "source_tree_sha": "53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6",
+  "artifacts": [
+    {
+      "path": "tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip",
+      "size": 1395977,
+      "sha256": "3bc4ce857613c7f82f2aecb0648b84e1971939f282a1fd056d93440d21305059"
+    },
+    {
+      "path": "tool/vibecodekit-mql5-v3.3.0rc6-source-full.manifest.json",
+      "size": 117711,
+      "sha256": "d95f49c0a7253a4d7ac29a3aaa4abb291a7bc21cb99a10bb27671015644e2373"
+    },
+    {
+      "path": "tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl",
+      "size": 892464,
+      "sha256": "a2ba69f0b568d7362017d3e81f28feea80ddb71f33494989089c4669136578d6"
+    }
+  ]
+}

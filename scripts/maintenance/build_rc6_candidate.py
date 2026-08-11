@@ -4,6 +4,7 @@
 Task 17 is a package-integration gate only. It deliberately keeps
 release_eligible=false until Task 18 supplies trusted native evidence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -28,7 +29,9 @@ from vibecodekit_mql5.wheel_repro import normalize_wheel, verify_wheel
 
 VERSION = "3.3.0rc6"
 SOURCE_ZIP = ROOT / "tool" / f"vibecodekit-mql5-v{VERSION}-source-full.zip"
-SOURCE_MANIFEST = ROOT / "tool" / f"vibecodekit-mql5-v{VERSION}-source-full.manifest.json"
+SOURCE_MANIFEST = (
+    ROOT / "tool" / f"vibecodekit-mql5-v{VERSION}-source-full.manifest.json"
+)
 WHEEL = ROOT / "tool" / f"vibecodekit_mql5_ea-{VERSION}-py3-none-any.whl"
 RELEASE_DIR = ROOT / "docs" / "release" / f"v{VERSION}"
 CANDIDATE_MANIFEST = RELEASE_DIR / "RC6-CANDIDATE-MANIFEST.json"
@@ -78,7 +81,7 @@ def zip_write_file(zf: zipfile.ZipFile, arcname: str, path: Path) -> None:
     info.compress_type = zipfile.ZIP_DEFLATED
     info.create_system = 3
     executable = bool(path.stat().st_mode & 0o111)
-    info.external_attr = ((0o100755 if executable else 0o100644) << 16)
+    info.external_attr = (0o100755 if executable else 0o100644) << 16
     zf.writestr(info, path.read_bytes())
 
 
@@ -189,7 +192,9 @@ def build_runtime_bundle() -> None:
 def write_artifact_sums() -> None:
     paths = [SOURCE_ZIP, SOURCE_MANIFEST, WHEEL, CANDIDATE_MANIFEST, RUNTIME_BUNDLE]
     ARTIFACT_SUMS.write_text(
-        "".join(f"{sha256(path)}  {path.relative_to(ROOT).as_posix()}\n" for path in paths),
+        "".join(
+            f"{sha256(path)}  {path.relative_to(ROOT).as_posix()}\n" for path in paths
+        ),
         encoding="utf-8",
         newline="\n",
     )
@@ -205,13 +210,16 @@ def verify_source_manifest() -> None:
         rel: (path.stat().st_size, sha256(path)) for rel, path in tracked_source_files()
     }
     declared = {
-        item["path"]: (int(item["size"]), item["sha256"]) for item in data.get("files", [])
+        item["path"]: (int(item["size"]), item["sha256"])
+        for item in data.get("files", [])
     }
     if actual != declared:
         missing = sorted(set(actual) - set(declared))
         extra = sorted(set(declared) - set(actual))
         changed = sorted(
-            path for path in set(actual) & set(declared) if actual[path] != declared[path]
+            path
+            for path in set(actual) & set(declared)
+            if actual[path] != declared[path]
         )
         raise SystemExit(
             f"source manifest mismatch: missing={missing[:10]} extra={extra[:10]} changed={changed[:10]}"
@@ -239,7 +247,10 @@ def verify_candidate_manifest() -> None:
     if set(records) != expected_paths:
         raise SystemExit("candidate manifest artifact set mismatch")
     for path, record in records.items():
-        if path.stat().st_size != int(record["size"]) or sha256(path) != record["sha256"]:
+        if (
+            path.stat().st_size != int(record["size"])
+            or sha256(path) != record["sha256"]
+        ):
             raise SystemExit(f"candidate artifact digest mismatch: {path}")
 
 
@@ -286,7 +297,11 @@ def junit_summary(path: Path) -> dict[str, int]:
 def selftest_summary(path: Path) -> tuple[int, int]:
     text = path.read_text(encoding="utf-8", errors="replace")
     marker = "selftest "
-    lines = [line for line in text.splitlines() if marker in line and "invariants passed" in line]
+    lines = [
+        line
+        for line in text.splitlines()
+        if marker in line and "invariants passed" in line
+    ]
     if not lines:
         raise SystemExit(f"selftest completion marker missing: {path}")
     tail = lines[-1].split(marker, 1)[1].split(" invariants passed", 1)[0]
@@ -311,13 +326,13 @@ def write_completion_report(args: argparse.Namespace) -> None:
     candidate = json.loads(CANDIDATE_MANIFEST.read_text(encoding="utf-8"))
     sums = ARTIFACT_SUMS.read_text(encoding="utf-8").rstrip()
     lines = [
-        "# PR-09 Completion — RC6 Package Integration",
+        "# Task 17 Completion — RC6 Package Integration",
         "",
-        "**Status:** PACKAGE INTEGRATION PASS — OWNER REVIEW REQUIRED  ",
-        f"**Generated:** {datetime.now(timezone.utc).isoformat()}  ",
-        f"**Workflow run:** `{args.run_id}`  ",
-        f"**Build input commit:** `{candidate['build_input_commit']}`  ",
-        f"**Source tree SHA:** `{candidate['source_tree_sha']}`  ",
+        "**Status:** PACKAGE INTEGRATION PASS — OWNER REVIEW REQUIRED",
+        f"**Generated:** {datetime.now(timezone.utc).isoformat()}",
+        f"**Workflow run:** `{args.run_id}`",
+        f"**Build input commit:** `{candidate['build_input_commit']}`",
+        f"**Source tree SHA:** `{candidate['source_tree_sha']}`",
         "**Release eligible:** `false` — Task 18 trusted native evidence remains mandatory.",
         "",
         "## Parity evidence",
@@ -351,7 +366,7 @@ def write_completion_report(args: argparse.Namespace) -> None:
             "",
             "## Gate decision",
             "",
-            "Task 17 deterministic package integration is complete at source/ZIP/wheel/runtime-bundle level. Stop for owner review before Task 18 native evidence.",
+            "Task 17 deterministic package integration is complete at source/ZIP/wheel/runtime-bundle level. Task 18 remains fail-closed until trusted native evidence is supplied.",
             "",
         ]
     )
@@ -361,9 +376,15 @@ def write_completion_report(args: argparse.Namespace) -> None:
 def cmd_build(args: argparse.Namespace) -> None:
     build_input_sha = args.build_input_sha or git("rev-parse", "HEAD")
     if git("status", "--porcelain", "--", "tool/source"):
-        raise SystemExit("tool/source contains uncommitted changes; refusing candidate build")
+        raise SystemExit(
+            "tool/source contains uncommitted changes; refusing candidate build"
+        )
     subprocess.check_call(
-        [sys.executable, str(ROOT / "scripts/maintenance/sync_distribution_snapshot.py"), "verify"],
+        [
+            sys.executable,
+            str(ROOT / "scripts/maintenance/sync_distribution_snapshot.py"),
+            "verify",
+        ],
         cwd=ROOT,
     )
     source_manifest = build_source_archive(build_input_sha)
@@ -375,8 +396,17 @@ def cmd_build(args: argparse.Namespace) -> None:
 
 
 def cmd_verify(_: argparse.Namespace) -> None:
-    required = [SOURCE_ZIP, SOURCE_MANIFEST, WHEEL, CANDIDATE_MANIFEST, ARTIFACT_SUMS, RUNTIME_BUNDLE]
-    missing = [path.relative_to(ROOT).as_posix() for path in required if not path.is_file()]
+    required = [
+        SOURCE_ZIP,
+        SOURCE_MANIFEST,
+        WHEEL,
+        CANDIDATE_MANIFEST,
+        ARTIFACT_SUMS,
+        RUNTIME_BUNDLE,
+    ]
+    missing = [
+        path.relative_to(ROOT).as_posix() for path in required if not path.is_file()
+    ]
     if missing:
         raise SystemExit(f"candidate artifacts missing: {missing}")
     verify_source_manifest()

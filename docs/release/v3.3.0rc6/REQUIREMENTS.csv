@@ -7,5 +7,5 @@ REQ-031,P0,"Native evidence binds EA source EA-IR set and tester configuration",
 REQ-032,P0,"Trusted MetaEditor MT5 and restart evidence is mandatory for release",Release contract,PLANNED,18
 REQ-033,P2,"Version README plan ledger and package metadata remain consistent",RC5 deep audit,COMPLETED,16
 REQ-034,P1,"Every task has a completion report and online commit",VibeCode protocol,IN_PROGRESS,11-19
-REQ-035,P1,"CCBSN remains fixture-only with no production defaults",Architecture invariant,IN_PROGRESS,12-17
+REQ-035,P1,"CCBSN remains fixture-only with no production defaults",Architecture invariant,COMPLETED,12-17
 REQ-036,P1,"Protect main and merge RC6 only after all gates pass",Repository governance,PLANNED,19

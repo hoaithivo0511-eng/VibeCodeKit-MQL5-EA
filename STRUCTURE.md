@@ -51,7 +51,9 @@ integrity metadata is regenerated afterward:
 - `docs/release/`;
 - `scripts/maintenance/`;
 - release-prep reports and repository-level manifest.
-- `tool/source/`, until the RC6 Task 17 candidate is frozen.
+- `tool/source/` was frozen for the Task 17 candidate at source tree
+  `53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`; later changes require a new
+  candidate identity and a complete parity rerun.
 
 ## Generated/native outputs
 
