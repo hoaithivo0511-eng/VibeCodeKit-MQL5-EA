@@ -303,11 +303,23 @@ class TestRC6NativeProvenance(unittest.TestCase):
 
     def test_rc6_runner_contract_generates_source_from_ir(self) -> None:
         script = Path(__file__).resolve().parents[3] / "scripts/native/Invoke-RC6NativeEvidence.ps1"
-        text = script.read_text(encoding="utf-8")
-        self.assertIn("[string]$EaIr", text)
-        self.assertIn("mql5-ir-build.exe", text)
-        self.assertIn('schema_version = "2.1"', text)
-        self.assertNotIn("[string]$EaPath", text)
+        if script.is_file():
+            text = script.read_text(encoding="utf-8")
+            self.assertIn("[string]$EaIr", text)
+            self.assertIn("mql5-ir-build.exe", text)
+            self.assertIn('schema_version = "2.1"', text)
+            self.assertNotIn("[string]$EaPath", text)
+        else:
+            # Standalone source/wheel channels do not ship repository operator
+            # scripts. Validate the packaged half of the same contract.
+            from vibecodekit_mql5.provenance import (
+                BOUND_INPUT_SCHEMA,
+                RC6_REQUIRED_INPUT_ARTIFACTS,
+            )
+
+            self.assertEqual(BOUND_INPUT_SCHEMA, "2.1")
+            self.assertIn("evidence/input/EA-IR.json", RC6_REQUIRED_INPUT_ARTIFACTS)
+            self.assertIn("evidence/input/source-manifest.json", RC6_REQUIRED_INPUT_ARTIFACTS)
 
 
 if __name__ == "__main__":
