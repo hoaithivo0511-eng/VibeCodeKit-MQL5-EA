@@ -148,8 +148,8 @@
     },
     {
       "path": "tests/test_phase28_rc6_baseline.py",
-      "sha256": "6501f40d6e5456110dc9236272290213fc5e273285406541768e918863b3d77b",
-      "size": 1174
+      "sha256": "aa24ea348b69962ebe103c1073a21038e14bbfa4759ac6ee253563f860f81f50",
+      "size": 1890
     },
     {
       "path": "tests/test_phase29_generated_review_parity.py",
@@ -178,8 +178,8 @@
     },
     {
       "path": "tests/test_phase33_rc6_hygiene.py",
-      "sha256": "956251192152ba4675351470a969407b16e53b1d1a5075fb3fcdbbed27799aae",
-      "size": 5159
+      "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
+      "size": 5908
     },
     {
       "path": "tests/test_phase3_codegen.py",

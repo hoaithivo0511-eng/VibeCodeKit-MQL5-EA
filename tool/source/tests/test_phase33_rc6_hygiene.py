@@ -17,14 +17,33 @@ def repository_root() -> Path | None:
     return candidate if marker.is_file() else None
 
 
+def packaged_contract_root() -> Path:
+    if (SOURCE_ROOT / "pyproject.toml").is_file():
+        return SOURCE_ROOT
+    from vibecodekit_mql5.distribution_snapshot import locate_snapshot_root
+
+    return locate_snapshot_root()
+
+
 def test_root_release_surfaces_are_current_and_fail_closed() -> None:
     repo = repository_root()
     if repo is None:
-        readme = (SOURCE_ROOT / "README.md").read_text(encoding="utf-8")
-        draft_notice = (SOURCE_ROOT / "DRAFT-NOT-VALIDATED.txt").read_text(encoding="utf-8")
-        assert "v3.3.0 RC6" in readme
-        assert "not compiled, gated, or validated" in draft_notice
-        assert "Do not use draft artifacts for live trading" in draft_notice
+        readme = SOURCE_ROOT / "README.md"
+        draft_notice = SOURCE_ROOT / "DRAFT-NOT-VALIDATED.txt"
+        if readme.is_file() or draft_notice.is_file():
+            assert "v3.3.0 RC6" in readme.read_text(encoding="utf-8")
+            notice = draft_notice.read_text(encoding="utf-8")
+            assert "not compiled, gated, or validated" in notice
+            assert "Do not use draft artifacts for live trading" in notice
+        else:
+            from vibecodekit_mql5._version import get_version
+            from vibecodekit_mql5.distribution_snapshot import (
+                locate_snapshot_root,
+                verify_distribution_snapshot,
+            )
+
+            assert get_version() == "3.3.0rc6"
+            assert verify_distribution_snapshot(locate_snapshot_root()) == []
         return
     readme = (repo / "README.md").read_text(encoding="utf-8")
     structure = (repo / "STRUCTURE.md").read_text(encoding="utf-8")
@@ -40,7 +59,9 @@ def test_root_release_surfaces_are_current_and_fail_closed() -> None:
 def test_active_workflows_are_rc6_and_never_auto_promote_release() -> None:
     repo = repository_root()
     if repo is None:
-        catalog = json.loads((SOURCE_ROOT / "tool-catalog.json").read_text(encoding="utf-8"))
+        catalog = json.loads(
+            (packaged_contract_root() / "tool-catalog.json").read_text(encoding="utf-8")
+        )
         assert catalog["kit_version"] == "3.3.0rc6"
         return
     workflow_dir = repo / ".github/workflows"
@@ -124,7 +145,9 @@ def test_historical_candidates_stay_fail_closed() -> None:
 def test_task16_traceability_is_closed_but_native_remains_planned() -> None:
     repo = repository_root()
     if repo is None:
-        contract = json.loads((SOURCE_ROOT / "agent-contract.json").read_text(encoding="utf-8"))
+        contract = json.loads(
+            (packaged_contract_root() / "agent-contract.json").read_text(encoding="utf-8")
+        )
         assert contract["kit"]["version"] == "3.3.0rc6"
         return
     requirements = (repo / "docs/release/v3.3.0rc6/REQUIREMENTS.csv").read_text(encoding="utf-8")
