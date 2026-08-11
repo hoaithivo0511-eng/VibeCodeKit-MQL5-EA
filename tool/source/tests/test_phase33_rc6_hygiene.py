@@ -21,8 +21,10 @@ def test_root_release_surfaces_are_current_and_fail_closed() -> None:
     repo = repository_root()
     if repo is None:
         readme = (SOURCE_ROOT / "README.md").read_text(encoding="utf-8")
+        draft_notice = (SOURCE_ROOT / "DRAFT-NOT-VALIDATED.txt").read_text(encoding="utf-8")
         assert "v3.3.0 RC6" in readme
-        assert "release_eligible=true" not in readme
+        assert "not compiled, gated, or validated" in draft_notice
+        assert "Do not use draft artifacts for live trading" in draft_notice
         return
     readme = (repo / "README.md").read_text(encoding="utf-8")
     structure = (repo / "STRUCTURE.md").read_text(encoding="utf-8")
@@ -107,9 +109,9 @@ def test_hygiene_checker_passes_the_git_inventory() -> None:
 def test_historical_candidates_stay_fail_closed() -> None:
     repo = repository_root()
     if repo is None:
-        from vibecodekit_mql5._version import VERSION
+        from vibecodekit_mql5._version import get_version
 
-        assert VERSION == "3.3.0rc6"
+        assert get_version() == "3.3.0rc6"
         return
     rc5 = json.loads(
         (repo / "docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json").read_text(encoding="utf-8")
