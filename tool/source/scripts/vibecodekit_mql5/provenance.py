@@ -5,12 +5,16 @@ proof that MetaEditor/Strategy Tester actually produced the evidence. This
 module is the single conservative gate used by both ``check_all`` and the
 attestation CLI.
 """
+
 from __future__ import annotations
 
-import base64, json, os
+import base64
+import configparser
+import json
+import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .execution_sources import assess_backtest_source, assess_compile_source
@@ -24,6 +28,15 @@ CORE_ARTIFACTS = (
     "evidence/backtest/report.xml",
     "evidence/stress/stress-matrix-report.json",
     "evidence/review/deep-review.json",
+)
+SUPPORTED_MANIFEST_SCHEMAS = {"2.0", "2.1"}
+BOUND_INPUT_SCHEMA = "2.1"
+RC6_REQUIRED_INPUT_ARTIFACTS = (
+    "evidence/input/EA-IR.json",
+    "evidence/input/source-manifest.json",
+    "evidence/input/test.set",
+    "evidence/backtest/tester.ini",
+    "evidence/backtest/tester-result.json",
 )
 REQUIRED_PROVENANCE = ("source", "command", "tool_version", "host", "recorded_at_utc")
 REQUIRED_RESTART_CASES = (
@@ -77,17 +90,102 @@ def _has_real_provenance(block: dict[str, Any], stage: str, errors: list[str]) -
         errors.append(f"{stage} provenance reports non-zero exit code")
 
 
-def _validate_report(path: Path, errors: list[str]) -> None:
+def _is_sha256(value: object) -> bool:
+    raw = str(value or "")
+    return len(raw) == 64 and all(char in "0123456789abcdef" for char in raw)
+
+
+def _validate_candidate_binding(
+    compile_block: dict[str, Any], errors: list[str]
+) -> tuple[str, set[str]]:
+    candidate = compile_block.get("candidate")
+    if not isinstance(candidate, dict):
+        errors.append("compile candidate binding must be an object for schema 2.1")
+        return "", set()
+    for key in ("kit_version", "build_input_commit", "source_tree_sha"):
+        if not str(candidate.get(key) or "").strip():
+            errors.append(f"compile candidate binding missing {key}")
+    if not _is_sha256(candidate.get("runtime_bundle_sha256")):
+        errors.append("compile candidate runtime_bundle_sha256 is invalid")
+    artifacts = candidate.get("artifacts")
+    wheel_hashes: set[str] = set()
+    if not isinstance(artifacts, dict) or not artifacts:
+        errors.append("compile candidate artifacts must be a non-empty hash map")
+    else:
+        for raw_path, digest in artifacts.items():
+            try:
+                rel = _safe_relative_path(raw_path)
+            except ValueError as exc:
+                errors.append(f"compile candidate artifact path is unsafe: {exc}")
+                continue
+            if not _is_sha256(digest):
+                errors.append(f"compile candidate artifact hash is invalid for {rel}")
+            elif rel.endswith(".whl"):
+                wheel_hashes.add(str(digest))
+        if not wheel_hashes:
+            errors.append("compile candidate artifacts contain no wheel hash")
+    return str(candidate.get("source_tree_sha") or "").strip(), wheel_hashes
+
+
+def _safe_relative_path(value: object) -> str:
+    rel = str(value or "").strip()
+    if not rel or "\\" in rel:
+        raise ValueError("path must be a non-empty POSIX relative path")
+    parsed = PurePosixPath(rel)
+    if parsed.is_absolute() or any(part in {"", ".", ".."} for part in parsed.parts):
+        raise ValueError("path must not be absolute or contain dot segments")
+    return rel
+
+
+def artifact_paths_for_manifest(manifest: dict[str, Any]) -> tuple[str, ...]:
+    """Return the exact runner-signed artifact set for a manifest schema."""
+    if str(manifest.get("schema_version") or "") != BOUND_INPUT_SCHEMA:
+        return CORE_ARTIFACTS
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list):
+        raise TypeError("manifest artifacts must be a list")
+    paths: list[str] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(artifacts):
+        if not isinstance(raw, dict):
+            raise TypeError(f"manifest artifacts[{index}] is not an object")
+        rel = _safe_relative_path(raw.get("path"))
+        if rel in seen:
+            raise ValueError(f"manifest contains duplicate artifact path {rel}")
+        seen.add(rel)
+        paths.append(rel)
+    missing = [rel for rel in (*CORE_ARTIFACTS, *RC6_REQUIRED_INPUT_ARTIFACTS) if rel not in seen]
+    if missing:
+        raise ValueError("manifest omits required artifact paths: " + ", ".join(missing))
+    return tuple(sorted(paths))
+
+
+def _validate_report(
+    path: Path, errors: list[str], *, require_nonzero_trades: bool = False
+) -> int | None:
     try:
         root = ET.parse(path).getroot()
     except Exception as exc:  # noqa: BLE001
         errors.append(f"backtest report is not valid XML: {exc}")
-        return
-    tags = {el.tag.rsplit("}", 1)[-1] for el in root.iter()}
+        return None
+    elements = {el.tag.rsplit("}", 1)[-1]: el for el in root.iter()}
+    tags = set(elements)
+    total_trades: int | None = None
     if "TotalTrades" not in tags:
         errors.append("backtest report has no TotalTrades metric")
+    else:
+        raw = str(elements["TotalTrades"].text or "").strip()
+        try:
+            total_trades = int(raw)
+            if require_nonzero_trades and total_trades <= 0:
+                raise ValueError
+        except ValueError:
+            if require_nonzero_trades:
+                errors.append("backtest report TotalTrades must be a positive integer")
+            total_trades = None
     if not ({"ProfitFactor", "NetProfit", "ExpectedPayoff"} & tags):
         errors.append("backtest report has no performance metric")
+    return total_trades
 
 
 def _load_json_object(path: Path, label: str, errors: list[str]) -> dict[str, Any] | None:
@@ -105,6 +203,9 @@ def _load_json_object(path: Path, label: str, errors: list[str]) -> dict[str, An
 def _validate_stress_report(
     path: Path,
     *,
+    project_root: Path,
+    verified_hashes: dict[str, str],
+    require_bound_evidence: bool,
     expected_source_tree_sha: str,
     errors: list[str],
 ) -> None:
@@ -148,14 +249,39 @@ def _validate_stress_report(
             continue
         if str(raw.get("status") or "").upper() != "PASS":
             errors.append(f"stress report restart recovery case {case_id} is not PASS")
-        if not str(raw.get("evidence") or "").strip():
-            errors.append(f"stress report restart recovery case {case_id} has no evidence reference")
+        evidence = str(raw.get("evidence") or "").strip()
+        if not evidence:
+            errors.append(
+                f"stress report restart recovery case {case_id} has no evidence reference"
+            )
+        elif require_bound_evidence:
+            try:
+                rel = _safe_relative_path(evidence)
+            except ValueError as exc:
+                errors.append(
+                    f"stress report restart recovery case {case_id} evidence path is unsafe: {exc}"
+                )
+                continue
+            if not rel.startswith("evidence/stress/cases/"):
+                errors.append(
+                    f"stress report restart recovery case {case_id} evidence is outside evidence/stress/cases"
+                )
+            elif rel not in verified_hashes:
+                errors.append(
+                    f"stress report restart recovery case {case_id} evidence is not a signed artifact: {rel}"
+                )
+            elif not (project_root / rel).is_file():
+                errors.append(
+                    f"stress report restart recovery case {case_id} evidence file is missing: {rel}"
+                )
 
 
 def _validate_review_report(
     path: Path,
     *,
     expected_source_tree_sha: str,
+    expected_source_manifest_sha: str = "",
+    require_source_binding: bool = False,
     errors: list[str],
 ) -> None:
     data = _load_json_object(path, "review report", errors)
@@ -170,6 +296,14 @@ def _validate_review_report(
         errors.append("review report missing candidate_source_tree_sha")
     elif expected_source_tree_sha and bound_tree != expected_source_tree_sha:
         errors.append("review report candidate_source_tree_sha does not match compile candidate")
+    if require_source_binding:
+        bound_source = str(data.get("project_source_manifest_sha256") or "").strip()
+        if not bound_source:
+            errors.append("review report missing project_source_manifest_sha256")
+        elif expected_source_manifest_sha and bound_source != expected_source_manifest_sha:
+            errors.append(
+                "review report project_source_manifest_sha256 does not match generated source"
+            )
     if not str(data.get("reviewer") or "").strip():
         errors.append("review report missing reviewer")
     if not str(data.get("reviewed_at_utc") or "").strip():
@@ -195,6 +329,210 @@ def _validate_review_report(
             errors.append(f"review report has unresolved {severity} finding at index {index}")
 
 
+def _require_bound_hash(
+    block: dict[str, Any],
+    key: str,
+    rel: str,
+    verified_hashes: dict[str, str],
+    errors: list[str],
+    *,
+    label: str,
+) -> None:
+    actual = verified_hashes.get(rel, "")
+    claimed = str(block.get(key) or "").strip()
+    if not claimed:
+        errors.append(f"{label} input binding missing {key}")
+    elif actual and claimed != actual:
+        errors.append(f"{label} input binding {key} does not match {rel}")
+
+
+def _validate_rc6_input_binding(
+    root: Path,
+    compile_block: dict[str, Any],
+    backtest_block: dict[str, Any],
+    verified_hashes: dict[str, str],
+    expected_source_tree_sha: str,
+    candidate_wheel_hashes: set[str],
+    report_total_trades: int | None,
+    errors: list[str],
+) -> str:
+    """Validate the candidate -> generated source -> tester input chain."""
+    source_manifest_rel = "evidence/input/source-manifest.json"
+    compile_binding = compile_block.get("input_binding")
+    if not isinstance(compile_binding, dict):
+        errors.append("compile input_binding must be an object for schema 2.1")
+        compile_binding = {}
+    backtest_binding = backtest_block.get("input_binding")
+    if not isinstance(backtest_binding, dict):
+        errors.append("backtest input_binding must be an object for schema 2.1")
+        backtest_binding = {}
+
+    if compile_binding.get("generated_by") != "installed_candidate_wheel":
+        errors.append("compile input binding was not generated_by installed_candidate_wheel")
+    wheel_hash = str(compile_binding.get("candidate_wheel_sha256") or "").strip()
+    if wheel_hash not in candidate_wheel_hashes:
+        errors.append(
+            "compile input binding candidate_wheel_sha256 does not match candidate artifacts"
+        )
+    _require_bound_hash(
+        compile_binding,
+        "ea_ir_sha256",
+        "evidence/input/EA-IR.json",
+        verified_hashes,
+        errors,
+        label="compile",
+    )
+    _require_bound_hash(
+        compile_binding,
+        "source_manifest_sha256",
+        source_manifest_rel,
+        verified_hashes,
+        errors,
+        label="compile",
+    )
+    _require_bound_hash(
+        backtest_binding,
+        "set_sha256",
+        "evidence/input/test.set",
+        verified_hashes,
+        errors,
+        label="backtest",
+    )
+    _require_bound_hash(
+        backtest_binding,
+        "tester_ini_sha256",
+        "evidence/backtest/tester.ini",
+        verified_hashes,
+        errors,
+        label="backtest",
+    )
+    for field_name in ("symbol", "timeframe", "period"):
+        if not str(backtest_binding.get(field_name) or "").strip():
+            errors.append(f"backtest input binding missing {field_name}")
+
+    tester_ini = configparser.ConfigParser(interpolation=None, strict=True)
+    try:
+        with (root / "evidence/backtest/tester.ini").open(encoding="utf-8") as stream:
+            tester_ini.read_file(stream)
+        tester = tester_ini["Tester"]
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"tester.ini is not a valid Tester configuration: {exc}")
+    else:
+        expected_period = str(backtest_binding.get("period") or "")
+        actual_period = f"{tester.get('FromDate', '')}-{tester.get('ToDate', '')}"
+        semantic_checks = {
+            "Symbol": str(backtest_binding.get("symbol") or ""),
+            "Period": str(backtest_binding.get("timeframe") or ""),
+        }
+        for key, expected in semantic_checks.items():
+            if tester.get(key, "") != expected:
+                errors.append(f"tester.ini {key} does not match signed backtest input binding")
+        if actual_period != expected_period:
+            errors.append("tester.ini date range does not match signed backtest input binding")
+        set_name = PurePosixPath(tester.get("ExpertParameters", "").replace("\\", "/")).name.lower()
+        expert_name = PurePosixPath(tester.get("Expert", "").replace("\\", "/")).name.lower()
+        if set_name != "test.set":
+            errors.append("tester.ini ExpertParameters does not reference the signed test.set")
+        if expert_name != "ea.ex5":
+            errors.append("tester.ini Expert does not reference the signed ea.ex5")
+
+    tester_result = _load_json_object(
+        root / "evidence/backtest/tester-result.json", "tester result", errors
+    )
+    if tester_result is not None:
+        raw_trades = tester_result.get("total_trades")
+        if not isinstance(raw_trades, int) or isinstance(raw_trades, bool) or raw_trades <= 0:
+            errors.append("tester result total_trades must be a positive integer")
+        elif report_total_trades is not None and raw_trades != report_total_trades:
+            errors.append("tester result total_trades does not match report.xml")
+        if str(tester_result.get("symbol") or "") != str(backtest_binding.get("symbol") or ""):
+            errors.append("tester result symbol does not match signed backtest input binding")
+        if str(tester_result.get("period") or "") != str(backtest_binding.get("timeframe") or ""):
+            errors.append("tester result period does not match signed backtest input binding")
+
+    source_manifest_path = root / source_manifest_rel
+    source_manifest = _load_json_object(source_manifest_path, "source manifest", errors)
+    if source_manifest is None:
+        return verified_hashes.get(source_manifest_rel, "")
+    if source_manifest.get("schema_version") != "1.0":
+        errors.append("source manifest schema_version must be 1.0")
+    if source_manifest.get("generated_by") != "installed_candidate_wheel":
+        errors.append("source manifest was not generated_by installed_candidate_wheel")
+    bound_tree = str(source_manifest.get("candidate_source_tree_sha") or "").strip()
+    if not bound_tree:
+        errors.append("source manifest missing candidate_source_tree_sha")
+    elif expected_source_tree_sha and bound_tree != expected_source_tree_sha:
+        errors.append("source manifest candidate_source_tree_sha does not match compile candidate")
+
+    files = source_manifest.get("files")
+    if not isinstance(files, list) or not files:
+        errors.append("source manifest files must be a non-empty list")
+        files = []
+    seen: set[str] = set()
+    source_extensions: set[str] = set()
+    for index, raw in enumerate(files):
+        if not isinstance(raw, dict):
+            errors.append(f"source manifest files[{index}] is not an object")
+            continue
+        try:
+            rel = _safe_relative_path(raw.get("path"))
+        except ValueError as exc:
+            errors.append(f"source manifest files[{index}] path is unsafe: {exc}")
+            continue
+        if not rel.startswith("evidence/input/project/"):
+            errors.append(f"source manifest path is outside generated project: {rel}")
+            continue
+        if rel in seen:
+            errors.append(f"source manifest contains duplicate file path {rel}")
+            continue
+        seen.add(rel)
+        source_extensions.add(PurePosixPath(rel).suffix.lower())
+        path = root / rel
+        if not path.is_file() or path.is_symlink():
+            errors.append(f"generated source file is missing or a symlink: {rel}")
+            continue
+        actual = sha256_file(path)
+        if str(raw.get("sha256") or "") != actual:
+            errors.append(f"source manifest hash mismatch for {rel}")
+        if raw.get("size") != path.stat().st_size:
+            errors.append(f"source manifest size mismatch for {rel}")
+        if verified_hashes.get(rel) != actual:
+            errors.append(f"generated source file is not bound into runner signature: {rel}")
+    if ".mq5" not in source_extensions:
+        errors.append("source manifest contains no generated .mq5 entrypoint")
+    if ".mqh" not in source_extensions:
+        errors.append("source manifest contains no generated .mqh source")
+    generated_root = root / "evidence/input/project"
+    actual_sources = (
+        {
+            path.relative_to(root).as_posix()
+            for path in generated_root.rglob("*")
+            if path.is_file() and path.suffix.lower() in {".mq5", ".mqh"}
+        }
+        if generated_root.is_dir()
+        else set()
+    )
+    listed_sources = {rel for rel in seen if PurePosixPath(rel).suffix.lower() in {".mq5", ".mqh"}}
+    if actual_sources != listed_sources:
+        errors.append("source manifest does not exactly cover generated .mq5/.mqh files")
+
+    try:
+        entrypoint = _safe_relative_path(source_manifest.get("ea_entrypoint"))
+    except (TypeError, ValueError) as exc:
+        errors.append(f"source manifest ea_entrypoint is unsafe: {exc}")
+    else:
+        if not entrypoint.endswith(".mq5"):
+            errors.append("source manifest ea_entrypoint must end in .mq5")
+        if entrypoint not in seen:
+            errors.append("source manifest ea_entrypoint is not listed in files")
+        if str(compile_binding.get("ea_entrypoint") or "") != entrypoint:
+            errors.append("compile input binding ea_entrypoint does not match source manifest")
+        expected_entrypoint_hash = verified_hashes.get(entrypoint, "")
+        if str(compile_binding.get("entrypoint_sha256") or "") != expected_entrypoint_hash:
+            errors.append("compile input binding entrypoint_sha256 does not match generated source")
+    return verified_hashes.get(source_manifest_rel, "")
+
+
 def attestation_payload(manifest: dict[str, Any], hashes: dict[str, str]) -> bytes:
     """Canonical bytes signed by the native runner, never by the repo writer."""
     return json.dumps(
@@ -209,16 +547,24 @@ def attestation_payload(manifest: dict[str, Any], hashes: dict[str, str]) -> byt
     ).encode()
 
 
-def _verify_runner_attestation(manifest: dict[str, Any], hashes: dict[str, str], result: ProvenanceResult) -> None:
+def _verify_runner_attestation(
+    manifest: dict[str, Any], hashes: dict[str, str], result: ProvenanceResult
+) -> None:
     """Verify detached native-runner signature against an in-repo pinned key."""
     block = manifest.get("runner_attestation")
-    if not isinstance(block, dict) or not block.get("signature_b64") or block.get("algorithm") != "Ed25519":
+    if (
+        not isinstance(block, dict)
+        or not block.get("signature_b64")
+        or block.get("algorithm") != "Ed25519"
+    ):
         result.missing.append("external runner Ed25519 attestation")
         return
 
     key_id = str(block.get("key_id") or "").strip()
     if not key_id:
-        result.errors.append("runner attestation does not declare key_id; cannot match a pinned key")
+        result.errors.append(
+            "runner attestation does not declare key_id; cannot match a pinned key"
+        )
         return
 
     trust = load_trust_root(result.project_dir or ".")
@@ -264,10 +610,13 @@ def _verify_runner_attestation(manifest: dict[str, Any], hashes: dict[str, str],
 
     try:
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
         key = Ed25519PublicKey.from_public_bytes(raw)
         key.verify(base64.b64decode(block["signature_b64"]), attestation_payload(manifest, hashes))
     except Exception as exc:  # noqa: BLE001
-        result.errors.append(f"external runner attestation verification failed: {exc.__class__.__name__}")
+        result.errors.append(
+            f"external runner attestation verification failed: {exc.__class__.__name__}"
+        )
         return
 
     result.signed_by_key_id = key_id
@@ -287,9 +636,14 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
         result.status = "FAIL"
         result.errors.append(f"invalid evidence manifest: {exc}")
         return result
+    if not isinstance(manifest, dict):
+        result.status = "FAIL"
+        result.errors.append("evidence manifest must be a JSON object")
+        return result
     result.manifest = manifest
-    if manifest.get("schema_version") != "2.0":
-        result.errors.append("manifest schema_version must be 2.0")
+    schema = str(manifest.get("schema_version") or "")
+    if schema not in SUPPORTED_MANIFEST_SCHEMAS:
+        result.errors.append("manifest schema_version must be 2.0 or 2.1")
     if manifest.get("release_eligible") is not True:
         result.errors.append("manifest release_eligible is not true")
     summary = manifest.get("summary")
@@ -302,15 +656,43 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
     _has_real_provenance(backtest_block, "backtest", result.errors)
     if not assess_compile_source(compile_block.get("source")).trusted_for_release:
         result.errors.append("compile source is not trusted for release")
-    if not assess_backtest_source(backtest_block.get("source"), root / CORE_ARTIFACTS[2]).trusted_for_release:
+    if not assess_backtest_source(
+        backtest_block.get("source"), root / CORE_ARTIFACTS[2]
+    ).trusted_for_release:
         result.errors.append("backtest source is not trusted for release")
 
     artifacts = manifest.get("artifacts")
-    by_path = {str(a.get("path")): a for a in artifacts if isinstance(a, dict)} if isinstance(artifacts, list) else {}
+    by_path: dict[str, dict[str, Any]] = {}
+    if not isinstance(artifacts, list):
+        result.errors.append("manifest artifacts must be a list")
+    else:
+        for index, raw in enumerate(artifacts):
+            if not isinstance(raw, dict):
+                result.errors.append(f"manifest artifacts[{index}] is not an object")
+                continue
+            try:
+                rel = _safe_relative_path(raw.get("path"))
+            except ValueError as exc:
+                result.errors.append(f"manifest artifacts[{index}] path is unsafe: {exc}")
+                continue
+            if rel in by_path:
+                result.errors.append(f"manifest contains duplicate artifact path {rel}")
+                continue
+            by_path[rel] = raw
+
+    try:
+        required_artifacts = artifact_paths_for_manifest(manifest)
+    except (TypeError, ValueError) as exc:
+        result.errors.append(str(exc))
+        required_artifacts = (
+            (*CORE_ARTIFACTS, *RC6_REQUIRED_INPUT_ARTIFACTS)
+            if schema == BOUND_INPUT_SCHEMA
+            else CORE_ARTIFACTS
+        )
     verified_hashes: dict[str, str] = {}
-    for rel in CORE_ARTIFACTS:
+    for rel in required_artifacts:
         path = root / rel
-        if not path.is_file():
+        if not path.is_file() or path.is_symlink():
             result.missing.append(rel)
             continue
         record = by_path.get(rel)
@@ -325,8 +707,13 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
     if ex5.is_file() and ex5.stat().st_size < 32:
         result.errors.append("ea.ex5 is implausibly small; refusing fixture/stub binary")
     report = root / CORE_ARTIFACTS[2]
+    report_total_trades: int | None = None
     if report.is_file():
-        _validate_report(report, result.errors)
+        report_total_trades = _validate_report(
+            report,
+            result.errors,
+            require_nonzero_trades=schema == BOUND_INPUT_SCHEMA,
+        )
 
     compile_candidate = compile_block.get("candidate")
     expected_source_tree_sha = (
@@ -334,12 +721,42 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
         if isinstance(compile_candidate, dict)
         else ""
     )
+    candidate_wheel_hashes: set[str] = set()
+    if schema == BOUND_INPUT_SCHEMA:
+        expected_source_tree_sha, candidate_wheel_hashes = _validate_candidate_binding(
+            compile_block, result.errors
+        )
+    source_manifest_sha = ""
+    if schema == BOUND_INPUT_SCHEMA:
+        source_manifest_sha = _validate_rc6_input_binding(
+            root,
+            compile_block,
+            backtest_block,
+            verified_hashes,
+            expected_source_tree_sha,
+            candidate_wheel_hashes,
+            report_total_trades,
+            result.errors,
+        )
     stress = root / CORE_ARTIFACTS[3]
     if stress.is_file():
-        _validate_stress_report(stress, expected_source_tree_sha=expected_source_tree_sha, errors=result.errors)
+        _validate_stress_report(
+            stress,
+            project_root=root,
+            verified_hashes=verified_hashes,
+            require_bound_evidence=schema == BOUND_INPUT_SCHEMA,
+            expected_source_tree_sha=expected_source_tree_sha,
+            errors=result.errors,
+        )
     review = root / CORE_ARTIFACTS[4]
     if review.is_file():
-        _validate_review_report(review, expected_source_tree_sha=expected_source_tree_sha, errors=result.errors)
+        _validate_review_report(
+            review,
+            expected_source_tree_sha=expected_source_tree_sha,
+            expected_source_manifest_sha=source_manifest_sha,
+            require_source_binding=schema == BOUND_INPUT_SCHEMA,
+            errors=result.errors,
+        )
 
     if not result.missing:
         _verify_runner_attestation(manifest, verified_hashes, result)

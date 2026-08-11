@@ -1,5 +1,5 @@
 {
-  "file_count": 45,
+  "file_count": 46,
   "files": [
     {
       "path": "agent-contract.json",
@@ -170,6 +170,11 @@
       "path": "tests/test_phase31_reproducible_wheel.py",
       "sha256": "cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac",
       "size": 2415
+    },
+    {
+      "path": "tests/test_phase32_rc6_native_provenance.py",
+      "sha256": "afc462458707aa144c695cf6d90e68d3c535b108babd298865418ba0667b5a6f",
+      "size": 12926
     },
     {
       "path": "tests/test_phase3_codegen.py",
