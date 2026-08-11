@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vibecodekit-mql5-ea"
-version = "3.3.0rc5"
+version = "3.3.0rc6"
 description = "Vibecode methodology kit for MQL5 Expert Advisor development"
 readme = "README.md"
 license = {text = "MIT"}

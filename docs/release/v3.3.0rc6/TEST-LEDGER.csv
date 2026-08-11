@@ -1,0 +1,4 @@
+ID,Test,Environment,Result,Evidence,Status,Notes
+T11-001,RC6 version triple,Python 3.12,2/2 tests passed,test_phase28_rc6_baseline.py,PASS,"pyproject catalog and contract"
+T11-002,RC6 source regression,Python 3.12,230/230 tests passed,rc6-task11.xml,PASS,"zero failures errors skips"
+T11-003,RC6 selftest,Python 3.12,13/13 invariants passed,mql5-selftest,PASS,"35 canonical test modules detected"

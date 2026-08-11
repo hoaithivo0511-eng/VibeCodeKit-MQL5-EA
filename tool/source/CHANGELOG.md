@@ -1,4 +1,9 @@
-## [3.3.0rc5] - Unreleased
+## [3.3.0rc6] - Unreleased
+
+- Close RC5 audit findings for generated-code review parity, distribution
+  snapshot integrity, reproducible packaging and native-evidence provenance.
+
+## [3.3.0rc5] - 2026-08-10
 
 ### Hardening foundation
 

@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "kit": "vibecodekit-mql5-ea",
-  "kit_version": "3.3.0rc5",
+  "kit_version": "3.3.0rc6",
   "generated_by": "mql5-manifest",
   "tools": [
     {
