@@ -1,5 +1,5 @@
 {
-  "file_count": 47,
+  "file_count": 48,
   "files": [
     {
       "path": "agent-contract.json",
@@ -163,8 +163,8 @@
     },
     {
       "path": "tests/test_phase30_distribution_snapshot.py",
-      "sha256": "267c4ba521c3a20106f54cd521cc3330e55e40908d17071a05e3ec0e875b8219",
-      "size": 1124
+      "sha256": "45fc778b8a8879957f56244755c79e4cf1f57c8ad1c7734b50350657466b8105",
+      "size": 1371
     },
     {
       "path": "tests/test_phase31_reproducible_wheel.py",
@@ -180,6 +180,11 @@
       "path": "tests/test_phase33_rc6_hygiene.py",
       "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
       "size": 5908
+    },
+    {
+      "path": "tests/test_phase34_documentation_runtime.py",
+      "sha256": "9aa0972a6627ff39a138a8abc86bd40cdbb6f45f9839623d05e79766057ba95f",
+      "size": 2988
     },
     {
       "path": "tests/test_phase3_codegen.py",

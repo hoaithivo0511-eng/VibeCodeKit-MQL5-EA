@@ -1,10 +1,10 @@
 # VibeCodeKit-MQL5-EA
 
-Kho hardening dành cho **VibeCodeKit MQL5 EA v3.3.0rc6**. Task 17 đã đóng
-băng một candidate xác định theo nguyên tắc fail-closed từ cây mã nguồn
-`tool/source/` hiện hành. Đây **chưa phải bản phát hành production** cho đến
-khi bằng chứng native đáng tin cậy được liên kết đầy đủ và điều kiện promotion
-của Task 19 được đáp ứng.
+Kho hardening dành cho **VibeCodeKit MQL5 EA v3.3.0rc6**. Task 20 đã đồng bộ
+tài liệu, khôi phục runtime kết xuất tài liệu của MCP bridge và đóng gói lại
+candidate xác định theo nguyên tắc fail-closed từ cây mã nguồn `tool/source/`
+hiện hành. Đây **chưa phải bản phát hành production** cho đến khi bằng chứng
+native đáng tin cậy được liên kết đầy đủ.
 
 > Trạng thái phát hành: **candidate-integrated / `release_eligible=false`**.
 > Artifact RC4 và RC5 được giữ lại như lịch sử bất biến. RC6 đã hoàn tất parity
@@ -65,22 +65,26 @@ a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f  tool/vibecodek
 5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a  tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
 ```
 
-Artifact RC4 và RC5 tiếp tục là dữ liệu lịch sử bất biến. Cây
-`tool/source/` của RC6 đã được đóng băng tại Task 17 với source tree
-`53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`; source ZIP và wheel RC6 đều đạt
-cùng bộ 252 test và selftest 13/13 trên cả ba kênh.
+Artifact RC4 và RC5 tiếp tục là dữ liệu lịch sử bất biến. Candidate được tag
+`v3.3.0rc6` ban đầu dùng source tree
+`53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`, đạt 252 test và selftest 13/13
+trên cả ba kênh. Candidate documentation-sync hiện hành dùng source tree
+`507eb8dae02a47d41a86d224fc8d4d567d06c691`, đạt 254 test và selftest 13/13
+trên cả ba kênh. Tag/pre-release cũ không bị di chuyển hoặc ghi đè.
 
 ## Danh tính candidate RC6 fail-closed
 
 ```text
-3bc4ce857613c7f82f2aecb0648b84e1971939f282a1fd056d93440d21305059  tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip
-a2ba69f0b568d7362017d3e81f28feea80ddb71f33494989089c4669136578d6  tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl
-f13cc038ce6187543e6e556b257ec109990a3646c3c16eea8ca67489c1ac9396  VibecodeKit-MQL5-v3.3.0rc6-runtime-candidate-bundle.zip
+166462a71b14a0e9623b2cac8aa9c7a316d0b7a7318fb4663ee026dd221fa5f9  tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip
+6fca0b2424008279044a37e9c39a4a5df4099af5e7fd1e364ce98109494b3eaa  tool/vibecodekit-mql5-v3.3.0rc6-source-full.manifest.json
+4c98c71f66c185b24f526034d9df7d7484e25fa2164e7af87225b230397cf408  tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl
+10ea6d8bdafaf1a43cee370dce93d3c010bb436c1cd597fbb84ec2440d37a2dc  docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json
+1b3cfec599a09a9adb3075c74d38d87058d4a056ff9183d7ac5dc3240e5e4a52  VibecodeKit-MQL5-v3.3.0rc6-runtime-candidate-bundle.zip
 ```
 
-Các hash này nhận diện một candidate đã tích hợp package, không phải bản phát
-hành production. `release_eligible` vẫn là `false` cho đến khi Task 18 và
-Task 19 đạt.
+Các hash này nhận diện candidate documentation-sync sẽ được tích hợp vào
+`main`, không phải bản phát hành production. `release_eligible` vẫn là `false`
+cho đến khi Task 18 đạt và có quyết định promotion riêng.
 
 ## Kiểm tra xác định tại máy local
 

@@ -51,9 +51,11 @@ integrity metadata is regenerated afterward:
 - `docs/release/`;
 - `scripts/maintenance/`;
 - release-prep reports and repository-level manifest.
-- `tool/source/` was frozen for the Task 17 candidate at source tree
-  `53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`; later changes require a new
-  candidate identity and a complete parity rerun.
+- `tool/source/` was frozen for the original tagged Task 17 candidate at source
+  tree `53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`. The Task 20 documentation-sync
+  candidate uses source tree `507eb8dae02a47d41a86d224fc8d4d567d06c691` and
+  completed a new source/ZIP/wheel parity run. The original tag remains
+  immutable.
 
 ## Generated/native outputs
 
@@ -61,7 +63,8 @@ Python caches, local virtual environments, coverage output, editor/OS noise, tem
 
 ## Release status
 
-RC6 may pass deterministic source/static/package gates while still being **not
-production-release eligible**. Task 18 native MetaEditor compilation, MT5
-Strategy Tester and restart/recovery evidence remain independent gates; do not
-infer them from static or Python regression success.
+RC6 may pass deterministic source/static/package gates and be integrated into
+`main` while still being **not production-release eligible**. Task 18 native
+MetaEditor compilation, MT5 Strategy Tester and restart/recovery evidence
+remain independent gates; do not infer them from static or Python regression
+success.

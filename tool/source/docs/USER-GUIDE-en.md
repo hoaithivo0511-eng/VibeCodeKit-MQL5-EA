@@ -9,7 +9,7 @@ audience: end_user, dev_team, ai_agent_operator
 > Walks you from **zero → compiled `.ex5` + published dashboard +
 > Neo-Retro Dev Deck docs** with the exact commands and expected output
 > for each step. Counts in this document are kept in sync with the
-> current `v2.4.3` baseline: **118 CLI commands**, **4 MCP servers**,
+> current `v3.3.0rc6` baseline: **139 CLI entry points**, **4 MCP servers**,
 > **26 anti-pattern detectors (25 numbered AP-1…AP-25 + 1 build-aware
 > method-hiding)**, **8 optional schema blocks** on `ea-spec.yaml`.
 > Live test count is recorded in <code>README.md</code> and verified
@@ -47,7 +47,7 @@ audience: end_user, dev_team, ai_agent_operator
   - [5.4. Re-render docs over `docs.ea_render`](#54-re-render-docs-over-docsea_render)
 - [6. `ea-spec.yaml` — 8 optional blocks](#6-ea-specyaml--8-optional-blocks)
 - [7. Troubleshooting & FAQ](#7-troubleshooting--faq)
-- [8. Appendix — 118 CLI commands by group](#8-appendix--118-cli-commands-by-group)
+- [8. Appendix — canonical 139-command catalog](#8-appendix--canonical-139-command-catalog)
 
 ---
 
@@ -192,7 +192,7 @@ The kit deliberately supports **two parallel paths**:
 |---|---|---|
 | Audience | Devs typing commands & reading output | Codex CLI / Claude Code / Cursor / Devin / Claude Desktop |
 | Transport | Shell / venv | JSON-RPC 2.0 over stdio |
-| Tool surface | 118 CLI commands | 30 MCP tools wrapping the main commands + 4 helpers |
+| Tool surface | 139 CLI entry points | 30 MCP tools in `vibecodekit-bridge` |
 | Best for | Learning, debugging, teaching, client demos | Batch builds, automatic fix-loops, in-IDE coding agents |
 | Pipeline | **Identical** — same `auto_build`, lint, permission gate, dashboard | |
 
@@ -201,7 +201,7 @@ dashboard are bit-identical.
 
 [Section 4](#4-path-a--cli-hands-on-7-steps) walks the 7 CLI steps.
 [Section 5](#5-path-b--ai-coding-agent-over-mcp) covers the bridge
-install for 5 agent tools.
+install for the 30-tool `vibecodekit-bridge` surface.
 
 ---
 
@@ -927,40 +927,17 @@ ceiling. Split overflow into a helper module (see
 
 ---
 
-## 8. Appendix — 118 CLI commands by group
+## 8. Appendix — canonical 139-command catalog
 
-Quick reference; full docs in [USAGE-en.md](USAGE-en.md).
+RC6 exposes **139 console entry points**, including compatibility aliases. Do
+not maintain a second hand-counted list in this guide: it previously drifted
+to 118 in the heading while the old appendix totalled only 50.
 
-**Discovery (4)** — `scan`, `survey`, `doctor`, `audit`
-
-**Plan (4)** — `rri`, `vision`, `blueprint`, `tip`
-
-**Build (12)** — `build`, `auto_build`, `auto_fix`, `spec_from_prompt`,
-`dashboard`, `wizard`, `pip_normalize`, `async_build`, `onnx_export`,
-`onnx_embed`, `llm_context`, `forge_init`
-
-**Verify (11)** — `compile`, `lint`, `method_hiding_check`,
-`backtest`, `tester_run`, `walkforward`, `monte_carlo`,
-`overfit_check`, `multibroker`, `fitness`, `mfe_mae`
-
-(`lint_best_practice` exists as a Python module — invokable via
-`python -m vibecodekit_mql5.lint_best_practice` — but is not
-registered as a console script in `pyproject.toml`, so it doesn't
-count toward the Verify CLI group.)
-
-**RRI methodology (3)** — `rri_bt`, `rri_rr`, `rri_chart`
-
-**Review (5)** — `review`, `eng_review`, `ceo_review`, `cso`,
-`investigate`
-
-**Deploy (3)** — `deploy_vps`, `cloud_optimize`, `canary`
-
-**Ship (3)** — `forge_pr`, `ship`, `refine`
-
-**Other (4)** — `broker_safety`, `trader_check`, `install`,
-`second_opinion`
-
-Total: **49 CLI** + 1 meta router = **50 entries**.
+- Human-readable catalog: [COMMANDS.md](COMMANDS.md).
+- Machine-readable catalog: `tool-catalog.json`.
+- Regenerate/inspect at runtime: `mql5-manifest --emit > manifest.json`.
+- Compare installed entry points with package metadata before publishing a
+  new version; any mismatch is a release-blocking documentation defect.
 
 ---
 
@@ -980,8 +957,9 @@ Total: **49 CLI** + 1 meta router = **50 entries**.
 - The `ea-spec.yaml` schema now covers 8 optional blocks (3 PR-2 +
   5 PR-8) for prop-firm, trailing, partial close, correlation,
   swap filter, and logs configuration.
-- Latest baseline (v2.4.3): **38 unit tests passed** + **selftest 8/8 invariants passed** (the MetaEditor compile probe runs only on Wine/Windows), ruff clean,
-  release audit passes.
+- RC6 documentation-sync baseline: **254 tests passed per source/source-ZIP/wheel
+  channel** and **selftest 13/13 invariants passed**. Native MetaEditor/MT5
+  evidence remains an independent release gate.
 
 For issues not in [section 7](#7-troubleshooting--faq), contact the official
 release support channel and include the output of

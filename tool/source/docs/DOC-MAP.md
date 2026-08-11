@@ -1,4 +1,4 @@
-# Documentation map — which file should I read?
+# Documentation map — v3.3.0rc6
 
 This kit ships four large, overlapping guides that grew independently. Roughly
 149 KB of their content is duplicated. Rather than mechanically merge them —
@@ -12,12 +12,12 @@ is already fixed would not be.
 
 ## Start here
 
-| You want to… | Read | Size |
+| You want to… | Read | Role |
 | --- | --- | --- |
-| Get running in 10 minutes | `QUICKSTART.md` | 6.7 KB |
-| Look up a specific command | `COMMANDS.md` | 27 KB |
-| Understand the whole workflow (English) | `USAGE-en.md` | 55 KB |
-| Understand the whole workflow (Tiếng Việt) | `HUONG-DAN-TOAN-TAP-vi.md` | 33 KB |
+| Get running in 10 minutes | `QUICKSTART.md` | Canonical quickstart |
+| Look up a specific command | `COMMANDS.md` | Canonical 139-command catalog |
+| Understand the whole workflow (English) | `USAGE-en.md` | English reference |
+| Understand the whole workflow (Tiếng Việt) | `HUONG-DAN-TOAN-TAP-vi.md` | Vietnamese master guide |
 
 ## Canonical source per topic
 
@@ -36,14 +36,29 @@ When two documents disagree, **the canonical file wins**. If you find a
 contradiction, that is a defect — the canonical file should be corrected and the
 duplicate updated or removed.
 
+## Historical snapshots
+
+The following files are retained as immutable point-in-time evidence. Their
+version labels and test counts describe the run that produced them; they are
+not the current RC6 release verdict:
+
+- `E2E-AUDIT-REPORT.html`;
+- `UI-E2E-REPORT.html`;
+- `OPUS-AUDIT-CROSSCHECK-R2.html`;
+- versioned changelogs, delivery notes and fix reports outside this map.
+
+Current release truth is defined by the repository's
+`docs/release/v3.3.0rc6/` ledgers and manifests. The RC6 candidate remains
+fail-closed until native release evidence passes.
+
 ## Known duplication debt
 
-| File | Size | Status |
-| --- | --- | --- |
-| `USAGE-en.md` | 55.7 KB | Superset; slated to become a topic index |
-| `HUONG-DAN-TOAN-TAP-vi.md` | 33.2 KB | Vietnamese full guide; keep, deduplicate against canon |
-| `USER-GUIDE-en.md` | 33.0 KB | Largely subsumed by `USAGE-en.md`; merge candidate |
-| `COMMANDS.md` | 27.7 KB | Canonical command reference; keep |
+| File | Status |
+| --- | --- |
+| `USAGE-en.md` | Superset; slated to become a topic index |
+| `HUONG-DAN-TOAN-TAP-vi.md` | Vietnamese full guide; keep, deduplicate against canon |
+| `USER-GUIDE-en.md` | Largely subsumed by `USAGE-en.md`; merge candidate |
+| `COMMANDS.md` | Canonical command reference; keep |
 
 Deferred deliberately: consolidating these is a content edit, not a code fix,
 and doing it in the same release as a security change would make both harder to

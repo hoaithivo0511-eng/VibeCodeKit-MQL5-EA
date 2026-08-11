@@ -13,16 +13,16 @@ workflow Chủ nhà–Thầu–Thợ, remote worker, MCP/IDE và catalog lệnh.
 
 # VibeCodeKit MQL5 EA – v3.3.0 RC6 EA specification compiler
 
-Bản v3.1 RC2 bổ sung pipeline lossless `document/prompt → EA-IR → capability
-plan → composable codegen → hash-bound evidence`. Xem hướng dẫn mới tại
-`docs/EA-IR-COMPILER-v3.1-vi.md`. Luồng legacy preset vẫn được giữ để tương
-thích, nhưng build EA mới nên dùng `mql5-doc-intake-ir`, `mql5-ir-build` và
+RC6 cung cấp pipeline lossless `document/prompt → EA-IR → capability plan →
+composable codegen → hash-bound evidence`. EA-IR compiler được giới thiệu từ
+v3.1 RC2; xem lịch sử và hướng dẫn subsystem tại
+`docs/EA-IR-COMPILER-v3.1-vi.md`. Luồng preset cũ vẫn được giữ để tương thích,
+nhưng build EA mới nên dùng `mql5-doc-intake-ir`, `mql5-ir-build` và
 `mql5-ir-verify`.
 
-
-Bản này giữ runtime/pipeline v2.6.x làm nền tương thích và bổ sung lớp governance
+RC6 giữ runtime/pipeline v2.6.x làm nền tương thích và dùng lớp governance
 agent-native v3: Lite/Standard/Full, Decision Ledger, AI-BUILD-CONTRACT v3,
-Retro A1–A14 machine-readable guards, approval bound to hashes, và policy rõ
+Retro A1–A14 machine-readable guards, approval bound to hashes, cùng policy rõ
 cho Windows/Wine, ONNX, MCP, evidence store và telemetry. Không có thay đổi
 semantic nào được tự động áp dụng sau khi owner đã approve.
 

@@ -1,6 +1,6 @@
 ---
 id: commands
-title: Command catalog (138 commands)
+title: Command catalog (139 commands)
 ---
 
 # Command catalog
@@ -8,7 +8,7 @@ title: Command catalog (138 commands)
 All commands callable directly via `python -m vibecodekit_mql5.<name>`.
 No master `/mql5` router — every command stands alone.
 
-## EA-IR compiler commands (v3.1 RC2)
+## EA-IR compiler commands (introduced in v3.1 RC2; current in RC6)
 
 | Command | Purpose |
 | --- | --- |
@@ -81,8 +81,8 @@ The remaining sections document every command in full for reference.
   matrix-named console scripts remain as 1-line aliases.
 
 The canonical command catalog is generated from `pyproject.toml` by
-`mql5-manifest --emit`. The v3.1 RC2 baseline currently contains 138 public
-entry points, including compatibility aliases. The high-level supported
+`mql5-manifest --emit`. The v3.3.0rc6 baseline contains 139 public entry
+points, including compatibility aliases. The high-level supported
 surface remains the `vkmql-new`, `vkmql-check`, and `vkmql-ship` umbrellas;
 the catalog count is not a recommendation to memorise every command. Every
 alias must resolve to its declared entry point. `.A/B/C` consolidated

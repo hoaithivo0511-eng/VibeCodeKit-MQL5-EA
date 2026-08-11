@@ -34,45 +34,90 @@ from typing import Any
 
 from vibecodekit_mql5 import (
     audit as audit_mod,
+)
+from vibecodekit_mql5 import (
     auto_build,
-    auto_fix as auto_fix_mod,
-    backtest as backtest_mod,
-    broker_safety as broker_safety_mod,
-    compile as compile_mod,
-    doctor as doctor_mod,
-    fitness as fitness_mod,
-    lint as lint_mod,
-    lint_best_practice as lint_bp_mod,
-    llm_context as llm_context_mod,
-    method_hiding_check as method_hiding_mod,
-    mfe_mae as mfe_mae_mod,
-    monte_carlo as monte_carlo_mod,
-    multibroker as multibroker_mod,
-    overfit_check as overfit_mod,
-    scan as scan_mod,
     spec_from_prompt,
     spec_schema,
-    trader_check as trader_check_mod,
-    walkforward as walkforward_mod,
 )
 from vibecodekit_mql5 import auto_build_docs_stage as auto_build_docs_stage_mod
+from vibecodekit_mql5 import (
+    auto_fix as auto_fix_mod,
+)
+from vibecodekit_mql5 import (
+    backtest as backtest_mod,
+)
+from vibecodekit_mql5 import (
+    broker_safety as broker_safety_mod,
+)
 from vibecodekit_mql5 import build as build_mod
+from vibecodekit_mql5 import (
+    compile as compile_mod,
+)
 from vibecodekit_mql5 import dashboard as dashboard_mod
+from vibecodekit_mql5 import (
+    doctor as doctor_mod,
+)
 from vibecodekit_mql5 import ea_docs as ea_docs_mod
+from vibecodekit_mql5 import (
+    fitness as fitness_mod,
+)
 from vibecodekit_mql5 import forge_pr as forge_pr_mod
+from vibecodekit_mql5 import (
+    lint as lint_mod,
+)
+from vibecodekit_mql5 import (
+    lint_best_practice as lint_bp_mod,
+)
+from vibecodekit_mql5 import (
+    llm_context as llm_context_mod,
+)
+from vibecodekit_mql5 import (
+    method_hiding_check as method_hiding_mod,
+)
+from vibecodekit_mql5 import (
+    mfe_mae as mfe_mae_mod,
+)
+from vibecodekit_mql5 import (
+    monte_carlo as monte_carlo_mod,
+)
+from vibecodekit_mql5 import (
+    multibroker as multibroker_mod,
+)
+from vibecodekit_mql5 import (
+    overfit_check as overfit_mod,
+)
+from vibecodekit_mql5 import (
+    scan as scan_mod,
+)
+from vibecodekit_mql5 import (
+    trader_check as trader_check_mod,
+)
+from vibecodekit_mql5 import (
+    walkforward as walkforward_mod,
+)
 from vibecodekit_mql5.permission import orchestrator as orch_mod
 from vibecodekit_mql5.review import (
     ceo_review as ceo_review_mod,
+)
+from vibecodekit_mql5.review import (
     cso as cso_mod,
+)
+from vibecodekit_mql5.review import (
     eng_review as eng_review_mod,
+)
+from vibecodekit_mql5.review import (
     investigate as investigate_mod,
+)
+from vibecodekit_mql5.review import (
     review as review_mod,
 )
 from vibecodekit_mql5.rri import (
     personas as rri_personas_mod,
+)
+from vibecodekit_mql5.rri import (
     step_workflow as rri_steps_mod,
 )
-
 
 TOOL_SCHEMAS: list[dict[str, Any]] = [
     {

@@ -1,5 +1,8 @@
 <!doctype html><html lang="vi"><meta charset="utf-8"><title>Opus Audit Cross-check R2</title>
 <style>body{font:15px/1.55 system-ui;background:#0d131a;color:#e8eef5;max-width:1200px;margin:32px auto;padding:0 24px}h1,h2{color:#fff}.card{background:#151e28;border:1px solid #2b3948;border-radius:12px;padding:16px;margin:14px 0}table{width:100%;border-collapse:collapse}th,td{border:1px solid #334354;padding:9px;vertical-align:top}th{background:#182330}.ok{color:#67d69b;font-weight:700}.warn{color:#ffd166;font-weight:700}code,pre{background:#111922;color:#b9d8ff;padding:2px 5px;border-radius:4px}pre{padding:12px;white-space:pre-wrap}.small{color:#aab8c6}</style>
+<p><strong>Historical snapshot:</strong> this report records its original R2
+verification and does not represent the current v3.3.0rc6 release verdict. See
+<code>docs/DOC-MAP.md</code> and the RC6 release ledgers.</p>
 <h1>Deep Review Cross-check — VibeCodeKit MQL5 EA alpha.3 UI R2</h1>
 <div class="card"><b>Kết luận:</b> Audit Opus đúng ở các finding trọng yếu. R2 đóng đường ADV-4 bằng trust root Ed25519 ngoài repo, làm E2E slim tái lập được, nối UX detector vào linter, chuyển A13/A14 sang evidence file, sinh UI-CONTRACT artifact thứ 8 và bổ sung scaffold UI. Runtime vẫn là <code>3.0.0a3</code>; chưa có Windows/MT5 native evidence nên không có claim live-ready.</div>
 <h2>Cross-check findings</h2>

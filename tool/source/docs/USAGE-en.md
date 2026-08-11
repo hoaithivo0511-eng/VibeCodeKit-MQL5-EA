@@ -1,12 +1,12 @@
 ---
 id: usage-en
-title: vibecodekit-mql5-ea v2.4.3 Usage Guide (English)
+title: vibecodekit-mql5-ea v3.3.0rc6 Usage Guide (English)
 audience: end_user, dev_team
 ---
 
-# `vibecodekit-mql5-ea` v2.4.3 Usage Guide
+# `vibecodekit-mql5-ea` v3.3.0rc6 Usage Guide
 
-End-to-end walkthrough of all 118 commands, from idea to live shipping.
+End-to-end walkthrough of the 139-command RC6 catalog, from idea to shipping.
 Suitable for both new users and dev teams.
 
 > 📚 Vietnamese master guide (single source): [HUONG-DAN-TOAN-TAP-vi.md](HUONG-DAN-TOAN-TAP-vi.md)
@@ -978,9 +978,9 @@ count is informational.
 
 ## 4. End-to-end example
 
-The full worked example lives at
-`examples//ea-wizard-macd-sar-eurusd-h1-portfolio/`. It demonstrates a
-**4-hour enterprise turnaround** on a Devin VM.
+The original worked-example fixture is maintainer-only and is not shipped in
+the user-facing package. The reproducible walkthrough below demonstrates the
+same enterprise flow without depending on an absent `examples/` path.
 
 ### Step 1 — SCAN (5 min)
 ```bash
@@ -1243,7 +1243,8 @@ export METAEDITOR_PATH=~/.wine/drive_c/Program\ Files/MetaTrader\ 5/metaeditor64
 ### `doctor --soft` for docs-only / lint-only CI
 Wine / MetaEditor / terminal probes degrade to warnings instead of failures, so
 CI jobs that don't ship Wine still exit 0. Hard checks (Python ≥ 3.10, kit
-package imports, `docs/references//`, scaffold archetypes) still flip the gate.
+package imports, full-flavor reference assets and scaffold archetypes) still
+flip the gate.
 ```bash
 python -m vibecodekit_mql5.doctor --soft
 # JSON output adds "soft": true and "strict_ok": <unfiltered ok>
@@ -1259,9 +1260,9 @@ pip install onnx onnxscript
 
 ### Build reports a missing scaffold file
 - Check `git status` for untracked scaffold files.
-- Verify `.gitignore` isn't excluding artefacts:
+- Verify `.gitignore` isn't excluding generated artefacts:
   ```bash
-  git check-ignore -v examples//**/results/canary.log
+  git check-ignore -v path/to/generated/results/canary.log
   ```
 
 ### mt5-bridge "MetaTrader5 not installed"
@@ -1278,12 +1279,12 @@ export ALGO_FORGE_API_KEY=your_key_here
 
 ## Further resources
 
-- [`docs/COMMANDS.md`](COMMANDS.md) — 43-command reference card
-- [`docs/references//`](references/) — 28 technical cheatsheets (50-survey → 79-pip-norm)
+- [`docs/COMMANDS.md`](COMMANDS.md) — canonical 139-command reference
+- [`docs/DOC-MAP.md`](DOC-MAP.md) — canonical source and historical-report map
 - [`docs/anti-patterns-AVOID.md`](anti-patterns-AVOID.md) — VCK-HU anti-patterns to avoid
 - [`docs/rri-personas/`](rri-personas/) — 6 YAML × 25 q each
 - [`docs/rri-templates/`](rri-templates/) — 8 step-by-step markdown templates
-- [`examples//ea-wizard-macd-sar-eurusd-h1-portfolio/`](../examples//ea-wizard-macd-sar-eurusd-h1-portfolio/) — 4-hour worked example
+- [`docs/QUICKSTART.md`](QUICKSTART.md) — short install and first-build flow
 
 Questions / bugs → contact the official release support channel.
 
