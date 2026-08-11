@@ -1,4 +1,4 @@
-name: RC5 Development Gate
+name: RC6 Development Gate
 
 on:
   push:
@@ -89,23 +89,20 @@ jobs:
               '.gitignore', 'LICENSE', 'README.md', 'STRUCTURE.md',
               'docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md',
               'docs/release/v3.3.0rc5/HARDENING-PLAN.md',
-              'docs/release/v3.3.0rc5/REQUIREMENTS.csv',
-              'docs/release/v3.3.0rc5/TEST-LEDGER.csv',
-              'docs/release/v3.3.0rc5/PR-00-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-01-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-02-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-03-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-04-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-05-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-06-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-07-COMPLETION.md',
-              'docs/release/v3.3.0rc5/PR-08-COMPLETION.md',
-              'docs/release/v3.3.0rc5/WAVE-0-COMPLETION.md',
-              'docs/release/v3.3.0rc5/WAVE-1-COMPLETION.md',
-              'docs/release/v3.3.0rc5/WAVE-2-COMPLETION.md',
+              'docs/release/v3.3.0rc6/HARDENING-PLAN.md',
+              'docs/release/v3.3.0rc6/REQUIREMENTS.csv',
+              'docs/release/v3.3.0rc6/TEST-LEDGER.csv',
+              'docs/release/v3.3.0rc6/TASK-11-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-12-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-13-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-14-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-15-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-16-COMPLETION.md',
+              'docs/release/v3.3.0rc6/TASK-18-NATIVE-EVIDENCE-RUNBOOK.md',
               'docs/maintenance/INITIAL-IMPORT.md',
               'scripts/maintenance/import-release-bundle.sh',
               'scripts/maintenance/assert_junit_clean.py',
+              'scripts/maintenance/check_rc6_hygiene.py',
           ]
           missing = [path for path in required if path not in tracked or not Path(path).is_file()]
           print(f'tracked files checked: {len(tracked)}')
@@ -115,3 +112,5 @@ jobs:
               raise SystemExit(1)
           print('repository hygiene: PASS')
           PY
+      - name: Check RC6 version workflow and executable-mode contract
+        run: python scripts/maintenance/check_rc6_hygiene.py

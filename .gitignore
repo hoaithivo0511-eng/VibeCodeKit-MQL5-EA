@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+pytest-of-root/
 .coverage
 .coverage.*
 coverage.json
@@ -42,3 +43,5 @@ Thumbs.db
 # Local release-prep workspaces
 _release-work/
 release-work/
+rc6-wheel-*/
+docs/release/*/rc*-task*.xml

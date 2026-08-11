@@ -1,6 +1,6 @@
-# RC5 native release trust root.
+# RC6 native release trust root.
 #
-# This file intentionally ships with NO trusted runner key. Task 10 cannot
+# This file intentionally ships with NO trusted runner key. Task 18 cannot
 # become release-eligible until an operator generates an Ed25519 key on the
 # trusted Windows/MT5 runner and a reviewed commit pins the SHA-256 fingerprint
 # of that public key below. The private key must never enter this repository.

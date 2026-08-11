@@ -44,5 +44,5 @@ Method: VibeCodeMaster `SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH →
 
 ## Current gate
 
-Tasks 11 through 15 passed. Task 16 documentation and repository hygiene is
-next. Native execution and release promotion remain pending.
+Tasks 11 through 16 passed. Task 17 candidate integration is next. Native
+execution and release promotion remain pending.

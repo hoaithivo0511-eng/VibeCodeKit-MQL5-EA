@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "status": "PENDING",
+  "source": "actual_mt5_restart_recovery",
+  "candidate_source_tree_sha": "<TASK-17-SOURCE-TREE-SHA>",
+  "restart_recovery_cases": [
+    {
+      "id": "abrupt_terminal_kill",
+      "status": "PENDING",
+      "evidence": "evidence/stress/cases/abrupt_terminal_kill.log"
+    },
+    {
+      "id": "restart_reconcile",
+      "status": "PENDING",
+      "evidence": "evidence/stress/cases/restart_reconcile.log"
+    },
+    {
+      "id": "no_duplicate_order",
+      "status": "PENDING",
+      "evidence": "evidence/stress/cases/no_duplicate_order.log"
+    },
+    {
+      "id": "legacy_v1_migration_restart",
+      "status": "PENDING",
+      "evidence": "evidence/stress/cases/legacy_v1_migration_restart.log"
+    }
+  ]
+}

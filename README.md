@@ -1,26 +1,26 @@
 # VibeCodeKit-MQL5-EA
 
-Hardening repository for **VibeCodeKit MQL5 EA v3.3.0rc5**. The active
-`tool/source/` tree is developed from the immutable v3.3.0rc4 pre-release
-baseline and is not a release artifact until the RC5 candidate is rebuilt,
-regression-tested and bound to fresh evidence.
+Hardening repository for **VibeCodeKit MQL5 EA v3.3.0rc6**. The active
+`tool/source/` tree supersedes the retained RC5 candidate and is not a release
+artifact until the RC6 candidate is rebuilt, regression-tested and bound to
+fresh evidence.
 
-> Release status: **hardening / not release eligible**. The frozen RC4 artifacts
-> remain available for historical verification. RC5 production eligibility is
-> blocked until the planned security/runtime fixes, candidate-package parity,
-> MetaEditor compile and MT5 Strategy Tester evidence all pass.
+> Release status: **hardening / `release_eligible=false`**. RC4 and RC5
+> artifacts remain historical inputs. RC6 production eligibility is blocked
+> until candidate parity and trusted MetaEditor, MT5 Strategy Tester and
+> restart/recovery evidence all pass.
 
 ## Repository layout
 
 | Path | Purpose |
 |---|---|
-| `tool/source/` | Active v3.3.0rc5 hardening source; candidate artifacts are generated only after the implementation gates pass. |
-| `tool/*.whl` | Frozen RC4 wheel now; versioned RC5 candidate wheel after the package gate. |
-| `tool/*-source-full.zip` | Frozen RC4 source archive and, later, the separately named RC5 candidate archive. |
+| `tool/source/` | Active v3.3.0rc6 hardening source; candidate artifacts are generated only after implementation gates pass. |
+| `tool/*.whl` | Historical RC4/RC5 wheels and the separately named RC6 candidate wheel after Task 17. |
+| `tool/*-source-full.zip` | Historical RC4/RC5 archives and the separately named RC6 source candidate after Task 17. |
 | `demo/` | CCBSN golden fixture and generic cross-project acceptance fixtures. CCBSN is test evidence, not a default template. |
-| `reports/` | Historical RC4 evidence; RC5 evidence must be regenerated and must not reuse these verdicts. |
+| `reports/` | Historical evidence; RC6 evidence must be regenerated and must not reuse these verdicts. |
 | `native/` | Native MetaEditor / MT5 validation handoff and Windows worker material. |
-| `docs/release/` | Immutable RC4 release-prep evidence plus the active RC5 hardening plan and ledgers. |
+| `docs/release/` | Immutable RC4/RC5 history plus the active RC6 plan, ledgers and native runbook. |
 | `docs/maintenance/` | Historical/maintenance repository procedures, separated from user-facing release documentation. |
 | `scripts/maintenance/` | Repository-maintenance helpers. They do not commit or push automatically. |
 | `.github/workflows/` | Deterministic CI release gates for source regression, artifact parity and repository hygiene. |
@@ -47,7 +47,7 @@ Historical coverage evidence records package-wide statement coverage at 18.23%; 
 
 ## Fixed RC4 artifact identities
 
-These hashes are frozen for the RC4 artifact set. RC5 work must not silently
+These hashes are frozen for the RC4 artifact set. RC6 work must not silently
 change or overwrite them:
 
 ```text
@@ -56,9 +56,9 @@ a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f  tool/vibecodek
 5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a  tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
 ```
 
-The RC4 source ZIP remains immutable. The active RC5 `tool/source/` tree is
-intentionally allowed to diverge; a new parity check is established only after
-the RC5 source archive is built.
+The RC4 and RC5 artifacts remain immutable. The active RC6 `tool/source/` tree
+is intentionally allowed to diverge; Task 17 establishes new source ZIP and
+wheel parity under RC6-specific filenames.
 
 ## Local deterministic verification
 
@@ -76,9 +76,10 @@ printf '%s  %s\n' \
   VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip | sha256sum -c -
 ```
 
-GitHub Actions runs RC5 source regression independently from frozen RC4
-artifact integrity. Source/archive/wheel parity is re-enabled for RC5 only when
-the versioned candidate artifacts exist.
+GitHub Actions runs RC6 source regression independently from frozen RC4
+artifact integrity. The RC6 package-integration workflow verifies canonical
+snapshot, reproducible wheel, source/archive/wheel parity and fail-closed
+candidate metadata.
 
 ## Safety and release semantics
 
