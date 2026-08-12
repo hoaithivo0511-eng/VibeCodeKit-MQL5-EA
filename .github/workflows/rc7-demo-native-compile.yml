@@ -1,0 +1,69 @@
+name: RC7 Demo Native Compile
+
+on:
+  push:
+    branches:
+      - 'test/rc7-native-compile-demo'
+    paths:
+      - 'demo/rc7/**'
+      - '.github/workflows/rc7-demo-native-compile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  native-compile:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Compile demo EA with VibeCodeKit RC7 native action
+        uses: ./.github/actions/mql5-native-compile
+        with:
+          target: demo/rc7/Experts/RC7CompileDemo.mq5
+          project-root: .
+          evidence-dir: evidence/demo-compile
+          installer-url: https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe
+          github-token: ${{ github.token }}
+          expected-commit: ${{ github.sha }}
+          warm-stdlib: auto
+          timeout-seconds: '180'
+          kit-version: 3.3.0rc7
+
+      - name: Validate RC7 GitHub compile evidence
+        if: always()
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = Join-Path $env:GITHUB_WORKSPACE 'tool/source/scripts'
+          @'
+          import json
+          from pathlib import Path
+          from vibecodekit_mql5.github_compile_evidence import validate_github_compile_record
+
+          path = Path('evidence/demo-compile/result.json')
+          if not path.is_file():
+              raise SystemExit('missing evidence/demo-compile/result.json')
+          payload = json.loads(path.read_text(encoding='utf-8'))
+          result = validate_github_compile_record(payload)
+          print(json.dumps(payload, indent=2))
+          print(json.dumps(result.to_dict(), indent=2))
+          if not result.ok:
+              raise SystemExit(1)
+          '@ | python -
+
+      - name: Upload demo compile evidence and EX5
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: rc7-demo-native-compile-${{ github.sha }}
+          if-no-files-found: error
+          path: evidence/demo-compile/
