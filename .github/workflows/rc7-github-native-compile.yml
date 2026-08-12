@@ -1,4 +1,5 @@
 name: RC7 GitHub Native Compile
+run-name: vkmql-native-${{ inputs.request_id || github.sha }}
 
 on:
   pull_request:
@@ -12,8 +13,10 @@ on:
       - 'tool/source/scripts/vibecodekit_mql5/compile_runner.py'
       - 'tool/source/scripts/vibecodekit_mql5/execution_sources.py'
       - 'tool/source/scripts/vibecodekit_mql5/github_actions_client.py'
+      - 'tool/source/scripts/vibecodekit_mql5/github_compile_backend.py'
       - 'tool/source/scripts/vibecodekit_mql5/github_compile_evidence.py'
       - 'tool/source/tests/test_phase31_compile_core_rc7.py'
+      - 'tool/source/tests/test_phase33_github_compile_backend.py'
   workflow_dispatch:
     inputs:
       target:
@@ -25,6 +28,10 @@ on:
         type: boolean
         required: true
         default: true
+      request_id:
+        description: Optional caller correlation id used by vkmql-check compile
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -51,7 +58,8 @@ jobs:
           cd tool/source
           python -m pytest -q \
             tests/test_phase25_native_release_contract.py \
-            tests/test_phase31_compile_core_rc7.py
+            tests/test_phase31_compile_core_rc7.py \
+            tests/test_phase33_github_compile_backend.py
       - name: Parse native compile PowerShell
         shell: pwsh
         run: |
@@ -66,6 +74,7 @@ jobs:
             tool/source/scripts/vibecodekit_mql5/compile_backends.py \
             tool/source/scripts/vibecodekit_mql5/compile_runner.py \
             tool/source/scripts/vibecodekit_mql5/github_actions_client.py \
+            tool/source/scripts/vibecodekit_mql5/github_compile_backend.py \
             tool/source/scripts/vibecodekit_mql5/github_compile_evidence.py
 
   native-secret-gate:
