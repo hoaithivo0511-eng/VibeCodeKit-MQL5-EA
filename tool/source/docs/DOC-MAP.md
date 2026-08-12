@@ -1,65 +1,107 @@
-# Documentation map — v3.3.0rc6
+# Documentation map — v3.3.0rc7
 
-This kit ships four large, overlapping guides that grew independently. Roughly
-149 KB of their content is duplicated. Rather than mechanically merge them —
-which would break every existing deep link and risk dropping content that only
-exists in one copy — this release declares a **canonical source per topic** and
-keeps the others as recognised aliases, scheduled for consolidation in a
-docs-only release.
-
-Being explicit about the duplication is the honest interim step; pretending it
-is already fixed would not be.
+This map defines the **current documentation authority** for the integrated RC7 source line. Historical versioned reports remain point-in-time evidence and do not override current docs.
 
 ## Start here
 
-| You want to… | Read | Role |
+| Goal | Read | Role |
 | --- | --- | --- |
-| Get running in 10 minutes | `QUICKSTART.md` | Canonical quickstart |
-| Look up a specific command | `COMMANDS.md` | Canonical 139-command catalog |
-| Understand the whole workflow (English) | `USAGE-en.md` | English reference |
-| Understand the whole workflow (Tiếng Việt) | `HUONG-DAN-TOAN-TAP-vi.md` | Vietnamese master guide |
+| Get from install to first honest compile/gate | `QUICKSTART.md` | Canonical quickstart |
+| Understand the full workflow in Vietnamese | `HUONG-DAN-TOAN-TAP-vi.md` | Vietnamese master guide |
+| Understand the RC7 operating model in English | `USAGE-en.md` | English operating guide |
+| Follow an EA build step by step in English | `USER-GUIDE-en.md` | English step-by-step guide |
+| Find supported/advanced CLI surfaces | `COMMANDS.md` | Command surface guide |
+| Configure Windows native compile through GitHub Actions | `GITHUB-NATIVE-COMPILE-vi.md` | Native backend guide |
+
+## Current source vs published release
+
+```text
+current integrated source/tool : 3.3.0rc7
+latest published tester release : v3.3.0rc6
+production/live release claim   : not implied by either label
+```
+
+Current RC7 audit/release truth is maintained under the repository root:
+
+```text
+docs/release/v3.3.0rc7/
+```
+
+The root `README.md` is the entry-point status summary. The versioned RC7 status ledger contains exact evidence/run identifiers.
 
 ## Canonical source per topic
 
-| Topic | Canonical | Also appears in (duplicate) |
+| Topic | Canonical file | Notes |
 | --- | --- | --- |
-| Command reference | `COMMANDS.md` | `USAGE-en.md`, `USER-GUIDE-en.md` |
-| Install & first build | `QUICKSTART.md` | `USAGE-en.md`, `HUONG-DAN-TOAN-TAP-vi.md` |
-| Governance & Triangle of Power | `V3-GOVERNANCE.md` | `USAGE-en.md` |
-| Release policy & gates | `RELEASE-POLICY.md` | `USAGE-en.md`, `USER-GUIDE-en.md` |
-| Runner key & trust root | `RELEASE-TRUST.md` | — (new, no duplicate) |
-| Retro guards A1–A14 | `RETRO-GUARDS.md` | `USAGE-en.md` |
-| UI / panel governance | `UI-PANEL-GOVERNANCE.md` | `USAGE-en.md` |
-| Anti-patterns | `anti-patterns-AVOID.md` | `USAGE-en.md` |
+| VibecodeV5 lifecycle | `HUONG-DAN-TOAN-TAP-vi.md` | 10 steps: SCAN → RRI → SPECIFY → DECIDE → CONTRACT → PLAN → BUILD → VERIFY → EVIDENCE → RETRO |
+| Short onboarding | `QUICKSTART.md` | Leads with high-level commands and honest environment gaps |
+| English operating model | `USAGE-en.md` | Thin RC7 operator guide; does not duplicate the whole command catalog |
+| English walkthrough | `USER-GUIDE-en.md` | Concrete project flow and evidence checkpoints |
+| CLI surface | `COMMANDS.md` | Public umbrellas first; `tool-catalog.json` is machine-readable source of truth for all 139 entrypoints |
+| GitHub native compile | `GITHUB-NATIVE-COMPILE-vi.md` | Backend routing, provenance, ProbeEA, staging and release semantics |
+| Release policy | `RELEASE-POLICY.md` | Generic release gates and fail-closed semantics |
+| Runner trust root | `RELEASE-TRUST.md` | External/native runner key trust |
+| Retro guards | `RETRO-GUARDS.md` | Runtime engineering guardrails |
+| UI/panel governance | `UI-PANEL-GOVERNANCE.md` | UI-specific rules |
+| Anti-patterns | `anti-patterns-AVOID.md` | Static/design anti-pattern guidance |
 
-When two documents disagree, **the canonical file wins**. If you find a
-contradiction, that is a defect — the canonical file should be corrected and the
-duplicate updated or removed.
+When two active documents disagree, the canonical file for that topic wins. Treat the contradiction as a documentation defect rather than choosing whichever claim is more convenient.
+
+## Machine-readable truth
+
+Do not infer command availability from prose alone.
+
+```text
+tool/source/pyproject.toml
+tool/source/tool-catalog.json
+tool/source/agent-contract.json
+```
+
+Current RC7 catalog has 139 console entrypoints. The normal user surface is intentionally much smaller.
 
 ## Historical snapshots
 
-The following files are retained as immutable point-in-time evidence. Their
-version labels and test counts describe the run that produced them; they are
-not the current RC6 release verdict:
+The following are retained as immutable point-in-time reports:
 
 - `E2E-AUDIT-REPORT.html`;
 - `UI-E2E-REPORT.html`;
 - `OPUS-AUDIT-CROSSCHECK-R2.html`;
-- versioned changelogs, delivery notes and fix reports outside this map.
+- versioned changelogs/delivery/fix reports from older releases.
 
-Current release truth is defined by the repository's
-`docs/release/v3.3.0rc6/` ledgers and manifests. The RC6 candidate remains
-fail-closed until native release evidence passes.
+Their embedded versions and test counts describe the historical run that generated them. They are **not** the current RC7 release verdict.
 
-## Known duplication debt
+## Historical release ledgers
 
-| File | Status |
-| --- | --- |
-| `USAGE-en.md` | Superset; slated to become a topic index |
-| `HUONG-DAN-TOAN-TAP-vi.md` | Vietnamese full guide; keep, deduplicate against canon |
-| `USER-GUIDE-en.md` | Largely subsumed by `USAGE-en.md`; merge candidate |
-| `COMMANDS.md` | Canonical command reference; keep |
+`docs/release/v3.3.0rc4/`, `v3.3.0rc5/` and `v3.3.0rc6/` remain historical release evidence. Do not rewrite them to make prior releases appear to have used RC7 logic.
 
-Deferred deliberately: consolidating these is a content edit, not a code fix,
-and doing it in the same release as a security change would make both harder to
-review.
+## Documentation duplication policy
+
+Earlier releases allowed several large guides to independently repeat the same install/workflow/command text. That made version and lifecycle drift likely.
+
+RC7 direction:
+
+- keep one master guide per language/purpose;
+- keep `COMMANDS.md` focused on command discovery and support tiers;
+- keep `QUICKSTART.md` short;
+- keep historical reports immutable;
+- link to canonical topic owners instead of copying whole sections;
+- validate active docs for current version/workflow/backend semantics in regression tests.
+
+## Runtime truth boundary
+
+No documentation may turn:
+
+```text
+native compile PASS
+```
+
+into:
+
+```text
+Strategy Tester PASS
+restart/recovery PASS
+broker parity PASS
+forward/live PASS
+```
+
+without the corresponding trusted evidence. Missing environment/evidence is `UNTESTABLE`/`INCOMPLETE`, not a successful release gate.

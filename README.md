@@ -1,130 +1,180 @@
-# VibeCodeKit-MQL5-EA
+# VibeCodeKit MQL5 EA — v3.3.0rc7
 
-Kho hardening dành cho **VibeCodeKit MQL5 EA v3.3.0rc6**. Task 20 đã đồng bộ
-tài liệu, khôi phục runtime kết xuất tài liệu của MCP bridge và đóng gói lại
-candidate xác định theo nguyên tắc fail-closed từ cây mã nguồn `tool/source/`
-hiện hành. Đây **chưa phải bản phát hành production** cho đến khi bằng chứng
-native đáng tin cậy được liên kết đầy đủ.
+VibeCodeKit MQL5 EA là bộ công cụ build, audit và đóng gói Expert Advisor MQL5 theo nguyên tắc **fail-closed**. Source tích hợp hiện tại trong `main` là **v3.3.0rc7**.
 
-> Trạng thái phát hành: **candidate-integrated / `release_eligible=false`**.
-> Source đang phát triển trong `tool/source/` là **v3.3.0rc7 candidate**; candidate này có backend native MetaEditor qua GitHub Actions nhưng chưa phải RC7 release/promotion.
-> Artifact RC4 và RC5 được giữ lại như lịch sử bất biến. RC6 đã hoàn tất parity
-> giữa source, source ZIP và wheel, nhưng điều kiện production vẫn bị chặn do
-> chưa có bằng chứng MetaEditor, MT5 Strategy Tester và restart/recovery đáng
-> tin cậy.
+> **Trạng thái hiện tại:** source/package/native-compile RC7 đã được xác minh, nhưng **chưa phải production/live release**. `release_eligible=false` cho đến khi các gate runtime bắt buộc của EA mục tiêu (Strategy Tester, stress/restart-recovery, forward/broker evidence và approval tương ứng) có bằng chứng native đáng tin cậy.
+>
+> **Latest published GitHub tester pre-release:** `v3.3.0rc6`. RC7 hiện là code line mới nhất đã tích hợp trong repository, chưa được promote thành GitHub Release/tag RC7.
 
-Pre-release dành cho tester: [v3.3.0rc6](https://github.com/hoaithivo0511-eng/VibeCodeKit-MQL5-EA/releases/tag/v3.3.0rc6).
+## Bề mặt sử dụng chính
 
-## Cấu trúc repository
-
-| Đường dẫn | Mục đích |
-|---|---|
-| `tool/source/` | Mã nguồn **v3.3.0rc7 candidate** đang hoạt động; GitHub Actions native MetaEditor đã có backend/evidence path, nhưng release promotion vẫn fail-closed theo các native/runtime gate độc lập. |
-| `tool/*.whl` | Wheel RC4/RC5 lịch sử và wheel candidate RC6 có tên riêng sau Task 17. |
-| `tool/*-source-full.zip` | Source archive RC4/RC5 lịch sử và source candidate RC6 có tên riêng sau Task 17. |
-| `demo/` | Fixture chuẩn CCBSN và fixture nghiệm thu chéo cho project tổng quát. CCBSN là bằng chứng kiểm thử, không phải template mặc định. |
-| `reports/` | Bằng chứng lịch sử; bằng chứng RC6 phải được tạo lại và không được tái sử dụng verdict cũ. |
-| `native/` | Tài liệu bàn giao kiểm thử native MetaEditor/MT5 và tài nguyên cho Windows worker. |
-| `docs/release/` | Lịch sử RC4/RC5 bất biến cùng plan, ledger và native runbook của RC6. |
-| `docs/maintenance/` | Quy trình bảo trì repository, tách biệt với tài liệu phát hành cho người dùng. |
-| `scripts/maintenance/` | Công cụ hỗ trợ bảo trì repository; không tự động commit hoặc push. |
-| `.github/workflows/` | Gate CI xác định cho regression mã nguồn, parity artifact và vệ sinh repository. |
-
-Xem `STRUCTURE.md` để biết chính sách cây thư mục theo định hướng phát hành.
-README này không ghi cứng số lượng file/byte vì chúng dễ lỗi thời;
-`REPO-MANIFEST.sha256` là inventory toàn vẹn có thẩm quyền sau khi hoàn tất
-release-prep.
-
-## Trạng thái xác định của RC4 đã đóng băng
-
-Gói RC4 đã audit có kết quả:
-
-| Gate | Trạng thái |
-|---|---|
-| Regression mã nguồn | 126/126 PASS |
-| Selftest mã nguồn | 13/13 PASS |
-| Regression wheel | 126/126 PASS |
-| Selftest wheel | 13/13 PASS |
-| Regression source archive | 126/126 PASS |
-| Nghiệm thu chéo project tổng quát | 4/4 PASS |
-| Biên dịch native bằng MetaEditor | PENDING / chưa được chứng minh trong môi trường repository này |
-| MT5 Strategy Tester | PENDING / chưa được chứng minh trong môi trường repository này |
-| Đủ điều kiện phát hành production | **false cho đến khi có bằng chứng native** |
-
-Bằng chứng coverage lịch sử ghi nhận statement coverage toàn package là
-18,23%; các module trọng yếu có coverage cao hơn đáng kể. Coverage là chỉ số
-về khả năng bảo trì, không phải bằng chứng về tính đúng đắn của giao dịch.
-
-## Danh tính artifact RC4 cố định
-
-Các hash sau đã đóng băng cho bộ artifact RC4. Công việc RC6 không được âm thầm
-thay đổi hoặc ghi đè chúng:
+Người dùng bình thường nên bắt đầu với 5 command public:
 
 ```text
-33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c  VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip
-a8e091caf35b59fbf436d10c5c8e1dc0414d3e355d029162295192c02029566f  tool/vibecodekit-mql5-v3.3.0rc4-source-full.zip
-5945a91c9f2b74ee3bbe3a7977991445d3e95885e396c3f95a14262ac8eb127a  tool/vibecodekit_mql5_ea-3.3.0rc4-py3-none-any.whl
+vkmql-new
+vkmql-check
+vkmql-ship
+mql5-ea-deep-review
+mql5-doctor
 ```
 
-Artifact RC4 và RC5 tiếp tục là dữ liệu lịch sử bất biến. Candidate được tag
-`v3.3.0rc6` ban đầu dùng source tree
-`53b8c6aad2fde6a0b0b8d6f61e2da4f6d7df20f6`, đạt 252 test và selftest 13/13
-trên cả ba kênh. Candidate documentation-sync hiện hành dùng source tree
-`507eb8dae02a47d41a86d224fc8d4d567d06c691`, đạt 254 test và selftest 13/13
-trên cả ba kênh. Tag/pre-release cũ không bị di chuyển hoặc ghi đè.
-
-## Danh tính candidate RC6 fail-closed
-
-```text
-166462a71b14a0e9623b2cac8aa9c7a316d0b7a7318fb4663ee026dd221fa5f9  tool/vibecodekit-mql5-v3.3.0rc6-source-full.zip
-6fca0b2424008279044a37e9c39a4a5df4099af5e7fd1e364ce98109494b3eaa  tool/vibecodekit-mql5-v3.3.0rc6-source-full.manifest.json
-4c98c71f66c185b24f526034d9df7d7484e25fa2164e7af87225b230397cf408  tool/vibecodekit_mql5_ea-3.3.0rc6-py3-none-any.whl
-10ea6d8bdafaf1a43cee370dce93d3c010bb436c1cd597fbb84ec2440d37a2dc  docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json
-1b3cfec599a09a9adb3075c74d38d87058d4a056ff9183d7ac5dc3240e5e4a52  VibecodeKit-MQL5-v3.3.0rc6-runtime-candidate-bundle.zip
-```
-
-Các hash này nhận diện candidate documentation-sync sẽ được tích hợp vào
-`main`, không phải bản phát hành production. `release_eligible` vẫn là `false`
-cho đến khi Task 18 đạt và có quyết định promotion riêng.
-
-## Kiểm tra xác định tại máy local
+Ba umbrella command chính:
 
 ```bash
-# Kiểm thử mã nguồn
-cd tool/source
-python -m pip install -e '.[dev]'
-python -m pytest -q
-mql5-selftest
-cd ../..
-
-# Kiểm tra hash artifact RC4 đã đóng băng
-printf '%s  %s\n' \
-  33af7e8326f6e373de6366600b35e7a5b465b5aee34f24af07f2ac6e36deec6c \
-  VibecodeKit-MQL5-v3.3.0rc4-runtime-safety-fix-bundle.zip | sha256sum -c -
+vkmql-new --help
+vkmql-check --help
+vkmql-ship --help
 ```
 
-GitHub Actions chạy regression mã nguồn RC6 độc lập với kiểm tra toàn vẹn
-artifact RC4 đã đóng băng. Workflow tích hợp package RC6 kiểm tra canonical
-snapshot, wheel tái tạo xác định, parity giữa source/archive/wheel và metadata
-candidate fail-closed.
+Các `mql5-*` command còn lại là advanced/internal/compatibility surface. Catalog hiện có **139 console entry points**, nhưng không phải 139 command mà người dùng phải ghi nhớ.
 
-## An toàn và ngữ nghĩa phát hành
+## VibecodeV5 workflow canonical
 
-`tool/source/DRAFT-NOT-VALIDATED.txt` được giữ lại có chủ đích để cảnh báo rằng
-**artifact nháp do tool sinh ra không tự động được biên dịch, qua gate hoặc
-được xác thực**.
+```text
+SCAN
+  → RRI
+  → SPECIFY
+  → DECIDE
+  → CONTRACT
+  → PLAN
+  → BUILD
+  → VERIFY
+  → EVIDENCE
+  → RETRO
+```
 
-Không được xem một EA vừa sinh là sẵn sàng cho production nếu chưa có biên dịch
-MetaEditor thực, kiểm tra broker/môi trường và bằng chứng MT5 Strategy Tester.
-Repository mặc định không theo dõi file `.ex5`; output native chỉ nên xuất hiện
-trong bộ bằng chứng đã ký/attest hoặc GitHub Release assets.
+Workflow phải scale theo risk và task size; không biến mọi bugfix nhỏ thành full ceremony. Với release/hardening/native-evidence, dùng Full mode.
 
-## Tài liệu
+## Quick start
 
-- Hướng dẫn tiếng Việt: `tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md`.
-- Runbook tạo bằng chứng native: `docs/release/v3.3.0rc6/TASK-18-NATIVE-EVIDENCE-RUNBOOK.md`.
-- Kết quả rà soát đồng bộ tài liệu RC6: `docs/release/v3.3.0rc6/DOCUMENTATION-AUDIT.md`.
+Từ source package đã giải nén:
 
-## Giấy phép
+```bash
+cd tool/source
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
+pip install -e '.[dev]'
 
-MIT. File `LICENSE` ở root giống hệt `tool/source/LICENSE`.
+mql5-doctor --soft
+mql5-selftest
+```
+
+Tạo governance artefacts cho project mới:
+
+```bash
+vkmql-new spec ./MyEA --name MyEA --symbol EURUSD --tf H1
+vkmql-new contract ./MyEA --name MyEA
+```
+
+Build từ EA-IR/prompt bằng advanced primitives khi cần, sau đó kiểm tra bằng high-level gate:
+
+```bash
+vkmql-check compile ./MyEA/Experts/MyEA/MyEA.mq5 --backend auto
+vkmql-check all ./MyEA
+```
+
+`vkmql-check all --require-release` chỉ PASS khi **mọi stage bắt buộc** có evidence release-grade; `UNTESTABLE` không được đổi thành PASS.
+
+## Native compile RC7
+
+Canonical compile router:
+
+```text
+local Windows MetaEditor
+  → GitHub Actions Windows
+  → remote Windows worker
+  → Wine MetaEditor (development/diagnostic only)
+  → UNTESTABLE
+```
+
+House policy:
+
+- MetaEditor compile log phải có `Result:`;
+- mặc định đúng `0 errors, 0 warnings`;
+- `.ex5` phải thực sự tồn tại;
+- stale log/EX5 bị xóa trước run;
+- MetaEditor process exit code **không** phải success authority duy nhất;
+- GitHub-native evidence phải bind repository/run/job/commit/tree + artifact SHA-256/size;
+- native compile **không** đồng nghĩa Strategy Tester/forward/live PASS.
+
+Tài liệu backend: `tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md`.
+
+## Evidence và release semantics
+
+Release-looking claim chỉ hợp lệ khi canonical policy và provenance gate đồng ý. Một file tên `PASS`, một XML parse được, hoặc một hash chain riêng lẻ không đủ chứng minh execution provenance.
+
+Runtime level được đánh giá riêng:
+
+```text
+DRAFT
+BACKTEST_ELIGIBLE
+FORWARD_ELIGIBLE
+LIVE_ELIGIBLE
+```
+
+RC7 hiện chứng minh repository/source/package/native-compile readiness của kit. Nó **không** tự chứng minh profitability, broker compatibility, restart safety hay live readiness của EA được build bằng kit.
+
+## Trạng thái E2E mới nhất
+
+Audit Full theo VibecodeV5 ngày 2026-08-12 xác nhận:
+
+- Python regression matrix 3.10 / 3.11 / 3.12: PASS;
+- 283 tests trên baseline RC7 trước docs-sync: PASS;
+- selftest 13/13: PASS;
+- 139 entrypoints import/callable: PASS;
+- repository hygiene + duplicate-content policy: PASS;
+- repository manifest: PASS;
+- deterministic wheel ×2: PASS;
+- installed-wheel selftest ngoài checkout: PASS;
+- exact Windows MetaEditor compile trên runtime baseline: PASS, `0 errors, 0 warnings`;
+- Strategy Tester / restart-recovery / broker parity / forward-live: chưa có evidence đủ để claim PASS.
+
+Chi tiết và SHA/run IDs nằm tại:
+
+- `docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md`
+- `docs/release/v3.3.0rc7/FULL-E2E-AUDIT-2026-08-12.md`
+
+## Documentation map
+
+Bắt đầu tại:
+
+- `tool/source/docs/QUICKSTART.md` — luồng ngắn nhất;
+- `tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md` — hướng dẫn tiếng Việt đầy đủ;
+- `tool/source/docs/USAGE-en.md` — English operating guide;
+- `tool/source/docs/USER-GUIDE-en.md` — English step-by-step guide;
+- `tool/source/docs/COMMANDS.md` — command surface và advanced tooling;
+- `tool/source/docs/DOC-MAP.md` — canonical docs map;
+- `tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md` — GitHub Windows native backend.
+
+Các HTML audit cũ trong `tool/source/docs/` là **historical snapshots**; version/test count trong đó không phải current RC7 verdict.
+
+## Repository layout
+
+```text
+tool/source/                         canonical executable source
+.github/actions/mql5-native-compile/ reusable Windows native compile action
+.github/workflows/                   CI / package / evidence gates
+scripts/maintenance/                 repository/release maintenance
+scripts/native/ProbeEA.mq5           canonical native toolchain probe
+docs/release/v3.3.0rc7/              current RC7 status/audit ledgers
+demo/                                fixtures/acceptance evidence, not strategy defaults
+```
+
+Distribution snapshot dưới `tool/source/scripts/vibecodekit_mql5/resources/distribution/` là mirror có chủ đích để regression có thể chạy từ installed wheel; không được deduplicate như build rác.
+
+## Published release boundary
+
+GitHub Release được publish gần nhất vẫn là **v3.3.0rc6 tester pre-release**. Các RC4/RC5/RC6 artefact lịch sử và checksum được giữ như immutable/historical evidence theo policy repository.
+
+RC7 sẽ chỉ nên được promote khi release criteria được quyết định rõ cho target và evidence tương ứng đã đủ. Không dùng native compile PASS để thay thế Strategy Tester hoặc live validation.
+
+## Security / governance notes
+
+- Secrets, broker credentials và live-trading credentials không được commit vào source.
+- Release evidence phải bind SHA/hash/provenance thay vì tin tên file.
+- `MT5_INSTALLER_SHA256` nên được pin ở release environment; installer hash quan sát sau download không thay thế pre-known trust pin.
+- GitHub branch protection là repository-admin control riêng, không phải code-level invariant của kit.
+
+## License
+
+Xem `LICENSE` trong repository/package tương ứng.
