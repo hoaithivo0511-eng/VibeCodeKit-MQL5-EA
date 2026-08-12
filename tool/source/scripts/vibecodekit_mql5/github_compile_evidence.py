@@ -55,9 +55,13 @@ def validate_github_compile_record(record: dict[str, Any] | None) -> GitHubCompi
         errors.append("GitHub native compile runner OS is not Windows")
 
     github = data.get("github") if isinstance(data.get("github"), dict) else {}
-    for key in ("repository", "run_id", "job_id", "workflow_ref"):
+    for key in ("repository", "workflow_ref"):
         if not str(github.get(key) or "").strip():
             errors.append(f"GitHub native compile missing github.{key}")
+    for key in ("run_id", "job_id"):
+        value = str(github.get(key) or "").strip()
+        if not value.isdigit() or int(value) <= 0:
+            errors.append(f"GitHub native compile github.{key} is not a positive numeric id")
 
     if not _git_sha(data.get("source_commit")):
         errors.append("GitHub native compile source_commit is not a full git SHA")
@@ -83,6 +87,11 @@ def validate_github_compile_record(record: dict[str, Any] | None) -> GitHubCompi
     metaeditor = data.get("metaeditor") if isinstance(data.get("metaeditor"), dict) else {}
     if not str(metaeditor.get("path") or "").strip():
         errors.append("GitHub native compile missing MetaEditor path provenance")
+    if not str(metaeditor.get("version") or "").strip():
+        errors.append("GitHub native compile missing MetaEditor version provenance")
+    toolchain = data.get("toolchain") if isinstance(data.get("toolchain"), dict) else {}
+    if toolchain.get("probe_ok") is not True:
+        errors.append("GitHub native compile toolchain ProbeEA did not PASS")
 
     artifacts = data.get("artifacts") if isinstance(data.get("artifacts"), list) else []
     roles: set[str] = set()
@@ -92,6 +101,11 @@ def validate_github_compile_record(record: dict[str, Any] | None) -> GitHubCompi
             continue
         role = str(raw.get("role") or "")
         roles.add(role)
+        filename = str(raw.get("filename") or "").replace("\\", "/")
+        if not filename or filename.startswith("/") or any(
+            part in {"", ".", ".."} for part in filename.split("/")
+        ):
+            errors.append(f"GitHub native compile artifact {role or index} has unsafe filename")
         if not _sha256(raw.get("sha256")):
             errors.append(f"GitHub native compile artifact {role or index} has invalid SHA-256")
         size = raw.get("size_bytes")
