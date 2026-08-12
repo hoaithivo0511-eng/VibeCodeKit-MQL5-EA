@@ -43,6 +43,23 @@ jobs:
           }
           Write-Host 'MetaEditor present despite installer process semantics'
 
+      - name: Diagnostic 45-second terminal warmup and stdlib discovery
+        shell: pwsh
+        run: |
+          $terminal = "$env:MT5_DIR\terminal64.exe"
+          $p = Start-Process -FilePath $terminal -PassThru
+          Start-Sleep -Seconds 45
+          try { if (-not $p.HasExited) { $p.Kill($true) } } catch {}
+          Start-Sleep -Seconds 5
+          $hits = @(
+            Get-ChildItem -Path "$env:APPDATA\MetaQuotes\Terminal",$env:MT5_DIR `
+              -Filter Trade.mqh -File -Recurse -ErrorAction SilentlyContinue |
+              Where-Object { $_.FullName -match '[\\/]MQL5[\\/]Include[\\/]Trade[\\/]Trade\.mqh$' }
+          )
+          Write-Host "Trade.mqh hits: $($hits.Count)"
+          $hits | ForEach-Object { Write-Host "stdlib: $($_.FullName)" }
+          if ($hits.Count -eq 0) { throw 'Trade.mqh not materialized after 45-second warmup' }
+
       - name: Compile demo EA with VibeCodeKit RC7 native action
         uses: ./.github/actions/mql5-native-compile
         with:
@@ -52,7 +69,7 @@ jobs:
           metaeditor: C:\Program Files\MetaTrader 5\MetaEditor64.exe
           github-token: ${{ github.token }}
           expected-commit: ${{ github.sha }}
-          warm-stdlib: auto
+          warm-stdlib: never
           timeout-seconds: '180'
           kit-version: 3.3.0rc7
 
