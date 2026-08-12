@@ -65,16 +65,20 @@ jobs:
           PYTHONPATH=scripts python -m vibecodekit_mql5.manifest --emit --output tool-catalog.json
           PYTHONPATH=scripts python -m vibecodekit_mql5.agent_contract --emit --output agent-contract.json
       - name: Synchronize installed-wheel verification snapshot
-        run: python scripts/maintenance/sync_distribution_snapshot.py sync
+        run: |
+          python scripts/maintenance/sync_distribution_snapshot.py sync
+          # repo_manifest.py intentionally hashes git-tracked files. Stage the
+          # synchronized snapshot before manifest generation so brand-new test
+          # snapshot files are part of the same manifest update, not one run late.
+          git add tool/source/scripts/vibecodekit_mql5/resources/distribution
       - name: Regenerate repository manifest
         run: python scripts/maintenance/repo_manifest.py --write
       - name: Commit derived release metadata if changed
         run: |
-          if git diff --quiet -- \
+          if git diff --quiet --cached && git diff --quiet -- \
             REPO-MANIFEST.sha256 \
             tool/source/tool-catalog.json \
-            tool/source/agent-contract.json \
-            tool/source/scripts/vibecodekit_mql5/resources/distribution; then
+            tool/source/agent-contract.json; then
             echo "derived release metadata already current"
             exit 0
           fi
