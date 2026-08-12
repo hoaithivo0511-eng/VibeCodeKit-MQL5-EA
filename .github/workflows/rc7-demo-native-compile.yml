@@ -46,9 +46,9 @@ jobs:
       - name: Compile demo EA with VibeCodeKit RC7 native action
         uses: ./.github/actions/mql5-native-compile
         with:
-          target: demo/rc7/Experts/RC7CompileDemo.mq5
-          project-root: .
-          evidence-dir: evidence/demo-compile
+          target: Experts/RC7CompileDemo.mq5
+          project-root: demo/rc7
+          evidence-dir: evidence/compile
           metaeditor: C:\Program Files\MetaTrader 5\MetaEditor64.exe
           github-token: ${{ github.token }}
           expected-commit: ${{ github.sha }}
@@ -66,9 +66,9 @@ jobs:
           from pathlib import Path
           from vibecodekit_mql5.github_compile_evidence import validate_github_compile_record
 
-          path = Path('evidence/demo-compile/result.json')
+          path = Path('demo/rc7/evidence/compile/result.json')
           if not path.is_file():
-              raise SystemExit('missing evidence/demo-compile/result.json')
+              raise SystemExit('missing demo/rc7/evidence/compile/result.json')
           payload = json.loads(path.read_text(encoding='utf-8'))
           result = validate_github_compile_record(payload)
           print(json.dumps(payload, indent=2))
@@ -83,4 +83,4 @@ jobs:
         with:
           name: rc7-demo-native-compile-${{ github.sha }}
           if-no-files-found: error
-          path: evidence/demo-compile/
+          path: demo/rc7/evidence/compile/
