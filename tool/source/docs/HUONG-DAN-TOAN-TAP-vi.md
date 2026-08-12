@@ -28,12 +28,12 @@ có thẩm quyền thay vì đếm thủ công.
 1. [Tool này làm gì](#1-tool-này-làm-gì)
 2. [Cài đặt môi trường](#2-cài-đặt-môi-trường)
 3. [Quickstart 15 phút](#3-quickstart-15-phút)
-4. [Triết lý 8 bước & 2 lối đi](#4-triết-lý-8-bước--2-lối-đi)
+4. [Quy trình VibecodeV5 10 bước & 2 lối đi](#4-quy-trình-vibecodev5-10-bước--2-lối-đi)
 5. [Build EA chi tiết từng bước](#5-build-ea-chi-tiết-từng-bước)
 6. [Schema `ea-spec.yaml` (8 block)](#6-schema-ea-specyaml-8-block)
 7. [Deep-review / Audit một EA có sẵn (1 lệnh)](#7-deep-review--audit-một-ea-có-sẵn-1-lệnh)
 8. [Workflow Chủ nhà → Thầu → Thợ](#8-workflow-chủ-nhà--thầu--thợ)
-9. [Remote worker — MetaEditor/MT5 thật trên Windows VPS](#9-remote-worker--metaeditormt5-thật-trên-windows-vps)
+9. [Native backend — GitHub Actions & Windows worker](#9-native-backend--github-actions--windows-worker)
 10. [Sinh tài liệu DOCX cho EA](#10-sinh-tài-liệu-docx-cho-ea)
 11. [RRI methodology & Review lenses](#11-rri-methodology--review-lenses)
 12. [Tích hợp MCP & IDE/agent](#12-tích-hợp-mcp--ideagent)
@@ -53,7 +53,7 @@ VibeCodeKit MQL5 EA là bộ kit build Expert Advisor (EA) MQL5 theo hướng
 - **Tạo / scaffold EA** từ mô tả tự do hoặc `ea-spec.yaml` (17 archetype).
 - **Sinh RRI questions, blueprint, workflow step** (deterministic, không cần LLM).
 - **Lint / static scan** + 25 anti-pattern detector (regex và AST tùy chọn).
-- **Compile** qua MetaEditor/MT5 (Wine trên Linux, native trên Windows).
+- **Compile** qua canonical backend: Windows local → GitHub Actions Windows → remote Windows → Wine development.
 - **Parse/verify** backtest report theo chính sách chống fake-pass.
 - **Permission gate** 7 lớp + **package guard** đóng gói an toàn.
 - **Deep-review code-base** một EA có sẵn bằng 1 lệnh (Stage 0→7).
@@ -175,10 +175,12 @@ dashboard → docs, và ghi `auto-build-report.json` idempotent.
 
 ---
 
-## 4. Triết lý 8 bước & 2 lối đi
+## 4. Quy trình VibecodeV5 10 bước & 2 lối đi
 
-Vòng đời build EA gồm **8 bước**: `SCAN → RRI → VISION → BLUEPRINT → TIP →
-BUILD → VERIFY → REFINE/SHIP`. Golden flow khi vận hành:
+Vòng đời canonical gồm **10 bước**: `SCAN → RRI → SPECIFY → DECIDE → CONTRACT →
+PLAN → BUILD → VERIFY → EVIDENCE → RETRO`. `VERIFY` phải giữ nguyên trạng thái
+`FAIL / UNTESTABLE / SKIPPED` khi thiếu bằng chứng; `EVIDENCE` liên kết kết quả với
+hash source, artifact và môi trường thay vì suy diễn PASS. Golden flow khi vận hành:
 
 > **BUILD → COMPILE → BACKTEST → GATE → RELEASE** — chạy `mql5-check status`
 > (hoặc `vkmql-check status`) bất cứ lúc nào để biết build đang ở đâu và lệnh
@@ -258,13 +260,25 @@ mql5-evidence-matrix --init-8x8 --out evidence/matrix.json
 
 ### 5.6. Compile thật
 
-Điều kiện: có MetaEditor (build ≥ 5260) qua Wine/native, hoặc remote worker (§9).
+Canonical surface là `vkmql-check compile` / `mql5-compile`. Với `--backend auto`,
+kit ưu tiên **Windows native local → GitHub Actions Windows → remote Windows worker
+→ Wine development**. Nếu không có backend hợp lệ, kết quả phải là `UNTESTABLE`.
 
 ```bash
-mql5-compile-runner --ea Experts/MyEA.mq5 --out evidence/compile
-# dry-run chỉ để test flow (KHÔNG tạo release):
-mql5-compile-runner --ea Experts/MyEA.mq5 --dry-run
+# Canonical compile; tự chọn backend tốt nhất đã cấu hình
+mql5-compile Experts/MyEA.mq5 --backend auto --project-root . --out evidence/compile
+
+# Ép GitHub Actions native khi cần provenance theo exact commit
+export VKMQL_GITHUB_TOKEN=...
+mql5-compile Experts/MyEA.mq5 --backend github-actions --project-root . \
+  --github-repo OWNER/REPO --github-ref BRANCH --github-commit <40-char-sha> \
+  --out evidence/compile
 ```
+
+`mql5-compile-runner` được giữ như **compatibility/evidence wrapper** (và remote-worker
+adapter), không phải compile surface mặc định cho workflow mới. Wine compile chỉ là
+development/CI evidence trừ khi policy dự án nói rõ khác. Native compile PASS vẫn
+không thay thế Strategy Tester, restart/recovery, broker parity, forward hoặc live gate.
 
 ### 5.7. Compile repair loop
 
@@ -471,9 +485,9 @@ mql5-contract-build --interview contract/owner-interview.json \
 
 | Actor | Vai | Sở hữu bước |
 |---|---|---|
-| `chu-nha` | Chủ nhà (người vận hành) | SCAN, VISION, APPROVED, CONFIRM, REFINE |
-| `chu-thau` | Thầu (Claude/GPT/Cursor Ask) | VISION design, BLUEPRINT, CONTRACT, TASK-GRAPH, VERIFY-REPORT |
-| `tho-thi-cong` | Thợ (Claude Code/Devin/Cursor Edit) | SCAN exec, TIP, BUILD, VERIFY |
+| `chu-nha` | Chủ nhà (người vận hành) | SPECIFY/DECIDE các semantics, duyệt thay đổi và RETRO outcome |
+| `chu-thau` | Thầu (Claude/GPT/Cursor Ask) | SCAN/RRI, CONTRACT, PLAN, independent VERIFY/EVIDENCE review |
+| `tho-thi-cong` | Thợ (Claude Code/Devin/Cursor Edit) | BUILD theo contract đã duyệt và chạy focused VERIFY |
 
 Gate liên quan: `mql5-contract-gen`, `mql5-verify-report`, `mql5-task-graph-gen`,
 `mql5-completion-report`, `mql5-permission-layer5 --enforce-sign-off`,
@@ -481,9 +495,11 @@ Gate liên quan: `mql5-contract-gen`, `mql5-verify-report`, `mql5-task-graph-gen
 
 ---
 
-## 9. Remote worker — MetaEditor/MT5 thật trên Windows VPS
+## 9. Native backend — GitHub Actions & Windows worker
 
-Dùng Windows worker để chạy MetaEditor/MT5 thật thay vì stub.
+RC7 có ba đường native đáng tin cậy khi provenance hợp lệ: MetaEditor Windows local,
+GitHub Actions Windows và Windows remote worker. Wine vẫn là backend development/CI
+theo mặc định và không tự trở thành release authority.
 
 ### Setup Windows worker
 
@@ -493,11 +509,25 @@ copy worker_config.example.json worker_config.json
 notepad worker_config.json   # khai báo metaeditor64, terminal64, workspace
 ```
 
-### Compile / backtest remote
+### GitHub Actions native compile
+
+GitHub backend chỉ được trust khi validator chứng minh đúng repository, exact source
+commit/tree, correlated workflow run + numeric job id, Windows runner, ProbeEA,
+`0 errors, 0 warnings`, EX5 vật lý và hash/size artifact. Không trust chỉ vì manifest
+chứa chuỗi `github_actions_metaeditor`.
 
 ```bash
-mql5-compile-runner --ea workspace/MyEA/Experts/MyEA.mq5 \
-  --backend remote-worker --worker-url http://WINDOWS_WORKER:8787 \
+export VKMQL_GITHUB_TOKEN=...
+mql5-compile workspace/MyEA/Experts/MyEA.mq5 --backend github-actions \
+  --project-root workspace/MyEA --github-repo OWNER/REPO --github-ref BRANCH \
+  --github-commit <40-char-sha> --out workspace/MyEA/evidence/compile
+```
+
+### Compile / backtest remote worker
+
+```bash
+mql5-compile workspace/MyEA/Experts/MyEA.mq5 --backend remote-worker \
+  --project-root workspace/MyEA --worker-url http://WINDOWS_WORKER:8787 \
   --worker-token CHANGE_ME --out workspace/MyEA/evidence/compile
 
 mql5-test-runner --ea workspace/MyEA/Experts/MyEA.ex5 \
@@ -630,6 +660,10 @@ Một kết quả chỉ `RELEASE ELIGIBLE` khi có **đủ**:
 - **Không** có stage required bị skip
 - Có `evidence/manifest.json` với `release_eligible=true` + hash artifact
   (compile log hash, EX5 hash, backtest/gate report hash khi cần release)
+- Với GitHub native compile: provenance phải bind đúng repository + exact source
+  commit/tree + workflow run/job Windows + ProbeEA + `0 errors, 0 warnings` + EX5/hash.
+- Native compile PASS **không** tự nâng Strategy Tester, restart/recovery, broker,
+  forward-test hay live gate; từng gate phải có evidence độc lập.
 
 **Không tin** bất kỳ claim `PASS / READY / PRODUCTION READY / ALL GATES PASSED`
 nếu thiếu manifest + hash. `command_ok` chỉ nghĩa là lệnh chạy xong.
@@ -742,8 +776,9 @@ linter sẽ là ERROR ở build ≥ 5260, WARN ở build thấp hơn.
 (`APPROVED by …` trên blueprint, `CONFIRM by …` trên contract). Bổ sung rồi
 chạy `mql5-permission-layer5 --enforce-sign-off`.
 
-**Permission layer 2 fail trên Linux không Wine** → đúng hành vi (gate không
-lặng lẽ skip compile). Cài Wine hoặc dùng remote worker (§9).
+**Permission layer 2 fail vì không có compile backend** → đúng hành vi (gate không
+lặng lẽ skip compile). Cấu hình Windows local, GitHub Actions native, remote worker
+hoặc Wine development; nếu không có backend thì giữ `UNTESTABLE` (§5.6, §9).
 
 **`forge.pr.create` trả dry-run thay vì PR thật / `forge_init` 401** → thiếu
 token Algo Forge; cấu hình secret rồi chạy lại.

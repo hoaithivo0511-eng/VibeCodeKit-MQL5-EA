@@ -237,7 +237,7 @@ af6b0d08600706bbf680ee08ca3e5831b50bc3dd3ae7699275a5fd5a9ea0893c  ./docs/release
 1587b5256ed7d83fd60b05ae01b18c04da11dea03ea4297d5661cb1630aa4f0a  ./docs/release/v3.3.0rc6/TASK-20-DOCUMENTATION-SYNC-COMPLETION.md
 4c212aae6a4c92f98adc5ab061388ad8494c853a7f5f9d581f2fa7001e94544e  ./docs/release/v3.3.0rc6/TEST-LEDGER.csv
 a572d698c97c90376c6468a3a24cb76dfd5df33feba048c681a0b57aa99def9a  ./docs/release/v3.3.0rc6/native-evidence/templates/restart-recovery.template.json
-d8099333357aa285ac3b2d805c2e577d4b73457a49df1f804fd6a6130f397f67  ./docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md
+0d6cb840c245a55f08f2a69b2e27f5e0d82138cb4fa02b3ea2b261269a547441  ./docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md
 d12a4ecbfacd5be64ffcfed7f0402df961ec1f3b9339bcaafb13dd002d5b81b9  ./native/NATIVE-VALIDATION-HANDOFF.md
 f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6  ./native/workers-windows/run_backtest.ps1
 4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7  ./native/workers-windows/run_compile.ps1
@@ -302,7 +302,7 @@ e70cbb05ffc2375078d01509fd4fddd9df202b17374bfd8bc9cf4c44b6603ee1  ./tool/source/
 38f0d7d630b608cb571e9bd5b05eadd35aa8f9756beb79fba384cae8684515a8  ./tool/source/docs/E2E-AUDIT-REPORT.html
 4c00447c894a50debb3e015bd9116e72952efc4926998b36d18e4048bdb73a95  ./tool/source/docs/EA-IR-COMPILER-v3.1-vi.md
 baa779dff6c0e803e369d18a297c3dfe397849c09656ae2b31393d0fb794c065  ./tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md
-9b9fd98ede38f9f04c202318b3f42872c1064361ccc17b607a2c1b005dd574aa  ./tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md
+83c25c93229428d232cf4e0a5620d050c08efa9ed7ac0bad58c24882aa352e60  ./tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md
 0444e59bbf03024cfe37dde29d3e4ffd7fc64e42dc5046246ff111cf32b698d7  ./tool/source/docs/MIGRATE-VPS.md
 de1bf6dba778f32012504c86df574d75ffc3e076ba2749ab92210620f89ce86f  ./tool/source/docs/OPUS-AUDIT-CROSSCHECK-R2.html
 e09dfe6bc28fc13719d82c87f38c896a0017fb552c935117c91ce2c5df6daef5  ./tool/source/docs/QUICKSTART.md
