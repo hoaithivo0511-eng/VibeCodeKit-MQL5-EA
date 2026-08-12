@@ -17,6 +17,7 @@ df8b465cab92287e4550709b2bba0c49764cd55ffab2b4634655d776530033c1  ./.github/work
 c22283fb34cc32564c00bee75c0b888030bc15e949aeee8664ffd2d7fde3b5d3  ./.github/workflows/rc7-remediation-apply.yml
 e77a90d382a5e51c0021c4f30e2ab179043374c71a09157b488ff25c75d77e66  ./.github/workflows/rc7-remediation-audit.yml
 064b25a119160d09708f10209a8f48f67b5259607bb896e792f8d67328169396  ./.github/workflows/rc7-remediation-kick.yml
+350e4db0832906eabdee30b0843e542d8e6a87dee7c7b3a669c01fd900dc8b41  ./.github/workflows/rc7-remediation-source-v2.yml
 6f1f7a13012a456b48ce1668f306dfe7437b34d3483965f9b82740e31323af83  ./.github/workflows/rc7-remediation-source.yml
 131ce6bd48f6773ee21c1a54d1ac20aa3e896827846c9518ca9a0203fae04213  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
