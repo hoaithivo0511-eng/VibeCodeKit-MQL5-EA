@@ -19,7 +19,7 @@ e77a90d382a5e51c0021c4f30e2ab179043374c71a09157b488ff25c75d77e66  ./.github/work
 064b25a119160d09708f10209a8f48f67b5259607bb896e792f8d67328169396  ./.github/workflows/rc7-remediation-kick.yml
 131ce6bd48f6773ee21c1a54d1ac20aa3e896827846c9518ca9a0203fae04213  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-b9c88c00560648ac143d09acaf4dcb1f5edd5baf849a7edaad9b60047cef20de  ./.github/workflows/repo-manifest-refresh.yml
+37f5265a0dd6b1220f4f8eaceb5f6f0b183ad52aaa103564456bc8b871d4dceb  ./.github/workflows/repo-manifest-refresh.yml
 30287aea02ae090b6bb06de1e9f3b6e2a27831c41f6a4afcd7b54b816d834fef  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
