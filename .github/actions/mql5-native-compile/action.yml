@@ -37,7 +37,7 @@ inputs:
     required: false
     default: ''
   warm-stdlib:
-    description: auto, always, or never. Auto warms terminal only for angle includes when stdlib is absent.
+    description: auto, always, or never. Auto warms terminal only for angle includes and verifies Trade/Trade.mqh before compile.
     required: false
     default: 'auto'
   timeout-seconds:
@@ -51,6 +51,27 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Prepare MetaEditor and MQL5 standard library
+      id: prepare-toolchain
+      shell: pwsh
+      env:
+        VKMQL_TARGET: ${{ inputs.target }}
+        VKMQL_TARGETS_JSON: ${{ inputs.targets-json }}
+        VKMQL_PROJECT_ROOT: ${{ inputs.project-root }}
+        VKMQL_METAEDITOR: ${{ inputs.metaeditor }}
+        VKMQL_INSTALLER_URL: ${{ inputs.installer-url }}
+        VKMQL_INSTALLER_SHA256: ${{ inputs.installer-sha256 }}
+        VKMQL_WARM_STDLIB: ${{ inputs.warm-stdlib }}
+      run: |
+        & "${{ github.action_path }}/Prepare-VKMql5Toolchain.ps1" `
+          -MetaEditor $env:VKMQL_METAEDITOR `
+          -InstallerUrl $env:VKMQL_INSTALLER_URL `
+          -InstallerSha256 $env:VKMQL_INSTALLER_SHA256 `
+          -ProjectRoot $env:VKMQL_PROJECT_ROOT `
+          -Target $env:VKMQL_TARGET `
+          -TargetsJson $env:VKMQL_TARGETS_JSON `
+          -WarmStdlib $env:VKMQL_WARM_STDLIB
+
     - name: Native MetaEditor compile
       shell: pwsh
       env:
@@ -58,12 +79,9 @@ runs:
         VKMQL_TARGETS_JSON: ${{ inputs.targets-json }}
         VKMQL_PROJECT_ROOT: ${{ inputs.project-root }}
         VKMQL_EVIDENCE_DIR: ${{ inputs.evidence-dir }}
-        VKMQL_METAEDITOR: ${{ inputs.metaeditor }}
-        VKMQL_INSTALLER_URL: ${{ inputs.installer-url }}
-        VKMQL_INSTALLER_SHA256: ${{ inputs.installer-sha256 }}
+        VKMQL_METAEDITOR: ${{ steps.prepare-toolchain.outputs.metaeditor }}
         VKMQL_GITHUB_TOKEN: ${{ inputs.github-token }}
         VKMQL_EXPECTED_COMMIT: ${{ inputs.expected-commit }}
-        VKMQL_WARM_STDLIB: ${{ inputs.warm-stdlib }}
         VKMQL_TIMEOUT_SECONDS: ${{ inputs.timeout-seconds }}
         VKMQL_KIT_VERSION: ${{ inputs.kit-version }}
       run: |
@@ -73,10 +91,25 @@ runs:
           -ProjectRoot $env:VKMQL_PROJECT_ROOT `
           -EvidenceDir $env:VKMQL_EVIDENCE_DIR `
           -MetaEditor $env:VKMQL_METAEDITOR `
-          -InstallerUrl $env:VKMQL_INSTALLER_URL `
-          -InstallerSha256 $env:VKMQL_INSTALLER_SHA256 `
+          -InstallerUrl '' `
+          -InstallerSha256 '' `
           -GitHubToken $env:VKMQL_GITHUB_TOKEN `
           -ExpectedCommit $env:VKMQL_EXPECTED_COMMIT `
-          -WarmStdlib $env:VKMQL_WARM_STDLIB `
+          -WarmStdlib never `
           -TimeoutSeconds ([int]$env:VKMQL_TIMEOUT_SECONDS) `
           -KitVersion $env:VKMQL_KIT_VERSION
+
+    - name: Finalize prepared toolchain provenance
+      if: always()
+      shell: pwsh
+      env:
+        VKMQL_PROJECT_ROOT: ${{ inputs.project-root }}
+        VKMQL_EVIDENCE_DIR: ${{ inputs.evidence-dir }}
+        VKMQL_INSTALLER_SHA256: ${{ steps.prepare-toolchain.outputs.installer_sha256 }}
+        VKMQL_STDLIB_WARMED: ${{ steps.prepare-toolchain.outputs.stdlib_warmed }}
+      run: |
+        & "${{ github.action_path }}/Finalize-VKMql5ToolchainEvidence.ps1" `
+          -ProjectRoot $env:VKMQL_PROJECT_ROOT `
+          -EvidenceDir $env:VKMQL_EVIDENCE_DIR `
+          -InstallerSha256 $env:VKMQL_INSTALLER_SHA256 `
+          -StdlibWarmed $env:VKMQL_STDLIB_WARMED
