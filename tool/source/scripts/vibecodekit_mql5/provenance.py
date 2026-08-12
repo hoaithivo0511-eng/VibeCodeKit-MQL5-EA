@@ -650,11 +650,30 @@ def validate_release_provenance(project_dir: Path | str) -> ProvenanceResult:
     if not isinstance(summary, dict) or summary.get("release_eligible") is not True:
         result.errors.append("manifest summary.release_eligible is not true")
 
+    compile_section_raw = manifest.get("compile")
+    compile_section = compile_section_raw if isinstance(compile_section_raw, dict) else {}
     compile_block = _prov_block(manifest, "compile")
     backtest_block = _prov_block(manifest, "backtest")
     _has_real_provenance(compile_block, "compile", result.errors)
     _has_real_provenance(backtest_block, "backtest", result.errors)
-    if not assess_compile_source(compile_block.get("source")).trusted_for_release:
+
+    compile_source = str(compile_block.get("source") or "").strip().lower()
+    github_compile_verified = False
+    if compile_source == "github_actions_metaeditor":
+        from .github_compile_evidence import validate_github_compile_record
+
+        github_validation = validate_github_compile_record(compile_section)
+        github_compile_verified = github_validation.ok
+        if not github_validation.ok:
+            result.errors.extend(
+                f"GitHub native compile evidence invalid: {error}"
+                for error in github_validation.errors
+            )
+    compile_assessment = assess_compile_source(
+        compile_source,
+        provenance_verified=github_compile_verified,
+    )
+    if not compile_assessment.trusted_for_release:
         result.errors.append("compile source is not trusted for release")
     if not assess_backtest_source(
         backtest_block.get("source"), root / CORE_ARTIFACTS[2]

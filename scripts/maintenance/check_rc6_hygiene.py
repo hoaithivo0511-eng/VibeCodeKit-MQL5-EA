@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Fail-closed RC6 compatibility + current-candidate repository hygiene checks.
+"""Fail-closed historical-RC6 + current-candidate repository hygiene checks.
 
-RC6 release artefacts remain historical inputs, while package/catalog/agent
-contract and active candidate documentation must follow the canonical version
-from ``tool/source/pyproject.toml``. This prevents a new RC from having to
-weaken or delete the RC6 compatibility gate merely because the current version
-advanced.
+RC6 release artefacts remain immutable historical compatibility inputs, while
+package/catalog/agent-contract and active documentation follow the canonical
+version from ``tool/source/pyproject.toml``. The checker deliberately separates
+"latest published historical release" from "current integrated source" so a
+new candidate does not need to falsify root docs or weaken RC6 evidence gates.
 """
 from __future__ import annotations
 
@@ -49,6 +49,7 @@ REQUIRED_PATHS = (
     "docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json",
     "docs/release/v3.3.0rc6/PRERELEASE-NOTES.md",
     "docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md",
+    "docs/release/v3.3.0rc7/FULL-E2E-AUDIT-2026-08-12.md",
     "scripts/maintenance/build_rc6_candidate.py",
     "scripts/maintenance/check_rc6_hygiene.py",
     "scripts/maintenance/sync_distribution_snapshot.py",
@@ -131,6 +132,10 @@ def _git_modes() -> dict[str, str]:
     return modes
 
 
+def _contains_current_version(text: str, current_version: str) -> bool:
+    return current_version in text or f"v{current_version}" in text
+
+
 def evaluate() -> dict[str, object]:
     errors: list[str] = []
     tracked = _tracked()
@@ -196,7 +201,7 @@ def evaluate() -> dict[str, object]:
         errors.append("tool catalog names do not match [project.scripts]")
 
     current_docs = {
-        "tool/source/README.md": ("v3.3.0 RC7", "GitHub Actions"),
+        "tool/source/README.md": (f"v{current_version}", "GitHub Actions"),
         "tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md": (
             "GitHub Native Compile Backend",
             "github_actions_metaeditor",
@@ -222,8 +227,8 @@ def evaluate() -> dict[str, object]:
         if forbidden in invoke:
             errors.append(f"native compile runner still owns toolchain preparation: {forbidden}")
 
-    # RC6 release documents/workflows are immutable historical compatibility
-    # surfaces; their RC6 labels must remain intact after later candidates.
+    # RC6 release workflows/ledgers are immutable historical compatibility
+    # surfaces. Their RC6 labels must remain intact after later candidates.
     for rel in (
         ".github/workflows/release-gate.yml",
         ".github/workflows/rc6-native-evidence-verify.yml",
@@ -248,19 +253,23 @@ def evaluate() -> dict[str, object]:
         if not canonical.is_file() or canonical.read_bytes() != packaged.read_bytes():
             errors.append(f"packaged scaffold resource drift: {rel.as_posix()}")
 
-    # Root release surfaces intentionally remain the last released/validated
-    # RC6 state until an RC7 release promotion happens. This is distinct from
-    # the source package candidate version.
+    # Root docs must tell both truths simultaneously:
+    # (1) RC6 is still the latest published tester release, and
+    # (2) the integrated source/tool follows the canonical current version.
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     structure = (ROOT / "STRUCTURE.md").read_text(encoding="utf-8")
     if RC6_VERSION not in readme or "release_eligible=false" not in readme:
-        errors.append("root README no longer preserves RC6 fail-closed release status")
-    if RC6_VERSION not in structure or "Task 18" not in structure:
-        errors.append("STRUCTURE.md no longer preserves the RC6 native gate history")
-    if current_version not in readme or "candidate" not in readme.lower():
-        errors.append("root README does not identify the active RC7 candidate source")
-    if current_version not in structure or "candidate" not in structure.lower():
-        errors.append("STRUCTURE.md does not identify the active RC7 candidate source")
+        errors.append("root README no longer preserves RC6 published-release + fail-closed status")
+    if RC6_VERSION not in structure or "historical" not in structure.lower():
+        errors.append("STRUCTURE.md no longer preserves RC6 historical release context")
+    if not _contains_current_version(readme, current_version) or not any(
+        token in readme.lower() for token in ("integrated", "tích hợp", "candidate")
+    ):
+        errors.append("root README does not identify the current integrated/candidate source")
+    if not _contains_current_version(structure, current_version) or not any(
+        token in structure.lower() for token in ("integrated", "candidate")
+    ):
+        errors.append("STRUCTURE.md does not identify the current integrated/candidate source")
 
     return {
         "ok": not errors,

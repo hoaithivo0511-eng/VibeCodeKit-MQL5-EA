@@ -1,5 +1,5 @@
 {
-  "file_count": 53,
+  "file_count": 54,
   "files": [
     {
       "path": "agent-contract.json",
@@ -188,8 +188,8 @@
     },
     {
       "path": "tests/test_phase33_rc6_hygiene.py",
-      "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
-      "size": 5908
+      "sha256": "da8b1ca47dec3d0c0b003ada38827d2ce181a4835f552d0ad5ab5f0970f680ed",
+      "size": 6645
     },
     {
       "path": "tests/test_phase34_documentation_runtime.py",
@@ -210,6 +210,11 @@
       "path": "tests/test_phase37_canonical_native_probe.py",
       "sha256": "4d4a9b5c6d16b94fb6c5b39e1726a0461d3eb80b003b1a142b4533dc7bdf900e",
       "size": 970
+    },
+    {
+      "path": "tests/test_phase38_rc7_full_e2e_truth.py",
+      "sha256": "7b41d70f09086c20fa8db98a480ae9825c2e1860361cf41306332554cd4db086",
+      "size": 7177
     },
     {
       "path": "tests/test_phase3_codegen.py",

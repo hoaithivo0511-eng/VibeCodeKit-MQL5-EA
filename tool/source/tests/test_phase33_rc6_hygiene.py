@@ -1,4 +1,4 @@
-"""RC6 documentation, workflow and repository-hygiene contracts."""
+"""Historical RC6 and current integrated repository-hygiene contracts."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from pathlib import Path
 import yaml
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
+RC6_VERSION = "3.3.0rc6"
 
 
 def repository_root() -> Path | None:
@@ -25,45 +26,60 @@ def packaged_contract_root() -> Path:
     return locate_snapshot_root()
 
 
+def current_version() -> str:
+    from vibecodekit_mql5._version import get_version
+
+    return get_version()
+
+
 def test_root_release_surfaces_are_current_and_fail_closed() -> None:
     repo = repository_root()
     if repo is None:
         readme = SOURCE_ROOT / "README.md"
         draft_notice = SOURCE_ROOT / "DRAFT-NOT-VALIDATED.txt"
         if readme.is_file() or draft_notice.is_file():
-            assert "v3.3.0 RC6" in readme.read_text(encoding="utf-8")
+            text = readme.read_text(encoding="utf-8")
+            assert current_version() in text or f"v{current_version()}" in text
             notice = draft_notice.read_text(encoding="utf-8")
             assert "not compiled, gated, or validated" in notice
             assert "Do not use draft artifacts for live trading" in notice
         else:
-            from vibecodekit_mql5._version import get_version
             from vibecodekit_mql5.distribution_snapshot import (
                 locate_snapshot_root,
                 verify_distribution_snapshot,
             )
 
-            assert get_version() == "3.3.0rc6"
+            assert current_version() == "3.3.0rc7"
             assert verify_distribution_snapshot(locate_snapshot_root()) == []
         return
+
     readme = (repo / "README.md").read_text(encoding="utf-8")
     structure = (repo / "STRUCTURE.md").read_text(encoding="utf-8")
     trust = (repo / "RELEASE-TRUST.yaml").read_text(encoding="utf-8")
-    assert "v3.3.0rc6" in readme
+
+    # Root docs must tell both truths: RC6 is the latest published historical
+    # tester release, while the integrated source follows the current package.
+    assert RC6_VERSION in readme
+    assert current_version() in readme or f"v{current_version()}" in readme
     assert "release_eligible=false" in readme
-    assert "v3.3.0rc6" in structure
-    assert "Task 18" in structure
+    assert RC6_VERSION in structure
+    assert current_version() in structure or f"v{current_version()}" in structure
+    assert "historical" in structure.lower()
+
+    # RC6 runner trust root remains immutable historical release evidence.
     assert "RC6 native release trust root" in trust
     assert yaml.safe_load(trust)["runner_keys"] == []
 
 
-def test_active_workflows_are_rc6_and_never_auto_promote_release() -> None:
+def test_active_workflows_preserve_rc6_history_and_never_auto_promote_release() -> None:
     repo = repository_root()
     if repo is None:
         catalog = json.loads(
             (packaged_contract_root() / "tool-catalog.json").read_text(encoding="utf-8")
         )
-        assert catalog["kit_version"] == "3.3.0rc6"
+        assert catalog["kit_version"] == current_version()
         return
+
     workflow_dir = repo / ".github/workflows"
     expected = {
         "release-gate.yml": "RC6 Development Gate",
@@ -130,9 +146,10 @@ def test_hygiene_checker_passes_the_git_inventory() -> None:
 def test_historical_candidates_stay_fail_closed() -> None:
     repo = repository_root()
     if repo is None:
-        from vibecodekit_mql5._version import get_version
-
-        assert get_version() == "3.3.0rc6"
+        # Historical candidate files are repository-only evidence and are not
+        # duplicated into the installed wheel. The package must still identify
+        # the current integrated kit version honestly.
+        assert current_version() == "3.3.0rc7"
         return
     rc5 = json.loads(
         (repo / "docs/release/v3.3.0rc5/RC5-CANDIDATE-MANIFEST.json").read_text(encoding="utf-8")
@@ -148,7 +165,7 @@ def test_task16_traceability_is_closed_but_native_remains_planned() -> None:
         contract = json.loads(
             (packaged_contract_root() / "agent-contract.json").read_text(encoding="utf-8")
         )
-        assert contract["kit"]["version"] == "3.3.0rc6"
+        assert contract["kit"]["version"] == current_version()
         return
     requirements = (repo / "docs/release/v3.3.0rc6/REQUIREMENTS.csv").read_text(encoding="utf-8")
     assert (
