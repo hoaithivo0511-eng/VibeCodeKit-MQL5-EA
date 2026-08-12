@@ -1,5 +1,5 @@
 {
-  "file_count": 51,
+  "file_count": 52,
   "files": [
     {
       "path": "agent-contract.json",
@@ -200,6 +200,11 @@
       "path": "tests/test_phase35_rc7_backend_routing.py",
       "sha256": "b6a4c0334926bb53b8d9ae2fbbbd14762d993a1e4ad44cf8859095421374e314",
       "size": 5886
+    },
+    {
+      "path": "tests/test_phase36_native_smoke_hardening.py",
+      "sha256": "b6b8d4873d740ad04e7a6500787f8ac7a69c736129bb57ee43c8d94a9fcdac4d",
+      "size": 2213
     },
     {
       "path": "tests/test_phase3_codegen.py",
