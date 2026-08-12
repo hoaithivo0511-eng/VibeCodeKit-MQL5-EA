@@ -1,0 +1,86 @@
+name: RC7 Package Integration Gate
+
+on:
+  pull_request:
+    paths:
+      - '.github/actions/mql5-native-compile/**'
+      - '.github/workflows/rc7-package-integration.yml'
+      - '.github/workflows/rc7-github-native-compile.yml'
+      - 'tool/source/**'
+      - 'scripts/native/**'
+      - 'docs/release/v3.3.0rc7/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-repro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Verify canonical RC7 version
+        run: |
+          cd tool/source
+          python -m vibecodekit_mql5.doctor --check-version
+          python - <<'PY'
+          from vibecodekit_mql5._version import get_version
+          version = get_version()
+          print('version:', version)
+          if version != '3.3.0rc7':
+              raise SystemExit(f'expected 3.3.0rc7, got {version}')
+          PY
+      - name: Run full source regression and selftest
+        run: |
+          cd tool/source
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/rc7-source.xml"
+          python -m vibecodekit_mql5.selftest
+      - name: Build wheel twice with deterministic epoch
+        shell: bash
+        run: |
+          set -euo pipefail
+          epoch="$(git show -s --format=%ct HEAD)"
+          export SOURCE_DATE_EPOCH="$epoch"
+          mkdir -p "${RUNNER_TEMP}/wheel-a" "${RUNNER_TEMP}/wheel-b"
+          python -m pip wheel --no-deps --no-cache-dir ./tool/source -w "${RUNNER_TEMP}/wheel-a"
+          python -m pip wheel --no-deps --no-cache-dir ./tool/source -w "${RUNNER_TEMP}/wheel-b"
+          a="$(find "${RUNNER_TEMP}/wheel-a" -name 'vibecodekit_mql5_ea-3.3.0rc7-*.whl' -type f -print -quit)"
+          b="$(find "${RUNNER_TEMP}/wheel-b" -name 'vibecodekit_mql5_ea-3.3.0rc7-*.whl' -type f -print -quit)"
+          test -n "$a" && test -n "$b"
+          sha256sum "$a" "$b"
+          test "$(sha256sum "$a" | cut -d' ' -f1)" = "$(sha256sum "$b" | cut -d' ' -f1)"
+          cp "$a" "${RUNNER_TEMP}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl"
+      - name: Test installed wheel outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          venv="${RUNNER_TEMP}/wheel-venv"
+          python -m venv "$venv"
+          "$venv/bin/python" -m pip install --upgrade pip
+          "$venv/bin/python" -m pip install "${RUNNER_TEMP}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl"
+          cd "${RUNNER_TEMP}"
+          PYTHONPATH='' "$venv/bin/python" - <<'PY'
+          from vibecodekit_mql5._version import get_version
+          if get_version() != '3.3.0rc7':
+              raise SystemExit(get_version())
+          PY
+          PYTHONPATH='' "$venv/bin/mql5-selftest"
+      - name: Assert source regression report clean
+        run: python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc7-source.xml"
+      - name: Upload fail-closed RC7 pre-candidate wheel
+        uses: actions/upload-artifact@v6
+        with:
+          name: vibecodekit-mql5-rc7-pre-candidate-${{ github.sha }}
+          if-no-files-found: error
+          path: ${{ runner.temp }}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl
