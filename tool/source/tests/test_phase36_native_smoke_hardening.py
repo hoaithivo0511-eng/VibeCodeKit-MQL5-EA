@@ -19,9 +19,15 @@ def test_native_action_prepares_toolchain_before_compile() -> None:
     )
     assert "Prepare-VKMql5Toolchain.ps1" in action
     assert "Finalize-VKMql5ToolchainEvidence.ps1" in action
-    assert "-InstallerUrl ''" in action
-    assert "-WarmStdlib never" in action
+    assert "-InstallerUrl ''" not in action
+    assert "-InstallerSha256 ''" not in action
+    assert "-WarmStdlib never" not in action
     assert "steps.prepare-toolchain.outputs.metaeditor" in action
+    invoke = (repo / ".github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1").read_text(encoding="utf-8")
+    assert "function Resolve-MetaEditor(" not in invoke
+    assert "InstallerUrl" not in invoke
+    assert "WarmStdlib" not in invoke
+    assert "Start-Sleep -Seconds 20" not in invoke
 
 
 def test_installer_exit_code_is_not_the_success_authority() -> None:

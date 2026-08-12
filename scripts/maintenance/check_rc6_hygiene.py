@@ -27,6 +27,9 @@ REQUIRED_PATHS = (
     ".github/workflows/rc7-package-integration.yml",
     ".github/actions/mql5-native-compile/action.yml",
     ".github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1",
+    ".github/actions/mql5-native-compile/Prepare-VKMql5Toolchain.ps1",
+    ".github/actions/mql5-native-compile/Finalize-VKMql5ToolchainEvidence.ps1",
+    "scripts/maintenance/check_duplicate_content.py",
     "docs/release/v3.3.0rc6/HARDENING-PLAN.md",
     "docs/release/v3.3.0rc6/DOCUMENTATION-AUDIT.md",
     "docs/release/v3.3.0rc6/REQUIREMENTS.csv",
@@ -132,6 +135,20 @@ def evaluate() -> dict[str, object]:
     errors: list[str] = []
     tracked = _tracked()
     tracked_set = set(tracked)
+    transient = [
+        rel
+        for rel in tracked
+        if (
+            (
+                rel.startswith(".github/workflows/")
+                and re.search(r"(?:^|[-_])(demo|remediation)(?:[-_.]|$)", PurePosixPath(rel).name)
+            )
+            or rel.startswith("demo/rc7/")
+            or rel.startswith("demo/final/")
+        )
+    ]
+    for rel in transient:
+        errors.append(f"transient smoke/remediation artifact is tracked: {rel}")
     for rel in REQUIRED_PATHS:
         if rel not in tracked_set or not (ROOT / rel).is_file():
             errors.append(f"required compatibility/current path is missing or untracked: {rel}")
@@ -196,6 +213,15 @@ def evaluate() -> dict[str, object]:
             if fragment not in text:
                 errors.append(f"current documentation contract drift: {rel}: {fragment}")
 
+    guide = (ROOT / "tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md").read_text(encoding="utf-8")
+    if f"kit_version: {current_version}" not in guide or f"Phiên bản tài liệu: **v{current_version}**" not in guide:
+        errors.append("canonical Vietnamese guide version does not match active candidate")
+
+    invoke = (ROOT / ".github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1").read_text(encoding="utf-8")
+    for forbidden in ("function Resolve-MetaEditor(", "InstallerUrl", "WarmStdlib", "Start-Sleep -Seconds 20"):
+        if forbidden in invoke:
+            errors.append(f"native compile runner still owns toolchain preparation: {forbidden}")
+
     # RC6 release documents/workflows are immutable historical compatibility
     # surfaces; their RC6 labels must remain intact after later candidates.
     for rel in (
@@ -231,6 +257,10 @@ def evaluate() -> dict[str, object]:
         errors.append("root README no longer preserves RC6 fail-closed release status")
     if RC6_VERSION not in structure or "Task 18" not in structure:
         errors.append("STRUCTURE.md no longer preserves the RC6 native gate history")
+    if current_version not in readme or "candidate" not in readme.lower():
+        errors.append("root README does not identify the active RC7 candidate source")
+    if current_version not in structure or "candidate" not in structure.lower():
+        errors.append("STRUCTURE.md does not identify the active RC7 candidate source")
 
     return {
         "ok": not errors,

@@ -1,18 +1,17 @@
 """Release-grade compile runner with evidence output.
 
-This command never fabricates compile success. All local MetaEditor parsing uses
-``compile_core``; remote backends remain fail-closed and artifact-verified.
+This compatibility command never fabricates compile success. Local/Wine execution delegates to the canonical ``mql5-compile`` engine; remote-worker evidence remains fail-closed and artifact-verified.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import subprocess
 from pathlib import Path
 from typing import Any
 
 from .capability import detect_capabilities
-from .compile_core import CompileFailureCode, CompilePolicy, evaluate_compile_files
+from .compile_core import CompileFailureCode
+from .compile import compile_mq5
 from .env_paths import resolve_metaeditor_path
 from .evidence_v2 import EvidenceManifestV2, artifact_record
 from .execution_sources import assess_compile_source
@@ -35,70 +34,32 @@ def run_metaeditor(
     *,
     max_warnings: int = 0,
 ) -> dict[str, Any]:
-    """Execute MetaEditor and classify success only from canonical log + EX5 evidence."""
-    log_path = out_dir / "compile.log"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    if log_path.exists():
-        log_path.unlink()
-    ex5 = ea.with_suffix(".ex5")
-    if ex5.exists():
-        ex5.unlink()
+    """Compatibility evidence wrapper over canonical ``compile.compile_mq5``.
 
-    cmd = [str(metaeditor), "/compile:" + str(ea), "/log:" + str(log_path)]
+    ``mql5-compile`` owns local/Wine MetaEditor execution and compile truth.
+    This wrapper preserves the historical evidence-manifest surface without a
+    second subprocess/parser implementation.
+    """
     if extra_args:
-        cmd.extend(extra_args)
-    try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_sec, check=False)
-    except subprocess.TimeoutExpired as exc:
-        out_text = exc.stdout or ""
-        err_text = exc.stderr or ""
-        if isinstance(out_text, bytes):
-            out_text = out_text.decode("utf-8", "ignore")
-        if isinstance(err_text, bytes):
-            err_text = err_text.decode("utf-8", "ignore")
-        reason = f"MetaEditor compile exceeded {timeout_sec}s timeout and was terminated."
         return {
-            "cmd": cmd,
-            "returncode": None,
-            "log_path": str(log_path),
+            "cmd": [], "returncode": None, "log_path": str(out_dir / "compile.log"),
             "ok": False,
-            "timed_out": True,
-            "reason": reason,
-            "failure_codes": [CompileFailureCode.TIMEOUT.value],
-            "stdout": out_text[-4000:],
-            "stderr": err_text[-4000:],
-        }
-    except FileNotFoundError as exc:
-        return {
-            "cmd": cmd,
-            "returncode": None,
-            "log_path": str(log_path),
-            "ok": False,
-            "reason": f"MetaEditor not invocable: {exc}",
+            "reason": "extra MetaEditor args are unsupported by the compatibility wrapper",
             "failure_codes": [CompileFailureCode.INVOCATION_FAILED.value],
-            "stdout": "",
-            "stderr": str(exc),
+            "stdout": "", "stderr": "",
         }
-
-    evaluation = evaluate_compile_files(
-        log_path,
-        ex5,
-        policy=CompilePolicy(max_warnings=max_warnings),
+    log_path = out_dir / "compile.log"
+    result = compile_mq5(
+        ea, metaeditor=str(metaeditor), log_path=log_path, timeout=timeout_sec,
+        max_warnings=max_warnings,
     )
     return {
-        "cmd": cmd,
-        "returncode": proc.returncode,
-        "log_path": str(log_path),
-        "ok": evaluation.success,
-        "error_count": evaluation.error_count,
-        "warning_count": evaluation.warning_count,
-        "result_summary": evaluation.result_summary,
-        "failure_codes": evaluation.failure_codes,
-        "errors": evaluation.errors,
-        "warnings": evaluation.warnings,
-        "ex5_path": evaluation.ex5_path,
-        "stdout": (proc.stdout or "")[-4000:],
-        "stderr": (proc.stderr or "")[-4000:],
+        "cmd": [str(metaeditor), "/compile:" + str(ea), "/log:" + str(log_path)],
+        "returncode": None, "log_path": str(log_path), "ok": result.success,
+        "error_count": result.error_count, "warning_count": result.warning_count,
+        "result_summary": result.result_summary, "failure_codes": result.failure_codes,
+        "errors": result.errors, "warnings": result.warnings, "ex5_path": result.ex5_path,
+        "stdout": "", "stderr": "",
     }
 
 
