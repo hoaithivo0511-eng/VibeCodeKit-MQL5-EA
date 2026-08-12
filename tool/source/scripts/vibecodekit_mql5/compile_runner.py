@@ -1,25 +1,24 @@
-"""Real compile runner wrapper.
+"""Release-grade compile runner with evidence output.
 
-This command never fabricates compile success. If MetaEditor is unavailable it
-emits a manifest with compile_ok=false and release_eligible=false.
+This command never fabricates compile success. All local MetaEditor parsing uses
+``compile_core``; remote backends remain fail-closed and artifact-verified.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import os
-import re
 import subprocess
 from pathlib import Path
 from typing import Any
 
 from .capability import detect_capabilities
+from .compile_core import CompileFailureCode, CompilePolicy, evaluate_compile_files
 from .env_paths import resolve_metaeditor_path
 from .evidence_v2 import EvidenceManifestV2, artifact_record
 from .execution_sources import assess_compile_source
+from .job_bundle import make_project_bundle, write_bundle_preview
 from .remote_worker_client import client_from_url
 from .worker_protocol import WorkerJobRequest
-from .job_bundle import make_project_bundle, write_bundle_preview
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
@@ -33,18 +32,23 @@ def run_metaeditor(
     out_dir: Path,
     extra_args: list[str] | None = None,
     timeout_sec: int = 180,
+    *,
+    max_warnings: int = 0,
 ) -> dict[str, Any]:
+    """Execute MetaEditor and classify success only from canonical log + EX5 evidence."""
     log_path = out_dir / "compile.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    if log_path.exists():
+        log_path.unlink()
+    ex5 = ea.with_suffix(".ex5")
+    if ex5.exists():
+        ex5.unlink()
+
     cmd = [str(metaeditor), "/compile:" + str(ea), "/log:" + str(log_path)]
     if extra_args:
         cmd.extend(extra_args)
-    # A hung MetaEditor must never block the pipeline forever: bound the call
-    # and treat a timeout as a hard compile failure (never release-eligible).
     try:
-        proc = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout_sec
-        )
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_sec, check=False)
     except subprocess.TimeoutExpired as exc:
         out_text = exc.stdout or ""
         err_text = exc.stderr or ""
@@ -53,9 +57,6 @@ def run_metaeditor(
         if isinstance(err_text, bytes):
             err_text = err_text.decode("utf-8", "ignore")
         reason = f"MetaEditor compile exceeded {timeout_sec}s timeout and was terminated."
-        log_text = out_text + "\n" + err_text + "\n" + reason
-        if not log_path.exists():
-            log_path.write_text(log_text, encoding="utf-8")
         return {
             "cmd": cmd,
             "returncode": None,
@@ -63,25 +64,41 @@ def run_metaeditor(
             "ok": False,
             "timed_out": True,
             "reason": reason,
+            "failure_codes": [CompileFailureCode.TIMEOUT.value],
             "stdout": out_text[-4000:],
             "stderr": err_text[-4000:],
         }
-    log_text = ""
-    if log_path.exists():
-        log_text = log_path.read_text(encoding="utf-8", errors="ignore")
-    else:
-        log_text = (proc.stdout or "") + "\n" + (proc.stderr or "")
-        log_path.write_text(log_text, encoding="utf-8")
-    failed = proc.returncode != 0 or bool(
-        re.search(r"\b[1-9]\d*\s+error", log_text, re.I)
+    except FileNotFoundError as exc:
+        return {
+            "cmd": cmd,
+            "returncode": None,
+            "log_path": str(log_path),
+            "ok": False,
+            "reason": f"MetaEditor not invocable: {exc}",
+            "failure_codes": [CompileFailureCode.INVOCATION_FAILED.value],
+            "stdout": "",
+            "stderr": str(exc),
+        }
+
+    evaluation = evaluate_compile_files(
+        log_path,
+        ex5,
+        policy=CompilePolicy(max_warnings=max_warnings),
     )
     return {
         "cmd": cmd,
         "returncode": proc.returncode,
         "log_path": str(log_path),
-        "ok": not failed,
-        "stdout": proc.stdout[-4000:],
-        "stderr": proc.stderr[-4000:],
+        "ok": evaluation.success,
+        "error_count": evaluation.error_count,
+        "warning_count": evaluation.warning_count,
+        "result_summary": evaluation.result_summary,
+        "failure_codes": evaluation.failure_codes,
+        "errors": evaluation.errors,
+        "warnings": evaluation.warnings,
+        "ex5_path": evaluation.ex5_path,
+        "stdout": (proc.stdout or "")[-4000:],
+        "stderr": (proc.stderr or "")[-4000:],
     }
 
 
@@ -89,12 +106,17 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Run real MetaEditor compile and write evidence manifest v2.")
     ap.add_argument("--ea", required=True, help="Path to .mq5 file")
     ap.add_argument("--out", default="evidence", help="Evidence output directory")
-    ap.add_argument("--backend", default="auto", choices=["auto", "local-metaeditor", "wine-metaeditor", "remote-worker"])
+    ap.add_argument(
+        "--backend",
+        default="auto",
+        choices=["auto", "local-metaeditor", "wine-metaeditor", "remote-worker"],
+    )
     ap.add_argument("--metaeditor", default=None, help="MetaEditor64.exe path; defaults to METAEDITOR64/METAEDITOR_PATH")
     ap.add_argument("--worker-url", default=None, help="Remote Windows worker base URL for --backend remote-worker")
     ap.add_argument("--worker-token", default=None, help="Bearer token for remote worker")
     ap.add_argument("--project-root", default=None, help="Project root to bundle for remote compile; defaults to EA parent")
     ap.add_argument("--timeout-sec", type=int, default=3600, help="Remote worker timeout")
+    ap.add_argument("--max-warnings", type=int, default=0, help="Maximum allowed MetaEditor warnings; default 0")
     ap.add_argument("--dry-run", action="store_true", help="Do not execute; write non-release manifest")
     args = ap.parse_args(argv)
 
@@ -106,7 +128,6 @@ def main(argv: list[str] | None = None) -> int:
 
     compile_info: dict[str, Any] = {"ok": False, "source": "unknown", "ea": str(ea)}
     artifacts = []
-
     if ea.exists():
         artifacts.append({**artifact_record(ea, "source_mq5"), "required": True})
 
@@ -123,30 +144,46 @@ def main(argv: list[str] | None = None) -> int:
                 project_root = Path(args.project_root) if args.project_root else ea.parent
                 bundle = make_project_bundle(project_root, required_file=ea)
                 write_bundle_preview(bundle, out_dir / "job-bundle.preview.json")
-                request = WorkerJobRequest(job_type="compile", payload={
-                    "ea_filename": ea.name,
-                    "ea_relative_path": str(ea.name if project_root == ea.parent else ea.resolve().relative_to(project_root.resolve())),
-                    "expected_ex5": ea.with_suffix(".ex5").name,
-                    "bundle": bundle,
-                })
+                request = WorkerJobRequest(
+                    job_type="compile",
+                    payload={
+                        "ea_filename": ea.name,
+                        "ea_relative_path": str(
+                            ea.name if project_root == ea.parent else ea.resolve().relative_to(project_root.resolve())
+                        ),
+                        "expected_ex5": ea.with_suffix(".ex5").name,
+                        "bundle": bundle,
+                    },
+                )
                 client = client_from_url(args.worker_url, token=args.worker_token)
                 job_id = client.submit(request)
                 result = client.poll(job_id, timeout_sec=args.timeout_sec)
-                (out_dir / "worker-result.json").write_text(json.dumps(result.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+                _write_json(out_dir / "worker-result.json", result.to_dict())
                 if result.status == "passed":
                     check = client.download_artifacts(result, out_dir)
-                    (out_dir / "worker-artifact-check.json").write_text(json.dumps(check, indent=2, ensure_ascii=False), encoding="utf-8")
-                    compile_info.update({
-                        "ok": bool(check.get("ok")),
-                        "worker_id": result.worker_id,
-                        "job_id": result.job_id,
-                        "artifact_check": check,
-                    })
+                    _write_json(out_dir / "worker-artifact-check.json", check)
+                    compile_info.update(
+                        {
+                            "ok": bool(check.get("ok")),
+                            "worker_id": result.worker_id,
+                            "job_id": result.job_id,
+                            "artifact_check": check,
+                        }
+                    )
                     for art in result.artifacts:
-                        artifacts.append({**artifact_record(out_dir / art.filename, art.role), "required": art.required})
+                        artifacts.append(
+                            {**artifact_record(out_dir / art.filename, art.role), "required": art.required}
+                        )
                 else:
-                    compile_info.update({"ok": False, "worker_id": result.worker_id, "job_id": result.job_id, "reason": result.error or "worker job failed"})
-            except Exception as exc:
+                    compile_info.update(
+                        {
+                            "ok": False,
+                            "worker_id": result.worker_id,
+                            "job_id": result.job_id,
+                            "reason": result.error or "worker job failed",
+                        }
+                    )
+            except Exception as exc:  # noqa: BLE001
                 compile_info.update({"ok": False, "reason": f"remote worker error: {exc}"})
     elif not metaeditor_path:
         compile_info.update({
@@ -157,19 +194,21 @@ def main(argv: list[str] | None = None) -> int:
         compile_info.update({
             "source": "actual_metaeditor",
             "reason": "EA source file does not exist",
+            "failure_codes": [CompileFailureCode.SOURCE_STAGE_FAILED.value],
         })
     else:
         source = "wine_metaeditor" if args.backend == "wine-metaeditor" else "actual_metaeditor"
-        result = run_metaeditor(ea, Path(metaeditor_path), out_dir)
+        result = run_metaeditor(
+            ea,
+            Path(metaeditor_path),
+            out_dir,
+            timeout_sec=min(args.timeout_sec, 3600),
+            max_warnings=max(0, args.max_warnings),
+        )
         compile_info.update(result)
         compile_info["source"] = source
         artifacts.append({**artifact_record(out_dir / "compile.log", "compile_log"), "required": True})
-        ex5 = ea.with_suffix(".ex5")
-        if ex5.exists():
-            artifacts.append({**artifact_record(ex5, "compiled_ex5"), "required": True})
-        elif compile_info.get("ok"):
-            compile_info["ok"] = False
-            compile_info["reason"] = "MetaEditor returned success but compiled .ex5 was not found."
+        artifacts.append({**artifact_record(ea.with_suffix(".ex5"), "compiled_ex5"), "required": True})
 
     assessment = assess_compile_source(compile_info.get("source"))
     if not assessment.trusted_for_release:
