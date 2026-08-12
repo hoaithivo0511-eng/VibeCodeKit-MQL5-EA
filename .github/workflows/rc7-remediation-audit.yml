@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - 'hardening/rc7-audit-remediation'
+    paths:
+      - '.github/workflows/rc7-remediation-audit.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +24,8 @@ jobs:
       - name: Inventory duplicate content and references
         shell: bash
         run: |
-          python - <<'PY'
+          {
+            python - <<'PY'
           from pathlib import Path
           import hashlib, subprocess
           tracked = subprocess.check_output(['git','ls-files','-z']).split(b'\0')
@@ -40,22 +43,27 @@ jobs:
               if len(paths) > 1:
                   print(h, *paths, sep='\n  ')
           PY
-          echo '=== REFERENCES ==='
-          for needle in \
-            'CCBSN-build-plan.json' \
-            'CCBSN-configured-ir.json' \
-            'CCBSN-extracted-ir.json' \
-            'compile_runner' \
-            'mql5-compile-runner' \
-            'Resolve-MetaEditor' \
-            'WarmStdlib' \
-            'InstallerUrl'; do
-            echo "--- $needle ---"
-            git grep -n -I -F "$needle" -- . ':!REPO-MANIFEST.sha256' ':!SHA256SUMS.txt' || true
-          done
-      - name: Baseline gates
-        continue-on-error: true
-        shell: bash
-        run: |
-          python scripts/maintenance/check_rc6_hygiene.py
-          python scripts/maintenance/repo_manifest.py --check
+            echo '=== REFERENCES ==='
+            for needle in \
+              'CCBSN-build-plan.json' \
+              'CCBSN-configured-ir.json' \
+              'CCBSN-extracted-ir.json' \
+              'compile_runner' \
+              'mql5-compile-runner' \
+              'Resolve-MetaEditor' \
+              'WarmStdlib' \
+              'InstallerUrl'; do
+              echo "--- $needle ---"
+              git grep -n -I -F "$needle" -- . ':!REPO-MANIFEST.sha256' ':!SHA256SUMS.txt' || true
+            done
+            echo '=== BASELINE HYGIENE ==='
+            python scripts/maintenance/check_rc6_hygiene.py || true
+            echo '=== BASELINE MANIFEST ==='
+            python scripts/maintenance/repo_manifest.py --check || true
+          } > rc7-remediation-inventory.txt 2>&1
+          cat rc7-remediation-inventory.txt
+      - uses: actions/upload-artifact@v6
+        with:
+          name: rc7-remediation-inventory
+          path: rc7-remediation-inventory.txt
+          if-no-files-found: error
