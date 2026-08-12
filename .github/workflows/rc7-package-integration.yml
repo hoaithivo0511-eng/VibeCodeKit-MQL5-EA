@@ -33,7 +33,7 @@ jobs:
       - name: Verify canonical RC7 version
         run: |
           cd tool/source
-          python -m vibecodekit_mql5.doctor --check-version
+          python -m vibecodekit_mql5.doctor --repo-root . --check-version
           python - <<'PY'
           from vibecodekit_mql5._version import get_version
           version = get_version()
