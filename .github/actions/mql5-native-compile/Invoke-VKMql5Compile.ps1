@@ -4,11 +4,8 @@ param(
   [string]$ProjectRoot = ".",
   [string]$EvidenceDir = "evidence/compile",
   [string]$MetaEditor = "",
-  [string]$InstallerUrl = "",
-  [string]$InstallerSha256 = "",
   [string]$GitHubToken = "",
   [string]$ExpectedCommit = "",
-  [ValidateSet("auto","always","never")][string]$WarmStdlib = "auto",
   [int]$TimeoutSeconds = 180,
   [string]$KitVersion = "3.3.0rc7"
 )
@@ -58,54 +55,6 @@ function Detect-Encoding([string]$Path) {
   } catch {
     return "system-ansi"
   }
-}
-
-function Assert-SafeHttpsUrl([string]$Url) {
-  $uri = [Uri]$Url
-  if ($uri.Scheme -ne "https") { throw "TOOLCHAIN_INSTALL_FAILED: installer URL must use https" }
-  $hostName = $uri.DnsSafeHost.ToLowerInvariant()
-  if ($hostName -in @("localhost","0.0.0.0","::1") -or $hostName.StartsWith("127.") -or $hostName.StartsWith("169.254.")) {
-    throw "TOOLCHAIN_INSTALL_FAILED: installer URL resolves to a forbidden local/link-local host name"
-  }
-}
-
-function Resolve-MetaEditor([string]$Override, [string]$Installer, [string]$ExpectedInstallerSha) {
-  if ($Override) {
-    $resolved = Resolve-Path -LiteralPath $Override -ErrorAction SilentlyContinue
-    if ($resolved) {
-      return [ordered]@{ path=$resolved.Path; installer_sha256=""; installed=$false }
-    }
-    throw "TOOLCHAIN_INSTALL_FAILED: MetaEditor override not found: $Override"
-  }
-  if (-not $Installer) { throw "TOOLCHAIN_INSTALL_FAILED: MetaEditor path or installer-url is required" }
-  Assert-SafeHttpsUrl $Installer
-  $installerPath = Join-Path $env:RUNNER_TEMP "vkmql-mt5setup.exe"
-  Invoke-WebRequest -Uri $Installer -OutFile $installerPath -UseBasicParsing
-  $actualSha = Sha256 $installerPath
-  if ($ExpectedInstallerSha -and $actualSha -ne $ExpectedInstallerSha.ToLowerInvariant()) {
-    throw "TOOLCHAIN_INSTALL_FAILED: MT5 installer SHA-256 mismatch"
-  }
-  $proc = Start-Process -FilePath $installerPath -ArgumentList "/auto" -PassThru -Wait
-  if ($proc.ExitCode -ne 0) { throw "TOOLCHAIN_INSTALL_FAILED: MT5 installer exited $($proc.ExitCode)" }
-
-  $candidates = @(
-    (Join-Path $env:ProgramFiles "MetaTrader 5/MetaEditor64.exe"),
-    (Join-Path $env:LOCALAPPDATA "Programs/MetaTrader 5/MetaEditor64.exe")
-  )
-  $deadline = [DateTime]::UtcNow.AddSeconds(120)
-  while ([DateTime]::UtcNow -lt $deadline) {
-    foreach ($candidate in $candidates) {
-      if (Test-Path -LiteralPath $candidate -PathType Leaf) {
-        return [ordered]@{ path=(Resolve-Path $candidate).Path; installer_sha256=$actualSha; installed=$true }
-      }
-    }
-    $found = Get-ChildItem -Path $env:ProgramFiles,$env:LOCALAPPDATA -Filter MetaEditor64.exe -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($found) {
-      return [ordered]@{ path=$found.FullName; installer_sha256=$actualSha; installed=$true }
-    }
-    Start-Sleep -Seconds 2
-  }
-  throw "TOOLCHAIN_INSTALL_FAILED: MetaEditor64.exe not found after MT5 installation"
 }
 
 function Copy-NormalizedTree([string]$Source, [string]$Destination) {
@@ -276,10 +225,12 @@ try {
     $plan['original_encoding'] = Detect-Encoding $candidate
   }
 
-  $resolvedMeta = Resolve-MetaEditor $MetaEditor $InstallerUrl $InstallerSha256
-  $metaPath = [string]$resolvedMeta.path
+  if (-not $MetaEditor) { throw "TOOLCHAIN_INSTALL_FAILED: prepared MetaEditor path is required" }
+  $resolvedMeta = Resolve-Path -LiteralPath $MetaEditor -ErrorAction SilentlyContinue
+  if (-not $resolvedMeta) { throw "TOOLCHAIN_INSTALL_FAILED: prepared MetaEditor path not found: $MetaEditor" }
+  $metaPath = [string]$resolvedMeta.Path
   $metaInfo.path = $metaPath
-  $metaInfo.installer_sha256 = [string]$resolvedMeta.installer_sha256
+  $metaInfo.installer_sha256 = ""
   $metaInfo.version = [string](Get-Item -LiteralPath $metaPath).VersionInfo.FileVersion
   $installRoot = Split-Path -Parent $metaPath
   $mql5Root = Join-Path $installRoot "MQL5"
@@ -294,22 +245,6 @@ try {
     foreach ($dir in $knownDirs) { Copy-NormalizedTree (Join-Path $root $dir) (Join-Path $mql5Root $dir) }
   } else {
     Copy-NormalizedTree $root (Join-Path $mql5Root "Experts/__vkmql_project")
-  }
-
-  $needsAngleInclude = $false
-  foreach ($plan in $plans) {
-    if ((Read-TextAnyEncoding ([string]$plan.original_path)) -match '(?m)^\s*#include\s*<') { $needsAngleInclude = $true; break }
-  }
-  $tradeHeader = Join-Path $mql5Root "Include/Trade/Trade.mqh"
-  $shouldWarm = $WarmStdlib -eq "always" -or ($WarmStdlib -eq "auto" -and $needsAngleInclude -and -not (Test-Path -LiteralPath $tradeHeader))
-  if ($shouldWarm) {
-    $terminal = Join-Path $installRoot "terminal64.exe"
-    if (Test-Path -LiteralPath $terminal -PathType Leaf) {
-      $terminalProc = Start-Process -FilePath $terminal -ArgumentList "/portable" -PassThru
-      Start-Sleep -Seconds 20
-      try { if (-not $terminalProc.HasExited) { $terminalProc.Kill($true) } } catch {}
-      $toolchain.stdlib_warmed = $true
-    }
   }
 
   $probeDir = Join-Path $mql5Root "Experts/__vkmql_probe"

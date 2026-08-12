@@ -23,6 +23,12 @@ Repository secret `MT5_INSTALLER_URL` was not configured during RC7 PR verificat
 
 The Linux fast gate validates parser/backend/provenance/security contracts but cannot substitute for a native MetaEditor execution.
 
+## Native smoke evidence after PR hardening
+
+After PR #9 was merged, the fixed composite action was exercised on a real GitHub-hosted Windows 2022 runner with the official MetaQuotes installer. Run `31589533638`, job `94091042352`, bound to source commit `35e462ece353b4cbdf73305a4f9c672c85809cd5`, completed successfully with `Result: 0 errors, 0 warnings` and a physical EX5.
+
+That smoke proves the RC7 native compile implementation at that bound source. It is not evidence for this remediation commit and does not promote Strategy Tester, restart/recovery, broker parity, forward-test or live gates. Mỗi remediation candidate phải có native evidence mới bind đúng exact candidate/PR source trước merge; historical smoke này không được tái sử dụng như bằng chứng cho source khác.
+
 ## Release eligibility
 
 `release_eligible=false` remains the required state until the independent runtime evidence required by the release policy is present and validated.

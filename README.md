@@ -7,6 +7,7 @@ hiện hành. Đây **chưa phải bản phát hành production** cho đến khi
 native đáng tin cậy được liên kết đầy đủ.
 
 > Trạng thái phát hành: **candidate-integrated / `release_eligible=false`**.
+> Source đang phát triển trong `tool/source/` là **v3.3.0rc7 candidate**; candidate này có backend native MetaEditor qua GitHub Actions nhưng chưa phải RC7 release/promotion.
 > Artifact RC4 và RC5 được giữ lại như lịch sử bất biến. RC6 đã hoàn tất parity
 > giữa source, source ZIP và wheel, nhưng điều kiện production vẫn bị chặn do
 > chưa có bằng chứng MetaEditor, MT5 Strategy Tester và restart/recovery đáng
@@ -18,7 +19,7 @@ Pre-release dành cho tester: [v3.3.0rc6](https://github.com/hoaithivo0511-eng/V
 
 | Đường dẫn | Mục đích |
 |---|---|
-| `tool/source/` | Mã nguồn hardening v3.3.0rc6 đang hoạt động; chỉ sinh candidate artifact sau khi các gate triển khai đã đạt. |
+| `tool/source/` | Mã nguồn **v3.3.0rc7 candidate** đang hoạt động; GitHub Actions native MetaEditor đã có backend/evidence path, nhưng release promotion vẫn fail-closed theo các native/runtime gate độc lập. |
 | `tool/*.whl` | Wheel RC4/RC5 lịch sử và wheel candidate RC6 có tên riêng sau Task 17. |
 | `tool/*-source-full.zip` | Source archive RC4/RC5 lịch sử và source candidate RC6 có tên riêng sau Task 17. |
 | `demo/` | Fixture chuẩn CCBSN và fixture nghiệm thu chéo cho project tổng quát. CCBSN là bằng chứng kiểm thử, không phải template mặc định. |

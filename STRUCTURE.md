@@ -1,6 +1,10 @@
-# Repository structure — v3.3.0rc6 hardening line
+# Repository structure — RC6 release boundary + v3.3.0rc7 active candidate
 
 This map describes the **role** of each repository area rather than embedding file/byte counts that become stale after maintenance commits.
+
+The published/frozen release boundary remains RC6, while `tool/source/` is the active **v3.3.0rc7 candidate**. Candidate status must not be interpreted as an RC7 release or as Strategy Tester/live eligibility.
+
+Frozen/published release boundary: **v3.3.0rc6**. The active candidate source may advance independently, but the historical RC6 boundary remains explicit and immutable.
 
 ```text
 /
@@ -8,12 +12,12 @@ This map describes the **role** of each repository area rather than embedding fi
 ├── demo/                       golden + generic acceptance fixtures
 ├── docs/
 │   ├── maintenance/            repository bootstrap/maintenance history
-│   └── release/                 immutable RC4/RC5 history + active RC6 plan
+│   └── release/                 immutable history + RC6 boundary + active RC7 candidate records
 ├── native/                     MetaEditor/MT5 native-validation handoff
 ├── reports/                    historical RC4 audit/test evidence
 ├── scripts/maintenance/        safe repository-maintenance helpers
 ├── tool/
-│   ├── source/                 active RC6 hardening source
+│   ├── source/                 active v3.3.0rc7 candidate source
 │   ├── *-source-full.zip       versioned frozen/candidate source archives
 │   ├── *.whl                   versioned frozen/candidate wheels
 │   └── *.manifest.json         distribution manifest

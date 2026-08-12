@@ -91,11 +91,8 @@ runs:
           -ProjectRoot $env:VKMQL_PROJECT_ROOT `
           -EvidenceDir $env:VKMQL_EVIDENCE_DIR `
           -MetaEditor $env:VKMQL_METAEDITOR `
-          -InstallerUrl '' `
-          -InstallerSha256 '' `
           -GitHubToken $env:VKMQL_GITHUB_TOKEN `
           -ExpectedCommit $env:VKMQL_EXPECTED_COMMIT `
-          -WarmStdlib never `
           -TimeoutSeconds ([int]$env:VKMQL_TIMEOUT_SECONDS) `
           -KitVersion $env:VKMQL_KIT_VERSION
 

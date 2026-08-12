@@ -1,5 +1,5 @@
 {
-  "file_count": 52,
+  "file_count": 53,
   "files": [
     {
       "path": "agent-contract.json",
@@ -203,8 +203,13 @@
     },
     {
       "path": "tests/test_phase36_native_smoke_hardening.py",
-      "sha256": "b6b8d4873d740ad04e7a6500787f8ac7a69c736129bb57ee43c8d94a9fcdac4d",
-      "size": 2213
+      "sha256": "3abd54d32fde360a370f1c88798df6d3584b42241aef2021b34b36fe4727b1db",
+      "size": 2566
+    },
+    {
+      "path": "tests/test_phase37_canonical_native_probe.py",
+      "sha256": "4d4a9b5c6d16b94fb6c5b39e1726a0461d3eb80b003b1a142b4533dc7bdf900e",
+      "size": 970
     },
     {
       "path": "tests/test_phase3_codegen.py",
