@@ -274,6 +274,7 @@ fc07aff3b5014d61a2ff40e5bda537b606f7ffbf890a12dec2c095ed4f1f2231  ./scripts/main
 e76bfdfe92aa6d94090aa8c8b4caa86131a8f160f52c1493ba8c98d5ff177f05  ./scripts/maintenance/verify_rc6_native_evidence.py
 3c3ab26c410e8254fa3af1462a98f433e9ced15d45593ef61e915204f2eeecf9  ./scripts/native/Invoke-RC5NativeEvidence.ps1
 d3d09d2f543b69ff96f028cb516557a52a210277bfd539385766ef3ecb3947f3  ./scripts/native/Invoke-RC6NativeEvidence.ps1
+db278d73ba05f5aa24df69a074fe850228d6afa2fe0f0646c38ce6c1873f5142  ./scripts/native/ProbeEA.mq5
 c2b5e350e0b9c8c88e635858a8039bf2ce564a14de186364885e6dabda5e7e2a  ./tool/source/.dockerignore
 e695b95c7b4f821a8100bfdf1d1f756850acf0d865ea6dab84987a4f2e6a8c2f  ./tool/source/AGENTS.md
 228173e76e1a6b8f3e84f0bd7e505e8a698c83c354a532b8d5723f9dc3837c78  ./tool/source/CHANGELOG-3.0.0rc1.md
