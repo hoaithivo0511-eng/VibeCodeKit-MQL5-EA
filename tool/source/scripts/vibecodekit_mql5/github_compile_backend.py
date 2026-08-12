@@ -96,6 +96,11 @@ def run_github_actions_compile(
             return _failure("GitHub Actions dispatch completed but the correlated workflow run was not found")
 
         run_data = actions.wait_for_run(run.run_id, timeout_sec=timeout_sec)
+        if str(run_data.get("head_sha") or "").lower() not in {"", commit}:
+            return _failure(
+                "GitHub workflow head SHA does not match requested commit",
+                CompileFailureCode.SOURCE_BINDING_MISMATCH.value,
+            )
         if run_data.get("conclusion") != "success":
             return _failure(
                 f"GitHub native compile workflow concluded {run_data.get('conclusion') or 'unknown'}"
@@ -124,9 +129,27 @@ def run_github_actions_compile(
                 failed = _failure("GitHub compile provenance validation failed")
                 failed["validation"] = validation.to_dict()
                 return failed
+            github = record.get("github") if isinstance(record.get("github"), dict) else {}
             if str(record.get("source_commit") or "").lower() != commit:
                 return _failure(
                     "GitHub compile artifact source commit does not match requested commit",
+                    CompileFailureCode.SOURCE_BINDING_MISMATCH.value,
+                )
+            if str(github.get("repository") or "").lower() != repository.lower():
+                return _failure(
+                    "GitHub compile artifact repository does not match requested repository",
+                    CompileFailureCode.SOURCE_BINDING_MISMATCH.value,
+                )
+            if str(github.get("run_id") or "") != str(run.run_id):
+                return _failure(
+                    "GitHub compile artifact run id does not match correlated workflow run",
+                    CompileFailureCode.SOURCE_BINDING_MISMATCH.value,
+                )
+            jobs = actions.list_jobs(run.run_id)
+            job_ids = {str(job.get("id")) for job in jobs if isinstance(job, dict)}
+            if str(github.get("job_id") or "") not in job_ids:
+                return _failure(
+                    "GitHub compile artifact job id is not part of the correlated workflow run",
                     CompileFailureCode.SOURCE_BINDING_MISMATCH.value,
                 )
             descriptors = [WorkerArtifact(**item) for item in record.get("artifacts", [])]
