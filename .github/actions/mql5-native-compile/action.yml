@@ -1,0 +1,82 @@
+name: VibeCodeKit MQL5 Native Compile
+description: Compile one or more MQL5 targets with native Windows MetaEditor and emit provenance-bound evidence.
+inputs:
+  target:
+    description: Primary .mq5 target relative to project-root.
+    required: true
+  targets-json:
+    description: Optional JSON array of additional/alternative targets ({id,source,required}).
+    required: false
+    default: ''
+  project-root:
+    description: Project root containing MQL5/, Experts/Include/etc, or a self-contained source tree.
+    required: false
+    default: '.'
+  evidence-dir:
+    description: Evidence directory relative to project-root.
+    required: false
+    default: 'evidence/compile'
+  metaeditor:
+    description: Optional existing MetaEditor64.exe path. If omitted, installer-url is used.
+    required: false
+    default: ''
+  installer-url:
+    description: HTTPS MT5 installer URL used when metaeditor is not supplied.
+    required: false
+    default: ''
+  installer-sha256:
+    description: Optional pinned SHA-256 for the downloaded MT5 installer.
+    required: false
+    default: ''
+  github-token:
+    description: GitHub token used only to resolve the numeric workflow job id for provenance.
+    required: false
+    default: ''
+  expected-commit:
+    description: Optional full commit SHA that the checked-out source must match.
+    required: false
+    default: ''
+  warm-stdlib:
+    description: auto, always, or never. Auto warms terminal only for angle includes when stdlib is absent.
+    required: false
+    default: 'auto'
+  timeout-seconds:
+    description: Per-target MetaEditor timeout.
+    required: false
+    default: '180'
+  kit-version:
+    description: VibeCodeKit version recorded in compile provenance.
+    required: false
+    default: '3.3.0rc7'
+runs:
+  using: composite
+  steps:
+    - name: Native MetaEditor compile
+      shell: pwsh
+      env:
+        VKMQL_TARGET: ${{ inputs.target }}
+        VKMQL_TARGETS_JSON: ${{ inputs.targets-json }}
+        VKMQL_PROJECT_ROOT: ${{ inputs.project-root }}
+        VKMQL_EVIDENCE_DIR: ${{ inputs.evidence-dir }}
+        VKMQL_METAEDITOR: ${{ inputs.metaeditor }}
+        VKMQL_INSTALLER_URL: ${{ inputs.installer-url }}
+        VKMQL_INSTALLER_SHA256: ${{ inputs.installer-sha256 }}
+        VKMQL_GITHUB_TOKEN: ${{ inputs.github-token }}
+        VKMQL_EXPECTED_COMMIT: ${{ inputs.expected-commit }}
+        VKMQL_WARM_STDLIB: ${{ inputs.warm-stdlib }}
+        VKMQL_TIMEOUT_SECONDS: ${{ inputs.timeout-seconds }}
+        VKMQL_KIT_VERSION: ${{ inputs.kit-version }}
+      run: |
+        & "${{ github.action_path }}/Invoke-VKMql5Compile.ps1" `
+          -Target $env:VKMQL_TARGET `
+          -TargetsJson $env:VKMQL_TARGETS_JSON `
+          -ProjectRoot $env:VKMQL_PROJECT_ROOT `
+          -EvidenceDir $env:VKMQL_EVIDENCE_DIR `
+          -MetaEditor $env:VKMQL_METAEDITOR `
+          -InstallerUrl $env:VKMQL_INSTALLER_URL `
+          -InstallerSha256 $env:VKMQL_INSTALLER_SHA256 `
+          -GitHubToken $env:VKMQL_GITHUB_TOKEN `
+          -ExpectedCommit $env:VKMQL_EXPECTED_COMMIT `
+          -WarmStdlib $env:VKMQL_WARM_STDLIB `
+          -TimeoutSeconds ([int]$env:VKMQL_TIMEOUT_SECONDS) `
+          -KitVersion $env:VKMQL_KIT_VERSION
