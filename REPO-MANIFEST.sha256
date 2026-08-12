@@ -10,9 +10,14 @@ d7a230623eddc002fcde320ba6e161affa5ea3ac069e5235362286c05388f3a5  ./.github/work
 f4bec6e472e7dbfee0536c2c4895f4cd941bf295ae9b967b807928315814f83b  ./.github/workflows/rc6-native-evidence-verify.yml
 17b9134a0c482440e23070e3ef0542438c924cd4edd986a8ab818f42b65739c7  ./.github/workflows/rc6-package-integration.yml
 f5c2a818df60c9f47add7315ca139d35bb4c8c0eda5d15433f095fde6651acbf  ./.github/workflows/rc6-prerelease-publish.yml
+df8b465cab92287e4550709b2bba0c49764cd55ffab2b4634655d776530033c1  ./.github/workflows/rc7-demo-native-compile.yml
+9b506a2ff77683d75c90906472ea2021607c0925d56615859586bc95673779d9  ./.github/workflows/rc7-final-native-compile-demo.yml
 61f5c6b12b9775a56e43627f82087a1ba728ae3d5313a6877382545195091de1  ./.github/workflows/rc7-github-native-compile.yml
 48b06915d7bcc2790b6ceec21d12fed1c7c7a56864aff067ac5a62adeceb5187  ./.github/workflows/rc7-package-integration.yml
-6ec9982cabb6255551492fa18dbf546c33c1f792ac8059be7a2b4db19e21aace  ./.github/workflows/release-gate.yml
+c22283fb34cc32564c00bee75c0b888030bc15e949aeee8664ffd2d7fde3b5d3  ./.github/workflows/rc7-remediation-apply.yml
+e77a90d382a5e51c0021c4f30e2ab179043374c71a09157b488ff25c75d77e66  ./.github/workflows/rc7-remediation-audit.yml
+064b25a119160d09708f10209a8f48f67b5259607bb896e792f8d67328169396  ./.github/workflows/rc7-remediation-kick.yml
+131ce6bd48f6773ee21c1a54d1ac20aa3e896827846c9518ca9a0203fae04213  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
 b9c88c00560648ac143d09acaf4dcb1f5edd5baf849a7edaad9b60047cef20de  ./.github/workflows/repo-manifest-refresh.yml
 30287aea02ae090b6bb06de1e9f3b6e2a27831c41f6a4afcd7b54b816d834fef  ./.gitignore
@@ -65,6 +70,7 @@ c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969  ./demo/CCBSN_G
 32030233cfe7bb3fce5771c2ec02fdbbeeacaf08f32dc8353e2322fb9bd69d1d  ./demo/CCBSN_GoldenFixture/evidence/ir-artifacts.json
 46f9425681e64a8cdb9e3edd013a36e0a61f51de118a51f8cac1d563394ef1d4  ./demo/CCBSN_GoldenFixture/evidence/manifest.json
 0cccaa1c5f06b1fd14d370d24985a1589092ddbc38ce035f140f4e869137538f  ./demo/CCBSN_GoldenFixture/requirements-matrix.csv
+4e04dc5670de8390339386cfa9ab00cfb76cffb36347bc397ae5662da92af801  ./demo/final/Experts/RC7FinalCompileDemo.mq5
 300ad953c26ec5bec9630b701315445fa20f00b8ff228411610ef1618d13c873  ./demo/generic-acceptance/BandReturn/ACCEPTANCE-SCOPE.md
 936499fe6b65bb205c8cd877edfb1fb8b2e321d11f834b85427a97884a58ae6a  ./demo/generic-acceptance/BandReturn/AGENTS.md
 4674a2e68640de7c10a005dd131b26fb704940a451005f86487224d0e7be39c4  ./demo/generic-acceptance/BandReturn/AI-BUILD-CONTRACT.json
@@ -185,6 +191,7 @@ c79db9bfc41d4a9b94cfb10c5b096fb1d7375e4f1dad3840559d8bbea0fbf969  ./demo/generic
 b23eeda2f1411fdc65100b72fe55d57785057ddde49b26eabe7c7f6d488c6897  ./demo/generic-acceptance/RangePulse/evidence/ir-artifacts.json
 d92568a0a7876f39a07fc492de66e98cf29aa8a2ac941bbf88fabc7321b9c483  ./demo/generic-acceptance/RangePulse/evidence/manifest.json
 c78eaa849a47053f7564f37078b4f2d0a0d558850ecafe90d59a4fe5e53ec8dd  ./demo/generic-acceptance/RangePulse/requirements-matrix.csv
+15f18f604d33a40073a039114b2bc8071ea0e7c56e964cbef0d5bf682504d1ec  ./demo/rc7/Experts/RC7CompileDemo.mq5
 095f9f63c8434749c0d3b4226c7e88725fbc1aae665d7816600ee6a1a95529f3  ./docs/maintenance/INITIAL-IMPORT.md
 2f1e7b5bc07f6dcc62b4245ae9a159f5d7c9690f48ece31481bc91ab75cceb96  ./docs/release/v3.3.0rc4/RELEASE-PREP-PLAN.md
 72df94c5930bfec29f68c1c18613e89cf497e7adde6113ee8b54c9900b269fa2  ./docs/release/v3.3.0rc4/RELEASE-PREP-REPORT.md
