@@ -1,0 +1,65 @@
+name: RC7 Final Main Native Compile Demo
+
+on:
+  push:
+    branches:
+      - 'test/rc7-main-native-compile-final'
+    paths:
+      - 'demo/final/**'
+      - '.github/workflows/rc7-final-native-compile-demo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  native-compile:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Compile demo EA with fixed main VibeCodeKit RC7 action
+        uses: ./.github/actions/mql5-native-compile
+        with:
+          target: Experts/RC7FinalCompileDemo.mq5
+          project-root: demo/final
+          evidence-dir: evidence/compile
+          installer-url: https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe
+          github-token: ${{ github.token }}
+          expected-commit: ${{ github.sha }}
+          warm-stdlib: auto
+          timeout-seconds: '180'
+          kit-version: 3.3.0rc7
+
+      - name: Validate compile evidence
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = Join-Path $env:GITHUB_WORKSPACE 'tool/source/scripts'
+          @'
+          import json
+          from pathlib import Path
+          from vibecodekit_mql5.github_compile_evidence import validate_github_compile_record
+
+          result_path = Path('demo/final/evidence/compile/result.json')
+          payload = json.loads(result_path.read_text(encoding='utf-8'))
+          verdict = validate_github_compile_record(payload)
+          print(json.dumps(payload, indent=2))
+          print(json.dumps(verdict.to_dict(), indent=2))
+          if not verdict.ok:
+              raise SystemExit(1)
+          '@ | python -
+
+      - name: Upload final EX5 and evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: rc7-final-main-native-compile-${{ github.sha }}
+          if-no-files-found: error
+          path: demo/final/evidence/compile/
