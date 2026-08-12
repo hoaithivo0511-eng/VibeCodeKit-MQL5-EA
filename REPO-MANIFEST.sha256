@@ -12,7 +12,6 @@ f4bec6e472e7dbfee0536c2c4895f4cd941bf295ae9b967b807928315814f83b  ./.github/work
 f5c2a818df60c9f47add7315ca139d35bb4c8c0eda5d15433f095fde6651acbf  ./.github/workflows/rc6-prerelease-publish.yml
 61f5c6b12b9775a56e43627f82087a1ba728ae3d5313a6877382545195091de1  ./.github/workflows/rc7-github-native-compile.yml
 48b06915d7bcc2790b6ceec21d12fed1c7c7a56864aff067ac5a62adeceb5187  ./.github/workflows/rc7-package-integration.yml
-8ef1eb1c23fdd45c67f1c6c09a04a93b5d5dc4d79a31d025782182c3c478b303  ./.github/workflows/rc7-remediation-source-v2.yml
 8f7fc4f83393cdb6eb54497c23e8225eb283e672293327f7e48d7b6b89a08197  ./.github/workflows/rc7-source-hardening.yml
 131ce6bd48f6773ee21c1a54d1ac20aa3e896827846c9518ca9a0203fae04213  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
