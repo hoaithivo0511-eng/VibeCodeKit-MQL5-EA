@@ -95,6 +95,7 @@ def validate_github_compile_record(record: dict[str, Any] | None) -> GitHubCompi
 
     artifacts = data.get("artifacts") if isinstance(data.get("artifacts"), list) else []
     roles: set[str] = set()
+    filenames: set[str] = set()
     for index, raw in enumerate(artifacts):
         if not isinstance(raw, dict):
             errors.append(f"GitHub native compile artifacts[{index}] is not an object")
@@ -106,6 +107,10 @@ def validate_github_compile_record(record: dict[str, Any] | None) -> GitHubCompi
             part in {"", ".", ".."} for part in filename.split("/")
         ):
             errors.append(f"GitHub native compile artifact {role or index} has unsafe filename")
+        elif filename in filenames:
+            errors.append(f"GitHub native compile contains duplicate artifact filename: {filename}")
+        else:
+            filenames.add(filename)
         if not _sha256(raw.get("sha256")):
             errors.append(f"GitHub native compile artifact {role or index} has invalid SHA-256")
         size = raw.get("size_bytes")
