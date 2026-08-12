@@ -1,14 +1,16 @@
-r"""mql5-compile — canonical MetaEditor compile front end.
+r"""mql5-compile — canonical multi-backend compile front end.
 
-Native/Wine execution is kept here for backward compatibility; release-grade
-orchestration may select other backends through the higher-level runner. All
-MetaEditor log parsing and artifact policy is delegated to ``compile_core`` so
-local, remote and GitHub paths cannot disagree about 0-error/0-warning success.
+The CLI keeps the historical local/Wine path while adding GitHub Actions and
+remote-worker execution behind one stable surface. All MetaEditor log parsing
+uses ``compile_core``. ``auto`` prefers native local Windows, GitHub Actions,
+configured remote worker, then Wine development compile; if none is available
+the command reports UNTESTABLE instead of fabricating success.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -138,17 +140,102 @@ def compile_mq5(
     return _to_result(evaluation)
 
 
+def _configured_github(args) -> tuple[str, str, str | None]:
+    repository = (
+        args.github_repo
+        or os.environ.get("VKMQL_GITHUB_REPOSITORY")
+        or os.environ.get("GITHUB_REPOSITORY")
+        or ""
+    )
+    ref = (
+        args.github_ref
+        or os.environ.get("VKMQL_GITHUB_REF")
+        or os.environ.get("GITHUB_REF_NAME")
+        or ""
+    )
+    token = (
+        args.github_token
+        or os.environ.get("VKMQL_GITHUB_TOKEN")
+        or os.environ.get("GITHUB_TOKEN")
+        or os.environ.get("GH_TOKEN")
+    )
+    return repository, ref, token
+
+
+def _select_backend(args) -> str | None:
+    if args.backend != "auto":
+        return args.backend
+    metaeditor = resolve_metaeditor_path(args.metaeditor)
+    if sys.platform.startswith("win") and metaeditor:
+        return "local-metaeditor"
+    repository, ref, token = _configured_github(args)
+    if repository and ref and token:
+        return "github-actions"
+    worker_url = args.worker_url or os.environ.get("VKMQL_WORKER_URL") or os.environ.get("MQL5_WORKER_URL")
+    if worker_url:
+        return "remote-worker"
+    if sys.platform.startswith("linux") and metaeditor and (shutil.which("wine") or shutil.which("wine64")):
+        return "wine-metaeditor"
+    return None
+
+
+def _github_target(mq5: str, project_root: Path) -> str:
+    raw = Path(mq5)
+    if raw.is_absolute():
+        candidate = raw.resolve()
+    elif (project_root / raw).exists():
+        candidate = (project_root / raw).resolve()
+    else:
+        candidate = raw.resolve()
+    try:
+        return candidate.relative_to(project_root.resolve()).as_posix()
+    except ValueError as exc:
+        raise ValueError("GitHub compile target must be inside --project-root") from exc
+
+
+def _emit_unavailable(args, backend: str | None, reason: str) -> int:
+    payload = {
+        "success": False,
+        "status": "UNTESTABLE" if backend is None or args.backend == "auto" else "FAIL",
+        "backend": backend or "none",
+        "reason": reason,
+        "failure_codes": [CompileFailureCode.INVOCATION_FAILED.value],
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+    else:
+        print(f"{payload['status']}: {reason}", file=sys.stderr)
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="mql5-compile", description=__doc__.splitlines()[0])
-    p.add_argument("mq5", help="path to .mq5 source")
+    p.add_argument("mq5", help="path to .mq5 source; GitHub backend requires repository-relative target")
+    p.add_argument(
+        "--backend",
+        default="auto",
+        choices=["auto", "local-metaeditor", "github-actions", "remote-worker", "wine-metaeditor"],
+        help="execution backend; auto prefers local native → GitHub → remote worker → Wine",
+    )
     p.add_argument(
         "--metaeditor",
         default=None,
         help="override MetaEditor64.exe path (else $METAEDITOR_PATH or default)",
     )
-    p.add_argument("--log", default=None, help="output log file (defaults to <mq5>.log)")
+    p.add_argument("--log", default=None, help="local/Wine output log file (defaults to <mq5>.log)")
+    p.add_argument("--out", default="evidence/compile", help="remote/GitHub evidence output directory")
+    p.add_argument("--project-root", default=".", help="project root for remote/GitHub source binding")
+    p.add_argument("--worker-url", default=None, help="remote Windows worker URL")
+    p.add_argument("--worker-token", default=None, help="remote Windows worker bearer token")
+    p.add_argument("--github-repo", default=None, help="GitHub repository owner/name")
+    p.add_argument("--github-ref", default=None, help="branch/tag ref dispatched by GitHub Actions backend")
+    p.add_argument("--github-token", default=None, help="GitHub token; defaults to VKMQL_GITHUB_TOKEN/GITHUB_TOKEN/GH_TOKEN")
+    p.add_argument("--github-commit", default=None, help="expected full source commit SHA")
+    p.add_argument("--github-workflow", default="rc7-github-native-compile.yml")
+    p.add_argument("--github-artifact", default=None, help="override expected workflow artifact name")
     p.add_argument("--json", action="store_true", help="emit structured JSON to stdout")
-    p.add_argument("--timeout", type=int, default=180)
+    p.add_argument("--timeout", type=int, default=180, help="local compile timeout seconds")
+    p.add_argument("--backend-timeout", type=int, default=3600, help="remote/GitHub backend timeout seconds")
     p.add_argument(
         "--max-warnings",
         type=int,
@@ -157,30 +244,110 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = p.parse_args(argv)
 
+    backend = _select_backend(args)
+    if backend is None:
+        return _emit_unavailable(
+            args,
+            None,
+            "no compile backend is configured; local MetaEditor, GitHub Actions, remote worker and Wine are unavailable",
+        )
+
+    if backend == "github-actions":
+        repository, ref, token = _configured_github(args)
+        if not repository or not ref or not token:
+            return _emit_unavailable(
+                args,
+                backend,
+                "GitHub backend requires repository, ref and token",
+            )
+        try:
+            target = _github_target(args.mq5, Path(args.project_root))
+        except ValueError as exc:
+            return _emit_unavailable(args, backend, str(exc))
+        from .github_compile_backend import run_github_actions_compile
+
+        record = run_github_actions_compile(
+            target,
+            repository=repository,
+            ref=ref,
+            project_root=args.project_root,
+            expected_commit=args.github_commit,
+            workflow=args.github_workflow,
+            artifact_name=args.github_artifact,
+            evidence_dir=args.out,
+            token=token,
+            timeout_sec=max(1, args.backend_timeout),
+        )
+        if args.json:
+            print(json.dumps(record, indent=2, ensure_ascii=False))
+        elif record.get("ok"):
+            print(
+                f"OK: github-actions run={record.get('workflow_run_id')} ex5={Path(args.out) / 'ea.ex5'}"
+            )
+        else:
+            print(f"FAIL: {record.get('reason', 'GitHub native compile failed')}", file=sys.stderr)
+        return 0 if record.get("ok") else 2
+
+    if backend == "remote-worker":
+        worker_url = args.worker_url or os.environ.get("VKMQL_WORKER_URL") or os.environ.get("MQL5_WORKER_URL")
+        worker_token = args.worker_token or os.environ.get("VKMQL_WORKER_TOKEN") or os.environ.get("MQL5_WORKER_TOKEN")
+        if not worker_url:
+            return _emit_unavailable(args, backend, "remote-worker backend requires --worker-url or VKMQL_WORKER_URL")
+        from .compile_runner import main as runner_main
+
+        runner_args = [
+            "--ea",
+            args.mq5,
+            "--out",
+            args.out,
+            "--backend",
+            "remote-worker",
+            "--worker-url",
+            worker_url,
+            "--project-root",
+            args.project_root,
+            "--timeout-sec",
+            str(max(1, args.backend_timeout)),
+        ]
+        if worker_token:
+            runner_args.extend(["--worker-token", worker_token])
+        return int(runner_main(runner_args) or 0)
+
+    if backend == "local-metaeditor" and not sys.platform.startswith("win"):
+        return _emit_unavailable(args, backend, "local-metaeditor requires native Windows")
+    if backend == "wine-metaeditor" and sys.platform.startswith("win"):
+        return _emit_unavailable(args, backend, "wine-metaeditor is a Linux development backend")
+    configured_metaeditor = resolve_metaeditor_path(args.metaeditor)
+    if not configured_metaeditor and args.backend in {"local-metaeditor", "wine-metaeditor"}:
+        return _emit_unavailable(args, backend, "MetaEditor path is not configured")
+
     mq5 = Path(args.mq5)
     log = Path(args.log) if args.log else None
     result = compile_mq5(
         mq5,
-        args.metaeditor,
+        configured_metaeditor,
         log,
         args.timeout,
         max_warnings=max(0, args.max_warnings),
     )
 
     if args.json:
-        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+        payload = result.to_dict()
+        payload["backend"] = backend
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
     else:
-        for w in result.warnings:
-            print("WARN:", w, file=sys.stderr)
-        for e in result.errors:
-            print("ERROR:", e, file=sys.stderr)
+        for warning in result.warnings:
+            print("WARN:", warning, file=sys.stderr)
+        for error in result.errors:
+            print("ERROR:", error, file=sys.stderr)
         if result.success:
-            print(f"OK: {result.ex5_path}")
+            suffix = " (development-only)" if backend == "wine-metaeditor" else ""
+            print(f"OK: {result.ex5_path}{suffix}")
         else:
-            if result.failure_codes:
-                print("FAIL:", ",".join(result.failure_codes), file=sys.stderr)
-            else:
-                print("FAIL", file=sys.stderr)
+            print(
+                "FAIL:" + (" " + ",".join(result.failure_codes) if result.failure_codes else ""),
+                file=sys.stderr,
+            )
     return 0 if result.success else 1
 
 
