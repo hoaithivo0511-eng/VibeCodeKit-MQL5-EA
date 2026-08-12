@@ -90,14 +90,19 @@ Read [references/retro-guards.md](references/retro-guards.md) whenever any guard
 ## Use runtime gates correctly
 
 - Prefer the high-level canonical CLI surface for common flows; use lower-level commands only for diagnosis or capabilities not exposed by the high-level surface.
-- Treat Windows native MetaEditor/MT5 evidence as the release authority for the initial product. Treat Wine evidence as development or CI evidence unless policy explicitly says otherwise.
+- Use `vkmql-check compile` / `mql5-compile` as the canonical compile surface. Let `--backend auto` prefer native local Windows → configured GitHub Actions Windows → configured remote Windows worker → Wine development compile. If no backend is available, preserve `UNTESTABLE`.
+- Treat Windows native MetaEditor/MT5 evidence as the release authority for the initial product. Native MetaEditor may run locally, on a trusted remote Windows worker, or on the GitHub Actions Windows backend only when the backend's provenance validator proves the exact repository, commit/tree, correlated workflow run, numeric job id, Windows runner, toolchain ProbeEA, 0 errors, 0 warnings, EX5 and artifact hashes/sizes.
+- Never trust `github_actions_metaeditor` merely because a manifest contains that source string. An uncorrelated/stale workflow artifact, wrong repository/run/job, invalid hash, unsafe artifact path or skipped Windows job is not trusted evidence.
+- If GitHub native compile is skipped because its installer secret/configuration is absent, report it as `UNTESTABLE`; a green fast/static gate is not native compile PASS.
+- Treat Wine evidence as development or CI evidence unless policy explicitly says otherwise.
 - Require backtest evidence for behavior, strategy, execution, or risk changes and for forward/live eligibility. Do not require backtests for documentation-only or proven behavior-preserving changes.
+- Native compile PASS alone never promotes Strategy Tester, forward, restart/recovery, broker, or live gates. Each remains independently fail-closed.
 - Use broker capability detection and profiles before adding broker-specific code.
 - Keep ONNX inference optional. Never treat a stub model as a real model, and verify action-label mappings end to end.
 - Treat MCP as an internal/experimental adapter until its schemas and command catalog are versioned and stable.
 - Keep telemetry off by default. Never transmit source, strategy parameters, accounts, trade history, decisions, prompts, paths, logs, credentials, or signatures.
 
-Read [references/runtime-policy.md](references/runtime-policy.md) before compile/backtest, broker, Wine, ONNX, MCP, evidence-store, telemetry, or live-release work.
+Read [references/runtime-policy.md](references/runtime-policy.md) before compile/backtest, broker, Wine, ONNX, MCP, evidence-store, telemetry, or live-release work. For GitHub native compile setup and evidence schema, read [GitHub Native Compile Backend](../../docs/GITHUB-NATIVE-COMPILE-vi.md).
 
 ## Report outcomes
 
