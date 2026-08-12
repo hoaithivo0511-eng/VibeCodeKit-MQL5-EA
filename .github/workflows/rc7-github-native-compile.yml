@@ -7,6 +7,7 @@ on:
       - '.github/actions/mql5-native-compile/**'
       - '.github/workflows/rc7-github-native-compile.yml'
       - 'scripts/native/ProbeEA.mq5'
+      - 'tool/source/scripts/vibecodekit_mql5/capability.py'
       - 'tool/source/scripts/vibecodekit_mql5/compile.py'
       - 'tool/source/scripts/vibecodekit_mql5/compile_core.py'
       - 'tool/source/scripts/vibecodekit_mql5/compile_backends.py'
@@ -15,8 +16,10 @@ on:
       - 'tool/source/scripts/vibecodekit_mql5/github_actions_client.py'
       - 'tool/source/scripts/vibecodekit_mql5/github_compile_backend.py'
       - 'tool/source/scripts/vibecodekit_mql5/github_compile_evidence.py'
+      - 'tool/source/scripts/vibecodekit_mql5/resources/github/**'
       - 'tool/source/tests/test_phase31_compile_core_rc7.py'
       - 'tool/source/tests/test_phase33_github_compile_backend.py'
+      - 'tool/source/tests/test_phase35_rc7_backend_routing.py'
   workflow_dispatch:
     inputs:
       target:
@@ -59,7 +62,8 @@ jobs:
           python -m pytest -q \
             tests/test_phase25_native_release_contract.py \
             tests/test_phase31_compile_core_rc7.py \
-            tests/test_phase33_github_compile_backend.py
+            tests/test_phase33_github_compile_backend.py \
+            tests/test_phase35_rc7_backend_routing.py
       - name: Parse native compile PowerShell
         shell: pwsh
         run: |
@@ -69,6 +73,7 @@ jobs:
       - name: Compile Python backend modules
         run: |
           python -m py_compile \
+            tool/source/scripts/vibecodekit_mql5/capability.py \
             tool/source/scripts/vibecodekit_mql5/compile.py \
             tool/source/scripts/vibecodekit_mql5/compile_core.py \
             tool/source/scripts/vibecodekit_mql5/compile_backends.py \
