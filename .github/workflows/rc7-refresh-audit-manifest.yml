@@ -1,0 +1,39 @@
+name: RC7 Refresh Audit Manifest
+
+on:
+  push:
+    branches:
+      - 'audit/rc7-full-e2e-docs-sync'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: audit/rc7-full-e2e-docs-sync
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Verify current hygiene contract
+        run: |
+          python scripts/maintenance/check_rc6_hygiene.py
+          python scripts/maintenance/check_duplicate_content.py
+      - name: Remove bootstrap and regenerate exact tracked manifest
+        run: |
+          git rm .github/workflows/rc7-refresh-audit-manifest.yml
+          python scripts/maintenance/repo_manifest.py --write
+          git add REPO-MANIFEST.sha256
+          python scripts/maintenance/repo_manifest.py --check
+      - name: Commit clean manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(audit): refresh manifest after hygiene update"
+          git push
