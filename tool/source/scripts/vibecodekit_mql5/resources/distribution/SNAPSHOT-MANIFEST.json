@@ -188,8 +188,8 @@
     },
     {
       "path": "tests/test_phase33_rc6_hygiene.py",
-      "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
-      "size": 5908
+      "sha256": "da8b1ca47dec3d0c0b003ada38827d2ce181a4835f552d0ad5ab5f0970f680ed",
+      "size": 6645
     },
     {
       "path": "tests/test_phase34_documentation_runtime.py",
