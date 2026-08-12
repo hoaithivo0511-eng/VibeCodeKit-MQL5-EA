@@ -25,6 +25,7 @@ on:
       - 'scripts/maintenance/verify_rc5_native_evidence.py'
       - 'scripts/maintenance/verify_rc6_native_evidence.py'
       - 'scripts/maintenance/check_rc6_hygiene.py'
+      - 'scripts/maintenance/sync_distribution_snapshot.py'
       - 'scripts/native/**'
       - 'tool/source/pyproject.toml'
       - 'tool/source/scripts/vibecodekit_mql5/**'
@@ -63,16 +64,26 @@ jobs:
           cd tool/source
           PYTHONPATH=scripts python -m vibecodekit_mql5.manifest --emit --output tool-catalog.json
           PYTHONPATH=scripts python -m vibecodekit_mql5.agent_contract --emit --output agent-contract.json
+      - name: Synchronize installed-wheel verification snapshot
+        run: python scripts/maintenance/sync_distribution_snapshot.py sync
       - name: Regenerate repository manifest
         run: python scripts/maintenance/repo_manifest.py --write
-      - name: Commit derived manifests if changed
+      - name: Commit derived release metadata if changed
         run: |
-          if git diff --quiet -- REPO-MANIFEST.sha256 tool/source/tool-catalog.json tool/source/agent-contract.json; then
-            echo "derived manifests already current"
+          if git diff --quiet -- \
+            REPO-MANIFEST.sha256 \
+            tool/source/tool-catalog.json \
+            tool/source/agent-contract.json \
+            tool/source/scripts/vibecodekit_mql5/resources/distribution; then
+            echo "derived release metadata already current"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add REPO-MANIFEST.sha256 tool/source/tool-catalog.json tool/source/agent-contract.json
-          git commit -m "chore(release): refresh RC7 derived manifests"
+          git add \
+            REPO-MANIFEST.sha256 \
+            tool/source/tool-catalog.json \
+            tool/source/agent-contract.json \
+            tool/source/scripts/vibecodekit_mql5/resources/distribution
+          git commit -m "chore(release): refresh RC7 derived release metadata"
           git push
