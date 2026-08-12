@@ -113,4 +113,6 @@ jobs:
           print('repository hygiene: PASS')
           PY
       - name: Check RC6 version workflow and executable-mode contract
-        run: python scripts/maintenance/check_rc6_hygiene.py
+        run: |
+          python scripts/maintenance/check_rc6_hygiene.py
+          python scripts/maintenance/check_duplicate_content.py
