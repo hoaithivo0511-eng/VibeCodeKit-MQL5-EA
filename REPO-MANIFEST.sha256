@@ -12,7 +12,7 @@ f5c2a818df60c9f47add7315ca139d35bb4c8c0eda5d15433f095fde6651acbf  ./.github/work
 48b06915d7bcc2790b6ceec21d12fed1c7c7a56864aff067ac5a62adeceb5187  ./.github/workflows/rc7-package-integration.yml
 6ec9982cabb6255551492fa18dbf546c33c1f792ac8059be7a2b4db19e21aace  ./.github/workflows/release-gate.yml
 e5f79f6438e3f558240473ba98c0ca9646e52b008fd322087921395ac55057a2  ./.github/workflows/repo-manifest-check.yml
-6d74f7197d56a413f2ab03dd6314ffc57e99415075dd6093611614422209b1e7  ./.github/workflows/repo-manifest-refresh.yml
+61b8d453f5ae5651fd66bc12a283fc4a57c873d332f860e018cb42832ed52a63  ./.github/workflows/repo-manifest-refresh.yml
 30287aea02ae090b6bb06de1e9f3b6e2a27831c41f6a4afcd7b54b816d834fef  ./.gitignore
 f30dad3dd888c60c12bf9e7ec2b9e794116a83327b0059a5332ee606192b4214  ./BUNDLE-MANIFEST.json
 b8aafddf626d07ec46d27ec4be8d96abcdf3ae767d91aba4baeea64e289f056e  ./FIX-TRACEABILITY.csv
@@ -291,7 +291,7 @@ fcd39af3da3891186bc8ee6b95c21230db9119d823a9878b9617125c757ec5a1  ./tool/source/
 2f16d6912ca56694a5ac387fb3701cc1d88593daf43735132919281d664049d2  ./tool/source/README.md
 92f953dd2d7dc66c551fda3e74b6d9d5b10689030b62925d851ce76db34a596c  ./tool/source/V3-ALPHA3-FIX-REPORT.md
 e09bee9491a605f390cf124ca279fce2082cc3d33bf7b3f4f99ef6836c81c841  ./tool/source/V3-DELIVERY.md
-97442276ffaa1e9429d41c081575b74d95a9085fb8a46b80b302118292f0c331  ./tool/source/agent-contract.json
+845ddb37fcf9e7201bcdd18b8fc5f95e978d466811b02c4683530f2e037788a0  ./tool/source/agent-contract.json
 d2aa31da92551ea6de24ef8d23ee8b4496d8c95e7b771fff2484529d2bab069b  ./tool/source/docs/AI-BUILD-CONTRACT.md
 b073a72abcf7bcc0a106bc7a97e671ace6701cca104c996690ca08d40f81d691  ./tool/source/docs/CODEX-SETUP-PROMPT.md
 43cd6eb3ffd74d4db029ed6390d0dc7b969e49b09a7a29909369db1d17c9ba18  ./tool/source/docs/COMMANDS.md
