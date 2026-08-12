@@ -17,6 +17,8 @@ jobs:
   native-compile:
     runs-on: windows-2022
     timeout-minutes: 30
+    env:
+      MT5_DIR: C:\Program Files\MetaTrader 5
     steps:
       - uses: actions/checkout@v7
         with:
@@ -26,13 +28,28 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Diagnostic install using proven MetaQuotes /auto semantics
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri 'https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe' `
+            -OutFile "$env:RUNNER_TEMP\mt5setup.exe" -UseBasicParsing
+          $p = Start-Process -FilePath "$env:RUNNER_TEMP\mt5setup.exe" -ArgumentList '/auto' -PassThru -Wait
+          Write-Host "installer exit code: $($p.ExitCode)"
+          Start-Sleep -Seconds 10
+          Get-Process -Name terminal64 -ErrorAction SilentlyContinue | Stop-Process -Force
+          if (-not (Test-Path "$env:MT5_DIR\MetaEditor64.exe")) {
+            throw 'MetaEditor64.exe not found after installer'
+          }
+          Write-Host 'MetaEditor present despite installer process semantics'
+
       - name: Compile demo EA with VibeCodeKit RC7 native action
         uses: ./.github/actions/mql5-native-compile
         with:
           target: demo/rc7/Experts/RC7CompileDemo.mq5
           project-root: .
           evidence-dir: evidence/demo-compile
-          installer-url: https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe
+          metaeditor: C:\Program Files\MetaTrader 5\MetaEditor64.exe
           github-token: ${{ github.token }}
           expected-commit: ${{ github.sha }}
           warm-stdlib: auto
