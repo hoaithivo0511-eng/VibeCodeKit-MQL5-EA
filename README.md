@@ -31,6 +31,12 @@ Các `mql5-*` command còn lại là advanced/internal/compatibility surface. Ca
 ## VibecodeV5 workflow canonical
 
 ```text
+SCAN → RRI → SPECIFY → DECIDE → CONTRACT → PLAN → BUILD → VERIFY → EVIDENCE → RETRO
+```
+
+Chi tiết theo từng phase:
+
+```text
 SCAN
   → RRI
   → SPECIFY
