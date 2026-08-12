@@ -1,14 +1,15 @@
 """Evidence manifest v2 for release-grade EA builds."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 import hashlib
 import json
-from datetime import datetime, timezone
 
-from .execution_sources import assess_compile_source, assess_backtest_source, is_fixture_path
+from .execution_sources import assess_backtest_source, assess_compile_source, is_fixture_path
+from .github_compile_evidence import validate_github_compile_record
 from .release_policy import compute_release_eligible
 
 
@@ -22,12 +23,7 @@ def sha256_file(path: str | Path) -> str:
 
 def artifact_record(path: str | Path, role: str) -> dict[str, Any]:
     p = Path(path)
-    rec = {
-        "role": role,
-        "path": str(p),
-        "exists": p.exists(),
-        "fixture": is_fixture_path(p),
-    }
+    rec = {"role": role, "path": str(p), "exists": p.exists(), "fixture": is_fixture_path(p)}
     if p.exists() and p.is_file():
         rec["sha256"] = sha256_file(p)
         rec["size_bytes"] = p.stat().st_size
@@ -53,14 +49,25 @@ class EvidenceManifestV2:
     })
 
     def evaluate(self) -> dict[str, Any]:
-        compile_assessment = assess_compile_source(self.compile.get("source"))
-        backtest_assessment = assess_backtest_source(self.backtest.get("source"), self.backtest.get("report_path"))
+        github_validation = None
+        provenance_verified = False
+        if self.compile.get("source") == "github_actions_metaeditor":
+            github_validation = validate_github_compile_record(self.compile)
+            provenance_verified = github_validation.ok
+        compile_assessment = assess_compile_source(
+            self.compile.get("source"), provenance_verified=provenance_verified
+        )
+        backtest_assessment = assess_backtest_source(
+            self.backtest.get("source"), self.backtest.get("report_path")
+        )
 
         compile_ok = bool(self.compile.get("ok")) and compile_assessment.trusted_for_release
         backtest_ok = bool(self.backtest.get("ok")) and backtest_assessment.trusted_for_release
         gate_ok = bool(self.gates.get("ok"))
         required_artifacts = [a for a in self.artifacts if a.get("required", True)]
-        evidence_ok = bool(required_artifacts) and all(a.get("exists") and a.get("sha256") for a in required_artifacts)
+        evidence_ok = bool(required_artifacts) and all(
+            a.get("exists") and a.get("sha256") for a in required_artifacts
+        )
         if not self.matrix:
             matrix_ok = True
         elif "ok" in self.matrix:
@@ -68,8 +75,6 @@ class EvidenceManifestV2:
         else:
             matrix_ok = bool(self.matrix.get("summary", {}).get("ok", False))
 
-        # Route through the ONE canonical predicate shared with the v1
-        # pipeline summary so the two evidence paths can never disagree.
         release_eligible = compute_release_eligible(
             compile_ok=compile_ok,
             backtest_ok=backtest_ok,
@@ -80,7 +85,7 @@ class EvidenceManifestV2:
             skipped_stages=self.skipped_stages,
         )
 
-        return {
+        summary = {
             "compile_ok": compile_ok,
             "backtest_ok": backtest_ok,
             "gate_ok": gate_ok,
@@ -92,6 +97,9 @@ class EvidenceManifestV2:
             "unsafe_flags_used": self.unsafe_flags_used,
             "skipped_stages": self.skipped_stages,
         }
+        if github_validation is not None:
+            summary["github_compile_validation"] = github_validation.to_dict()
+        return summary
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
