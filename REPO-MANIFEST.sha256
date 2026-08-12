@@ -2,7 +2,7 @@
 94410818887b0880a089ea3ce5cfdda38ebaa4cb8f06b9b5d5336cfd1309a037  ./.github/actions/mql5-native-compile/Finalize-VKMql5ToolchainEvidence.ps1
 61d8efdab2db0196e69eee5c72db0bbe4d622fcfe7ba76e1b6ddfb124c00e737  ./.github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1
 0e01f36b8fbd9039a4ae2987bbb89042b65db8e5f22ac9039cdc027a11715d8c  ./.github/actions/mql5-native-compile/Prepare-VKMql5Toolchain.ps1
-bb3286b50ea2018771ea924cd806a5ff751ea02951747e296c36e953bf0cddba  ./.github/actions/mql5-native-compile/action.yml
+7368d2131c13c5a78024385cc29bd353dbaed4ddbe299fa48822c19834105c71  ./.github/actions/mql5-native-compile/action.yml
 e7628232be65a11ff3d8e9382513adc28ceeb6cf7ab3175ed4cbb2422c2b1a0c  ./.github/workflows/package-regression.yml
 90860fd29d8232eab6ef5153e336a4a710f56053a8d15aa973c534a5e308fe40  ./.github/workflows/rc5-conformance-verify.yml
 d7a230623eddc002fcde320ba6e161affa5ea3ac069e5235362286c05388f3a5  ./.github/workflows/rc5-native-evidence-verify.yml
