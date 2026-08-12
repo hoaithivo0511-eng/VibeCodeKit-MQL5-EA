@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-"""Fail-closed RC6 documentation, workflow and repository hygiene checks."""
+"""Fail-closed RC6 compatibility + current-candidate repository hygiene checks.
 
+RC6 release artefacts remain historical inputs, while package/catalog/agent
+contract and active candidate documentation must follow the canonical version
+from ``tool/source/pyproject.toml``. This prevents a new RC from having to
+weaken or delete the RC6 compatibility gate merely because the current version
+advanced.
+"""
 from __future__ import annotations
 
 import argparse
@@ -10,13 +16,17 @@ import subprocess
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = "3.3.0rc6"
+RC6_VERSION = "3.3.0rc6"
 
 REQUIRED_PATHS = (
     ".github/workflows/release-gate.yml",
     ".github/workflows/rc6-native-evidence-verify.yml",
     ".github/workflows/rc6-package-integration.yml",
     ".github/workflows/rc6-prerelease-publish.yml",
+    ".github/workflows/rc7-github-native-compile.yml",
+    ".github/workflows/rc7-package-integration.yml",
+    ".github/actions/mql5-native-compile/action.yml",
+    ".github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1",
     "docs/release/v3.3.0rc6/HARDENING-PLAN.md",
     "docs/release/v3.3.0rc6/DOCUMENTATION-AUDIT.md",
     "docs/release/v3.3.0rc6/REQUIREMENTS.csv",
@@ -35,11 +45,13 @@ REQUIRED_PATHS = (
     "docs/release/v3.3.0rc6/RC6-ARTIFACTS.sha256",
     "docs/release/v3.3.0rc6/RC6-CANDIDATE-MANIFEST.json",
     "docs/release/v3.3.0rc6/PRERELEASE-NOTES.md",
+    "docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md",
     "scripts/maintenance/build_rc6_candidate.py",
     "scripts/maintenance/check_rc6_hygiene.py",
     "scripts/maintenance/sync_distribution_snapshot.py",
     "scripts/maintenance/verify_rc6_native_evidence.py",
     "scripts/native/Invoke-RC6NativeEvidence.ps1",
+    "tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md",
 )
 EXECUTABLE_SCRIPTS = (
     "scripts/maintenance/build_rc6_candidate.py",
@@ -61,11 +73,17 @@ FORBIDDEN_SEGMENTS = {
 }
 FORBIDDEN_BASENAMES = {".DS_Store", "Thumbs.db", ".coverage", ".env"}
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+VERSION_RE = re.compile(r'^version\s*=\s*"([^"]+)"\s*$', re.MULTILINE)
+
+
+def _current_version(pyproject: str) -> str:
+    match = VERSION_RE.search(pyproject)
+    if not match:
+        raise ValueError("cannot read [project] version from pyproject.toml")
+    return match.group(1)
 
 
 def _project_scripts(pyproject: str) -> list[str]:
-    """Read names from [project.scripts] without requiring TOML on Python 3.10."""
-
     scripts: list[str] = []
     in_section = False
     for raw in pyproject.splitlines():
@@ -98,15 +116,11 @@ def _missing_relative_doc_links(tracked: list[str]) -> list[str]:
 
 
 def _tracked() -> list[str]:
-    return subprocess.check_output(
-        ["git", "ls-files"], cwd=ROOT, text=True
-    ).splitlines()
+    return subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines()
 
 
 def _git_modes() -> dict[str, str]:
-    lines = subprocess.check_output(
-        ["git", "ls-files", "-s"], cwd=ROOT, text=True
-    ).splitlines()
+    lines = subprocess.check_output(["git", "ls-files", "-s"], cwd=ROOT, text=True).splitlines()
     modes: dict[str, str] = {}
     for line in lines:
         metadata, path = line.split("\t", 1)
@@ -120,13 +134,11 @@ def evaluate() -> dict[str, object]:
     tracked_set = set(tracked)
     for rel in REQUIRED_PATHS:
         if rel not in tracked_set or not (ROOT / rel).is_file():
-            errors.append(f"required RC6 path is missing or untracked: {rel}")
+            errors.append(f"required compatibility/current path is missing or untracked: {rel}")
 
     for rel in tracked:
         path = PurePosixPath(rel)
-        generated_coverage = path.name == "coverage.json" and path.parts[:1] != (
-            "reports",
-        )
+        generated_coverage = path.name == "coverage.json" and path.parts[:1] != ("reports",)
         if (
             any(segment in FORBIDDEN_SEGMENTS for segment in path.parts)
             or path.name in FORBIDDEN_BASENAMES
@@ -140,85 +152,52 @@ def evaluate() -> dict[str, object]:
             errors.append(f"active maintenance script is not executable in Git: {rel}")
 
     pyproject = (ROOT / "tool/source/pyproject.toml").read_text(encoding="utf-8")
-    catalog = json.loads(
-        (ROOT / "tool/source/tool-catalog.json").read_text(encoding="utf-8")
-    )
-    contract = json.loads(
-        (ROOT / "tool/source/agent-contract.json").read_text(encoding="utf-8")
-    )
-    if f'version = "{VERSION}"' not in pyproject:
-        errors.append("pyproject version is not RC6")
-    if catalog.get("kit_version") != VERSION:
-        errors.append("tool catalog version is not RC6")
-    if contract.get("kit", {}).get("version") != VERSION:
-        errors.append("agent contract version is not RC6")
+    try:
+        current_version = _current_version(pyproject)
+    except ValueError as exc:
+        errors.append(str(exc))
+        current_version = "unknown"
+    catalog = json.loads((ROOT / "tool/source/tool-catalog.json").read_text(encoding="utf-8"))
+    contract = json.loads((ROOT / "tool/source/agent-contract.json").read_text(encoding="utf-8"))
+    if catalog.get("kit_version") != current_version:
+        errors.append(
+            f"tool catalog version {catalog.get('kit_version')!r} != canonical {current_version!r}"
+        )
+    if contract.get("kit", {}).get("version") != current_version:
+        errors.append(
+            f"agent contract version {contract.get('kit', {}).get('version')!r} != canonical {current_version!r}"
+        )
 
     catalog_tools = catalog.get("tools", [])
     script_names = _project_scripts(pyproject)
     if len(catalog_tools) != 139 or len(script_names) != 139:
         errors.append(
-            "RC6 command count drift: "
+            "command count drift: "
             f"catalog={len(catalog_tools)}, project.scripts={len(script_names)}, expected=139"
         )
     elif {item.get("name") for item in catalog_tools} != set(script_names):
         errors.append("tool catalog names do not match [project.scripts]")
 
-    active_doc_contract = {
-        "tool/source/README.md": ("v3.3.0 RC6", "EA-IR compiler"),
-        "tool/source/docs/COMMANDS.md": (
-            "Command catalog (139 commands)",
-            "v3.3.0rc6 baseline contains 139 public entry",
+    current_docs = {
+        "tool/source/README.md": ("v3.3.0 RC7", "GitHub Actions"),
+        "tool/source/docs/GITHUB-NATIVE-COMPILE-vi.md": (
+            "GitHub Native Compile Backend",
+            "github_actions_metaeditor",
+            "UNTESTABLE",
         ),
-        "tool/source/docs/USAGE-en.md": (
-            "v3.3.0rc6 Usage Guide",
-            "139-command RC6 catalog",
-        ),
-        "tool/source/docs/USER-GUIDE-en.md": (
-            "current `v3.3.0rc6` baseline: **139 CLI entry points**",
-            "selftest 13/13 invariants passed",
-        ),
-        "tool/source/docs/HUONG-DAN-TOAN-TAP-vi.md": (
-            "kit_version: 3.3.0rc6",
-            "139 console entry",
-        ),
-        "tool/source/docs/CODEX-SETUP-PROMPT.md": (
-            "Setup & Build System Prompt (v3.3.0rc6)",
-            "Require: 13/13 invariants passed.",
-        ),
-        "tool/source/docs/DOC-MAP.md": (
-            "Documentation map — v3.3.0rc6",
-            "Historical snapshots",
+        "tool/source/skill/vibecode-mql5/SKILL.md": (
+            "github_actions_metaeditor",
+            "vkmql-check compile",
         ),
     }
-    for rel, required_fragments in active_doc_contract.items():
+    for rel, required_fragments in current_docs.items():
         text = (ROOT / rel).read_text(encoding="utf-8")
         for fragment in required_fragments:
             if fragment not in text:
-                errors.append(f"active documentation contract drift: {rel}: {fragment}")
+                errors.append(f"current documentation contract drift: {rel}: {fragment}")
 
-    missing_links = _missing_relative_doc_links(tracked)
-    for finding in missing_links:
-        errors.append(f"broken relative documentation link: {finding}")
-
-    canonical_scaffolds = ROOT / "tool/source/scaffolds"
-    packaged_scaffolds = (
-        ROOT / "tool/source/scripts/vibecodekit_mql5/resources/scaffolds"
-    )
-    for packaged in packaged_scaffolds.rglob("*"):
-        if not packaged.is_file():
-            continue
-        rel = packaged.relative_to(packaged_scaffolds)
-        canonical = canonical_scaffolds / rel
-        if not canonical.is_file() or canonical.read_bytes() != packaged.read_bytes():
-            errors.append(f"packaged scaffold resource drift: {rel.as_posix()}")
-
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    structure = (ROOT / "STRUCTURE.md").read_text(encoding="utf-8")
-    if "v3.3.0rc6" not in readme or "release_eligible=false" not in readme:
-        errors.append("root README does not state RC6 and fail-closed release status")
-    if "v3.3.0rc6" not in structure or "Task 18" not in structure:
-        errors.append("STRUCTURE.md does not describe the RC6 native gate")
-
+    # RC6 release documents/workflows are immutable historical compatibility
+    # surfaces; their RC6 labels must remain intact after later candidates.
     for rel in (
         ".github/workflows/release-gate.yml",
         ".github/workflows/rc6-native-evidence-verify.yml",
@@ -227,10 +206,36 @@ def evaluate() -> dict[str, object]:
     ):
         text = (ROOT / rel).read_text(encoding="utf-8")
         if "RC6" not in text:
-            errors.append(f"active workflow is not labeled RC6: {rel}")
+            errors.append(f"historical RC6 workflow label drift: {rel}")
+
+    missing_links = _missing_relative_doc_links(tracked)
+    for finding in missing_links:
+        errors.append(f"broken relative documentation link: {finding}")
+
+    canonical_scaffolds = ROOT / "tool/source/scaffolds"
+    packaged_scaffolds = ROOT / "tool/source/scripts/vibecodekit_mql5/resources/scaffolds"
+    for packaged in packaged_scaffolds.rglob("*"):
+        if not packaged.is_file():
+            continue
+        rel = packaged.relative_to(packaged_scaffolds)
+        canonical = canonical_scaffolds / rel
+        if not canonical.is_file() or canonical.read_bytes() != packaged.read_bytes():
+            errors.append(f"packaged scaffold resource drift: {rel.as_posix()}")
+
+    # Root release surfaces intentionally remain the last released/validated
+    # RC6 state until an RC7 release promotion happens. This is distinct from
+    # the source package candidate version.
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    structure = (ROOT / "STRUCTURE.md").read_text(encoding="utf-8")
+    if RC6_VERSION not in readme or "release_eligible=false" not in readme:
+        errors.append("root README no longer preserves RC6 fail-closed release status")
+    if RC6_VERSION not in structure or "Task 18" not in structure:
+        errors.append("STRUCTURE.md no longer preserves the RC6 native gate history")
+
     return {
         "ok": not errors,
-        "version": VERSION,
+        "version": current_version,
+        "historical_release_version": RC6_VERSION,
         "tracked_files": len(tracked),
         "required_paths": len(REQUIRED_PATHS),
         "command_count": len(catalog_tools),
@@ -252,11 +257,11 @@ def main() -> int:
         print(json.dumps(result, indent=2))
     elif result["ok"]:
         print(
-            f"RC6 repository hygiene: PASS "
-            f"({result['tracked_files']} tracked files; {result['required_paths']} required paths)"
+            f"Repository hygiene: PASS ({result['version']}; "
+            f"{result['tracked_files']} tracked files; {result['required_paths']} required paths)"
         )
     else:
-        print("RC6 repository hygiene: FAIL")
+        print("Repository hygiene: FAIL")
         for error in result["errors"]:
             print(f"- {error}")
     return 0 if result["ok"] else 1

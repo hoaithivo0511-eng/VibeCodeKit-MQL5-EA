@@ -1,0 +1,151 @@
+name: RC7 GitHub Native Compile
+run-name: vkmql-native-${{ inputs.request_id || github.sha }}
+
+on:
+  pull_request:
+    paths:
+      - '.github/actions/mql5-native-compile/**'
+      - '.github/workflows/rc7-github-native-compile.yml'
+      - 'scripts/native/ProbeEA.mq5'
+      - 'tool/source/scripts/vibecodekit_mql5/capability.py'
+      - 'tool/source/scripts/vibecodekit_mql5/compile.py'
+      - 'tool/source/scripts/vibecodekit_mql5/compile_core.py'
+      - 'tool/source/scripts/vibecodekit_mql5/compile_backends.py'
+      - 'tool/source/scripts/vibecodekit_mql5/compile_runner.py'
+      - 'tool/source/scripts/vibecodekit_mql5/execution_sources.py'
+      - 'tool/source/scripts/vibecodekit_mql5/github_actions_client.py'
+      - 'tool/source/scripts/vibecodekit_mql5/github_compile_backend.py'
+      - 'tool/source/scripts/vibecodekit_mql5/github_compile_evidence.py'
+      - 'tool/source/scripts/vibecodekit_mql5/resources/github/**'
+      - 'tool/source/tests/test_phase31_compile_core_rc7.py'
+      - 'tool/source/tests/test_phase33_github_compile_backend.py'
+      - 'tool/source/tests/test_phase35_rc7_backend_routing.py'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: MQL5 target relative to repository root
+        required: true
+        default: scripts/native/ProbeEA.mq5
+      enable_native_run:
+        description: Run the Windows MetaEditor stage when installer secret is configured
+        type: boolean
+        required: true
+        default: true
+      request_id:
+        description: Optional caller correlation id used by vkmql-check compile
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  fast-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tool/source/pyproject.toml
+      - name: Install RC7 source and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install './tool/source[dev]'
+      - name: Run focused compile/evidence regression
+        run: |
+          cd tool/source
+          python -m pytest -q \
+            tests/test_phase25_native_release_contract.py \
+            tests/test_phase31_compile_core_rc7.py \
+            tests/test_phase33_github_compile_backend.py \
+            tests/test_phase35_rc7_backend_routing.py
+      - name: Parse native compile PowerShell
+        shell: pwsh
+        run: |
+          $text = Get-Content -Raw .github/actions/mql5-native-compile/Invoke-VKMql5Compile.ps1
+          [void][scriptblock]::Create($text)
+          Write-Host "RC7 native compile PowerShell syntax: PASS"
+      - name: Compile Python backend modules
+        run: |
+          python -m py_compile \
+            tool/source/scripts/vibecodekit_mql5/capability.py \
+            tool/source/scripts/vibecodekit_mql5/compile.py \
+            tool/source/scripts/vibecodekit_mql5/compile_core.py \
+            tool/source/scripts/vibecodekit_mql5/compile_backends.py \
+            tool/source/scripts/vibecodekit_mql5/compile_runner.py \
+            tool/source/scripts/vibecodekit_mql5/github_actions_client.py \
+            tool/source/scripts/vibecodekit_mql5/github_compile_backend.py \
+            tool/source/scripts/vibecodekit_mql5/github_compile_evidence.py
+
+  native-secret-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.gate.outputs.enabled }}
+    steps:
+      - id: gate
+        shell: bash
+        env:
+          MT5_INSTALLER_URL: ${{ secrets.MT5_INSTALLER_URL }}
+        run: |
+          if [ -n "$MT5_INSTALLER_URL" ]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'MT5_INSTALLER_URL is not configured; native Windows compile remains UNTESTABLE for this run.'
+          fi
+
+  native-compile:
+    needs: [fast-gate, native-secret-gate]
+    if: >-
+      needs.native-secret-gate.outputs.enabled == 'true' &&
+      (github.event_name != 'workflow_dispatch' || inputs.enable_native_run)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Compile ProbeEA or requested target with native MetaEditor
+        uses: ./.github/actions/mql5-native-compile
+        with:
+          target: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'scripts/native/ProbeEA.mq5' }}
+          project-root: .
+          evidence-dir: evidence/compile
+          installer-url: ${{ secrets.MT5_INSTALLER_URL }}
+          installer-sha256: ${{ secrets.MT5_INSTALLER_SHA256 }}
+          github-token: ${{ github.token }}
+          expected-commit: ${{ github.sha }}
+          warm-stdlib: auto
+          kit-version: 3.3.0rc7
+      - name: Validate machine-readable GitHub compile evidence
+        if: always()
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = Join-Path $env:GITHUB_WORKSPACE 'tool/source/scripts'
+          @'
+          import json
+          from pathlib import Path
+          from vibecodekit_mql5.github_compile_evidence import validate_github_compile_record
+
+          path = Path('evidence/compile/result.json')
+          if not path.is_file():
+              raise SystemExit('native compile did not emit evidence/compile/result.json')
+          result = validate_github_compile_record(json.loads(path.read_text(encoding='utf-8')))
+          print(json.dumps(result.to_dict(), indent=2))
+          if not result.ok:
+              raise SystemExit(1)
+          '@ | python -
+      - name: Upload native compile evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: vkmql-rc7-native-compile-${{ github.sha }}
+          if-no-files-found: error
+          path: evidence/compile/

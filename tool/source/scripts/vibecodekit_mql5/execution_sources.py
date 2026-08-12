@@ -1,16 +1,18 @@
 """Execution source classification for compile/backtest evidence.
 
 This module intentionally distinguishes real execution from imported, fixture,
-or stub outputs. Only actual MetaEditor/MT5 execution may become release evidence.
+or stub outputs. Only actual MetaEditor/MT5 execution with independently
+validated provenance may become release evidence.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Literal, Any
+from typing import Any, Literal
 
 CompileSource = Literal[
     "actual_metaeditor",
+    "github_actions_metaeditor",
     "wine_metaeditor",
     "remote_worker_metaeditor",
     "imported_log",
@@ -45,13 +47,12 @@ class SourceAssessment:
         return asdict(self)
 
 
-def assess_compile_source(source: str | None) -> SourceAssessment:
+def assess_compile_source(
+    source: str | None,
+    *,
+    provenance_verified: bool = False,
+) -> SourceAssessment:
     src = (source or "unknown").strip().lower()
-    # Wine is a useful development/CI backend, but it is not release
-    # authority unless a separately attested Windows-native/remote run exists.
-    # Keeping it untrusted here prevents a local compatibility run from being
-    # misrepresented as production compile evidence.
-    trusted = src in {"actual_metaeditor", "remote_worker_metaeditor"}
     if src == "stub":
         return SourceAssessment("compile", src, False, "Stub output is not compile evidence.")
     if src == "imported_log":
@@ -60,7 +61,21 @@ def assess_compile_source(source: str | None) -> SourceAssessment:
         return SourceAssessment("compile", src, False, "Compile source is unknown.")
     if src == "wine_metaeditor":
         return SourceAssessment("compile", src, False, "Wine compile is development/CI evidence, not release authority.")
-    if trusted:
+    if src == "github_actions_metaeditor":
+        if provenance_verified:
+            return SourceAssessment(
+                "compile",
+                src,
+                True,
+                "Compile was produced by a Windows GitHub Actions MetaEditor backend with verified provenance.",
+            )
+        return SourceAssessment(
+            "compile",
+            src,
+            False,
+            "GitHub Actions source labels are not trusted until Windows runner, source binding and artifact provenance are verified.",
+        )
+    if src in {"actual_metaeditor", "remote_worker_metaeditor"}:
         return SourceAssessment("compile", src, True, "Compile was produced by a trusted MetaEditor execution backend.")
     return SourceAssessment("compile", src, False, "Unrecognized compile source is not trusted for release.")
 

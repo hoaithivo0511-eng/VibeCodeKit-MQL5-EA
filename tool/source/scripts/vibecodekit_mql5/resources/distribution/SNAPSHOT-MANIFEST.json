@@ -1,15 +1,15 @@
 {
-  "file_count": 48,
+  "file_count": 51,
   "files": [
     {
       "path": "agent-contract.json",
-      "sha256": "97442276ffaa1e9429d41c081575b74d95a9085fb8a46b80b302118292f0c331",
-      "size": 1445
+      "sha256": "845ddb37fcf9e7201bcdd18b8fc5f95e978d466811b02c4683530f2e037788a0",
+      "size": 1812
     },
     {
       "path": "pyproject.toml",
-      "sha256": "04a4dbef381d7725077de9d3becedd552659fd2fd4d87b245107df8c4d677b80",
-      "size": 11423
+      "sha256": "131b4e2b131ee79ce367f367214df16a9ab058adae8acb94b0b19b2c552a5ff1",
+      "size": 11422
     },
     {
       "path": "tests/__init__.py",
@@ -148,8 +148,8 @@
     },
     {
       "path": "tests/test_phase28_rc6_baseline.py",
-      "sha256": "aa24ea348b69962ebe103c1073a21038e14bbfa4759ac6ee253563f860f81f50",
-      "size": 1890
+      "sha256": "599301a3f1f4ab4872de01a2667a408a98f5149c3de98fdd35c83c85c61b0e86",
+      "size": 1868
     },
     {
       "path": "tests/test_phase29_generated_review_parity.py",
@@ -167,6 +167,11 @@
       "size": 1371
     },
     {
+      "path": "tests/test_phase31_compile_core_rc7.py",
+      "sha256": "449a4dc8ecd81084fdd731107b43c0105e5fdd262861f142fe48ed6654cb7fac",
+      "size": 2419
+    },
+    {
       "path": "tests/test_phase31_reproducible_wheel.py",
       "sha256": "cdc54dd9f290391de162b5fbfcb53c88069c68e37bf6c5dfb279def02bf9caac",
       "size": 2415
@@ -177,14 +182,24 @@
       "size": 13527
     },
     {
+      "path": "tests/test_phase33_github_compile_backend.py",
+      "sha256": "0773acb4367adc065637edd453ec3ada3345d4d50486a34305c9f4923066312f",
+      "size": 4918
+    },
+    {
       "path": "tests/test_phase33_rc6_hygiene.py",
       "sha256": "a59d65f34614147b786eac192ac04990b5ca2f1909cafa53712f727e49ca0a95",
       "size": 5908
     },
     {
       "path": "tests/test_phase34_documentation_runtime.py",
-      "sha256": "9aa0972a6627ff39a138a8abc86bd40cdbb6f45f9839623d05e79766057ba95f",
-      "size": 2988
+      "sha256": "4a7596f41a8efad76314a6f4caea83f74570a54289e04fe89c9966fb5809f8af",
+      "size": 3085
+    },
+    {
+      "path": "tests/test_phase35_rc7_backend_routing.py",
+      "sha256": "b6a4c0334926bb53b8d9ae2fbbbd14762d993a1e4ad44cf8859095421374e314",
+      "size": 5886
     },
     {
       "path": "tests/test_phase3_codegen.py",
@@ -238,8 +253,8 @@
     },
     {
       "path": "tool-catalog.json",
-      "sha256": "85a6ee0c1978348228133b30401bad49bf3f92b6564558e508396fcfb1534954",
-      "size": 55295
+      "sha256": "3e51a318678156ece0d832bf2a6f7439c5bea8fd7415d9698993a478bafab0d6",
+      "size": 54353
     }
   ],
   "kind": "wheel-verification-snapshot",

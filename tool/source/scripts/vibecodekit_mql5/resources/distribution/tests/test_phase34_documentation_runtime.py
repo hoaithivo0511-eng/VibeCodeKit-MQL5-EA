@@ -1,4 +1,4 @@
-"""RC6 documentation runtime and MCP bridge smoke contracts."""
+"""Documentation runtime and MCP bridge smoke contracts."""
 
 from __future__ import annotations
 
@@ -36,6 +36,9 @@ def test_vibecodekit_bridge_starts_with_30_tools() -> None:
 
 
 def test_docs_ea_render_writes_html_and_markdown(tmp_path: Path) -> None:
+    from vibecodekit_mql5._version import get_version
+
+    current_version = get_version()
     spec = {
         "name": "DocsSmokeEA",
         "preset": "trend",
@@ -63,7 +66,7 @@ def test_docs_ea_render_writes_html_and_markdown(tmp_path: Path) -> None:
         )
         assert result["ok"] is True
         assert set(result["outputs"]) == {"html", "md"}
-        assert "3.3.0rc6" in (tmp_path / "DocsSmokeEA.docs.md").read_text(
+        assert current_version in (tmp_path / "DocsSmokeEA.docs.md").read_text(
             encoding="utf-8"
         )
         return
@@ -91,4 +94,4 @@ def test_docs_ea_render_writes_html_and_markdown(tmp_path: Path) -> None:
     assert set(result["outputs"]) == {"html", "md"}
     for output in result["outputs"].values():
         assert Path(output).is_file()
-    assert "3.3.0rc6" in (tmp_path / "DocsSmokeEA.docs.md").read_text(encoding="utf-8")
+    assert current_version in (tmp_path / "DocsSmokeEA.docs.md").read_text(encoding="utf-8")
