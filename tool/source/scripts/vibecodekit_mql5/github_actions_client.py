@@ -121,15 +121,25 @@ class GitHubActionsClient:
             {"ref": ref, "inputs": inputs or {}},
         )
 
-    def find_run(self, workflow: str, *, head_sha: str, event: str = "workflow_dispatch") -> DispatchedRun | None:
+    def find_run(
+        self,
+        workflow: str,
+        *,
+        head_sha: str,
+        event: str = "workflow_dispatch",
+        request_id: str | None = None,
+    ) -> DispatchedRun | None:
         workflow_id = urllib.parse.quote(workflow, safe="")
         data = self.transport.request_json(
             "GET",
             f"{self.base}/actions/workflows/{workflow_id}/runs?event={event}&per_page=20",
         ) or {}
         for raw in data.get("workflow_runs", []):
-            if str(raw.get("head_sha") or "") == head_sha:
-                return DispatchedRun(int(raw["id"]), head_sha, str(raw.get("html_url") or ""))
+            if str(raw.get("head_sha") or "") != head_sha:
+                continue
+            if request_id and request_id not in str(raw.get("display_title") or raw.get("name") or ""):
+                continue
+            return DispatchedRun(int(raw["id"]), head_sha, str(raw.get("html_url") or ""))
         return None
 
     def wait_for_run(self, run_id: int, *, timeout_sec: int = 3600, interval_sec: float = 2.0) -> dict[str, Any]:
