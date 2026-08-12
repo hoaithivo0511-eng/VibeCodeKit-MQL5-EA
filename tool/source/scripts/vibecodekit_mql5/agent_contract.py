@@ -1,25 +1,8 @@
 """mql5-agent-contract — emit the kit's machine-readable agent contract.
 
-While ``tool-catalog.json`` (see :mod:`vibecodekit_mql5.manifest`) is the flat
-list of every CLI command, the *agent contract* is the higher-level handshake
-an external agent (Devin / Claude Code / Cursor) reads first. It answers:
-
-  * what kit + version + flavor am I talking to?
-  * what is the canonical project layout? (mt5-native)
-  * which entrypoints should I drive? (the vkmql-* verbs, when present)
-  * where do artifacts live? (tool catalog, evidence manifest)
-  * what does "release eligible" actually require?
-  * which lint/policy rule namespaces exist?
-  * which OS environments are supported by CI?
-
-The document is regenerated deterministically so it can live in version
-control and be diffed in review.
-
-CLI::
-
-    python -m vibecodekit_mql5.agent_contract --emit > agent-contract.json
-    python -m vibecodekit_mql5.agent_contract --emit --output agent-contract.json
-    python -m vibecodekit_mql5.agent_contract --validate agent-contract.json
+While ``tool-catalog.json`` is the flat list of CLI commands, the agent
+contract is the higher-level handshake for external agents. It is generated
+deterministically from the canonical package version and runtime policy.
 """
 from __future__ import annotations
 
@@ -39,22 +22,27 @@ CANONICAL_LAYOUT = "mt5"
 TOOL_CATALOG = "tool-catalog.json"
 EVIDENCE_MANIFEST = "evidence/manifest.json"
 
-# High-level verbs an agent should prefer. Listed in driving order. Only the
-# ones actually declared in pyproject.toml are emitted, so this stays correct
-# whether or not the vkmql-* entrypoints have been wired yet.
 PRIMARY_ENTRYPOINTS = ("vkmql-new", "vkmql-check", "vkmql-ship")
-# Legacy fallback so the contract is never empty before the vkmql-* verbs land.
 LEGACY_PRIMARY = ("mql5-init", "mql5-auto-build", "mql5-ship")
-
 SUPPORTED_ENVIRONMENTS = ("linux", "windows")
 
-# Release gate — mirrors the kit's hard rule: nothing is release-eligible
-# without a signed evidence manifest produced from real tooling.
 RELEASE_POLICY = {
     "requires_evidence_manifest": True,
     "evidence_manifest_path": EVIDENCE_MANIFEST,
     "release_eligible_field": "release_eligible",
-    "accepted_compile_evidence": ["actual_metaeditor", "remote_worker_metaeditor"],
+    "accepted_compile_evidence": [
+        "actual_metaeditor",
+        "remote_worker_metaeditor",
+        "github_actions_metaeditor",
+    ],
+    "compile_evidence_conditions": {
+        "github_actions_metaeditor": (
+            "trusted only after exact Windows runner, repository, commit/tree, "
+            "correlated workflow run/job, ProbeEA, 0-error/0-warning, EX5 and "
+            "artifact hash/size provenance validation"
+        ),
+        "wine_metaeditor": "development/diagnostic only; not release authority",
+    },
     "accepted_backtest_evidence": [
         "actual_mt5_strategy_tester",
         "remote_worker_strategy_tester",
@@ -73,20 +61,16 @@ RELEASE_POLICY = {
 def _entrypoints() -> dict:
     scripts = _load_pyproject_scripts()
     declared = set(scripts)
-    primary = [n for n in PRIMARY_ENTRYPOINTS if n in declared]
+    primary = [name for name in PRIMARY_ENTRYPOINTS if name in declared]
     if not primary:
-        primary = [n for n in LEGACY_PRIMARY if n in declared]
-    return {
-        "primary": primary,
-        "count": len(declared),
-        "catalog": TOOL_CATALOG,
-    }
+        primary = [name for name in LEGACY_PRIMARY if name in declared]
+    return {"primary": primary, "count": len(declared), "catalog": TOOL_CATALOG}
 
 
 def _rule_namespaces() -> list[dict]:
     return [
-        {"namespace": ns, "rule_count": len(rr.by_namespace(ns))}
-        for ns in rr.NAMESPACES
+        {"namespace": namespace, "rule_count": len(rr.by_namespace(namespace))}
+        for namespace in rr.NAMESPACES
     ]
 
 
@@ -112,7 +96,6 @@ def build_contract() -> dict:
 
 
 def validate_contract(contract: dict) -> list[str]:
-    """Return human-readable validation errors; empty list means consistent."""
     errors: list[str] = []
     if contract.get("schema_version") != SCHEMA_VERSION:
         errors.append(
@@ -128,33 +111,36 @@ def validate_contract(contract: dict) -> list[str]:
         )
     if not contract.get("entrypoints", {}).get("primary"):
         errors.append("entrypoints.primary is empty")
-    declared_ns = {n["namespace"] for n in contract.get("rule_namespaces", [])}
+    declared_ns = {item["namespace"] for item in contract.get("rule_namespaces", [])}
     if declared_ns != set(rr.NAMESPACES):
         errors.append(
             f"rule_namespaces {sorted(declared_ns)} != {sorted(rr.NAMESPACES)}"
         )
+    accepted = set(contract.get("release_policy", {}).get("accepted_compile_evidence", []))
+    if "github_actions_metaeditor" not in accepted:
+        errors.append("release_policy does not declare provenance-gated github_actions_metaeditor")
     return errors
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog="mql5-agent-contract", description=__doc__.splitlines()[0]
     )
-    grp = p.add_mutually_exclusive_group(required=True)
-    grp.add_argument("--emit", action="store_true", help="Emit the agent contract JSON")
-    grp.add_argument(
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--emit", action="store_true", help="Emit the agent contract JSON")
+    group.add_argument(
         "--validate",
         type=Path,
         default=None,
         help="Validate an existing agent-contract.json against the live kit",
     )
-    p.add_argument(
+    parser.add_argument(
         "--output",
         type=Path,
         default=None,
         help="Write the contract to this path (default: stdout)",
     )
-    args = p.parse_args(argv)
+    args = parser.parse_args(argv)
 
     if args.emit:
         text = json.dumps(build_contract(), indent=2, sort_keys=False) + "\n"
@@ -172,8 +158,8 @@ def main(argv: list[str] | None = None) -> int:
         contract = json.loads(args.validate.read_text(encoding="utf-8"))
         errors = validate_contract(contract)
         if errors:
-            for err in errors:
-                print(f"agent-contract:error: {err}", file=sys.stderr)
+            for error in errors:
+                print(f"agent-contract:error: {error}", file=sys.stderr)
             return 1
         print(f"{args.validate}: ok")
         return 0
