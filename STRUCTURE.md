@@ -2,6 +2,8 @@
 
 This map describes the **role** of each repository area rather than embedding file/byte counts that become stale after maintenance commits.
 
+Frozen/published release boundary: **v3.3.0rc6**. The active candidate source may advance independently, but the historical RC6 boundary remains explicit and immutable.
+
 ```text
 /
 ├── .github/workflows/          deterministic CI release gates
