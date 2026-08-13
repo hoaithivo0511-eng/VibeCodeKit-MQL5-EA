@@ -10,7 +10,7 @@ ebc1516ef33ea9f85b35b8ab4fb4f90723e582e1f38c6d576bfb539b517193de  ./.github/work
 46c58523fd8bed7ce00ad7d183b530f94dc7f52083861935f8d9582266787f27  ./.github/workflows/rc6-native-evidence-verify.yml
 a1edf0754065900410ca87edf29a71eefdf5863e6353f53da8f4d7c16c38877d  ./.github/workflows/rc6-package-integration.yml
 3770049b26a343b55d856891ba682baa684096f14b0ea949090a9596816bf17d  ./.github/workflows/rc6-prerelease-publish.yml
-0341de3c2a20fa81a9ddc8852cdb3858c2abf3474a4076d1d3102688ff0a7b8d  ./.github/workflows/rc7-github-native-compile.yml
+36a162eec029ca2954690731649beb416cf960d49a48f38a85ab3c48b98e55c0  ./.github/workflows/rc7-github-native-compile.yml
 91e82c56a259a578be8e20c9eac4c5d9163d6f395e4a7b92b2a02fd1c64d050e  ./.github/workflows/rc7-package-integration.yml
 e318d0296e9536fad35ed58f7450fcd4f85426d4e98aba424cd5c3d1c60aa416  ./.github/workflows/release-gate.yml
 3acbc8858595a7308e87955b24466a7a1a573689312471622f8e763f715f0e21  ./.github/workflows/repo-manifest-check.yml
@@ -239,7 +239,7 @@ af6b0d08600706bbf680ee08ca3e5831b50bc3dd3ae7699275a5fd5a9ea0893c  ./docs/release
 a572d698c97c90376c6468a3a24cb76dfd5df33feba048c681a0b57aa99def9a  ./docs/release/v3.3.0rc6/native-evidence/templates/restart-recovery.template.json
 d5f55f90b1b2bacad48e73e951d9ed62d399ec3a60b9381cd8f4cdcf2ce57fa5  ./docs/release/v3.3.0rc7/FULL-E2E-AUDIT-2026-08-12.md
 3c86210f2cd257a547daa98bca2e3d0cf57384f66e073a576ae0e3572193022a  ./docs/release/v3.3.0rc7/RC7-CANDIDATE-STATUS.md
-b62521f150d4462f5b810f6b27ca7442ef39a94f79bd1074981bd57a2a1699bb  ./docs/release/v3.3.0rc7/RC7-HARDENING-REPORT-2026-08-13.md
+ea2648cff02920d72be4cced9b4607eacf3ab3591afabd88e2e0b71ae330b649  ./docs/release/v3.3.0rc7/RC7-HARDENING-REPORT-2026-08-13.md
 d12a4ecbfacd5be64ffcfed7f0402df961ec1f3b9339bcaafb13dd002d5b81b9  ./native/NATIVE-VALIDATION-HANDOFF.md
 f413d908b8715993e90be96b66bdc5cbeddee5f0623d2e4a229d5b6f98f7def6  ./native/workers-windows/run_backtest.ps1
 4547e1d8e8b297fa806855e989cf0f816ca0605024e74c3334682aa7396940b7  ./native/workers-windows/run_compile.ps1
@@ -646,7 +646,7 @@ a398bd107252f873bb1bfc9a2c80087a1f30f53b8fbf1ea3363c16977b37edbd  ./tool/source/
 e3703a3422d075e6a0f8037a330b4c94e648e62aceb685924a444191dda4ed9e  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CRiskGuard.mqh
 306a7cc4fda374e2789e1662219f4dd2ad6eee3b9ed863622b7533eef9ab6e3c  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CSafeTradeManager.mqh
 0ad7b5a3ad26256111ef83deb98a26a4515d76933ee2aba28632ba0a0fb8b20b  ./tool/source/scripts/vibecodekit_mql5/resources/Include/CSpreadGuard.mqh
-fbc14bfd0c0c33e77f690d99bd40be8ca0779702d96c627bb1b403bff7a0523c  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/SNAPSHOT-MANIFEST.json
+6e25eabfb5c8425526cd4fdd2cb56e2073f7d88fa493b778aacd01ae7a6fbcd2  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/SNAPSHOT-MANIFEST.json
 845ddb37fcf9e7201bcdd18b8fc5f95e978d466811b02c4683530f2e037788a0  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/agent-contract.json
 208a6febb07ecc89cad63ba4099d69a68e2a1e1ad6247aa460e145051b7b06b6  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/pyproject.toml
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/__init__.py
@@ -690,7 +690,7 @@ b6a4c0334926bb53b8d9ae2fbbbd14762d993a1e4ad44cf8859095421374e314  ./tool/source/
 3abd54d32fde360a370f1c88798df6d3584b42241aef2021b34b36fe4727b1db  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase36_native_smoke_hardening.py
 4d4a9b5c6d16b94fb6c5b39e1726a0461d3eb80b003b1a142b4533dc7bdf900e  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase37_canonical_native_probe.py
 7b41d70f09086c20fa8db98a480ae9825c2e1860361cf41306332554cd4db086  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase38_rc7_full_e2e_truth.py
-c2a213f66281a7cf2d1cadbf50dec1a53b4f9ae743e3ab8e3b4fd358ab4e13ee  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase39_rc7_release_hardening.py
+050151e47cd0b3b7138195838000dcf5c20f5cddd1d4632b84e911bfbef1abee  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase39_rc7_release_hardening.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase4_auto_build_ir.py
 28dac7b849c322a55445bd648fca4e3d0b44cefc37ff929e46c4f67738bedcef  ./tool/source/scripts/vibecodekit_mql5/resources/distribution/tests/test_phase4_legacy_bridge.py
@@ -941,7 +941,7 @@ b6a4c0334926bb53b8d9ae2fbbbd14762d993a1e4ad44cf8859095421374e314  ./tool/source/
 3abd54d32fde360a370f1c88798df6d3584b42241aef2021b34b36fe4727b1db  ./tool/source/tests/test_phase36_native_smoke_hardening.py
 4d4a9b5c6d16b94fb6c5b39e1726a0461d3eb80b003b1a142b4533dc7bdf900e  ./tool/source/tests/test_phase37_canonical_native_probe.py
 7b41d70f09086c20fa8db98a480ae9825c2e1860361cf41306332554cd4db086  ./tool/source/tests/test_phase38_rc7_full_e2e_truth.py
-c2a213f66281a7cf2d1cadbf50dec1a53b4f9ae743e3ab8e3b4fd358ab4e13ee  ./tool/source/tests/test_phase39_rc7_release_hardening.py
+050151e47cd0b3b7138195838000dcf5c20f5cddd1d4632b84e911bfbef1abee  ./tool/source/tests/test_phase39_rc7_release_hardening.py
 e16c60aa108999927f439637f0fd1e9ac4ce663f52a690697471006387a6b63c  ./tool/source/tests/test_phase3_codegen.py
 474584c8dbda6cd2e0d9603620cf3a2a59f8cb6c2456be5ca32991562643ac54  ./tool/source/tests/test_phase4_auto_build_ir.py
 28dac7b849c322a55445bd648fca4e3d0b44cefc37ff929e46c4f67738bedcef  ./tool/source/tests/test_phase4_legacy_bridge.py

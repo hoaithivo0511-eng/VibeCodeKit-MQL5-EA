@@ -217,3 +217,10 @@ def test_active_rc7_methodology_and_supply_chain_docs_are_current() -> None:
     assert "actions/setup-python@v" not in workflows
     assert "actions/upload-artifact@v" not in workflows
     assert (SOURCE_ROOT / "requirements-ci.lock").is_file()
+
+    native_workflow = (
+        REPO_ROOT / ".github" / "workflows" / "rc7-github-native-compile.yml"
+    ).read_text(encoding="utf-8")
+    assert "https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe" in native_workflow
+    assert "a879492dd9d7b168d0538edd1c0dc5604ca43dc0951825b3501818e8b18f4c93" in native_workflow
+    assert "using the SHA-pinned canonical MetaQuotes installer" in native_workflow

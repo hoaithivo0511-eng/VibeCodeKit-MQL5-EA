@@ -25,6 +25,8 @@ Baseline comparison:
 - repaired runtime type-hint resolution and uniform MCP required-argument checks;
 - synchronized active release/Retro documentation and added A13/A14 guard truth;
 - pinned release dependencies and every GitHub Action to an immutable commit SHA;
+- made the native GitHub gate fall back to the canonical MetaQuotes installer
+  only when its previously observed SHA-256 matches exactly;
 - expanded the active RC7 package gate to run Ruff, source, source ZIP, wheel,
   selftests, reproducibility, clean JUnit assertions, and upload both artifacts.
 

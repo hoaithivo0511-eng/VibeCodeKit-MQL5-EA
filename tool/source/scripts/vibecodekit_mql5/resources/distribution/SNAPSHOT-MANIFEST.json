@@ -218,8 +218,8 @@
     },
     {
       "path": "tests/test_phase39_rc7_release_hardening.py",
-      "sha256": "c2a213f66281a7cf2d1cadbf50dec1a53b4f9ae743e3ab8e3b4fd358ab4e13ee",
-      "size": 7297
+      "sha256": "050151e47cd0b3b7138195838000dcf5c20f5cddd1d4632b84e911bfbef1abee",
+      "size": 7723
     },
     {
       "path": "tests/test_phase3_codegen.py",
