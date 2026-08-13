@@ -321,7 +321,7 @@ def test_lint_review_and_release_helpers_handle_nonhappy_paths(
     assert check_all._stage_lint(tmp_path).status == "PASS"
 
     monkeypatch.setattr(
-        "vibecodekit_mql5.ea_doc_analyzer.read_mql_files",
+        "vibecodekit_mql5.ea_doc_analyzer.read_reachable_mql_files",
         lambda _project: (_ for _ in ()).throw(RuntimeError("read failed")),
     )
     assert check_all._stage_lint(tmp_path).status == "UNTESTABLE"

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .deadcode import find_dead_code
-from .ea_doc_analyzer import analyze_project, read_mql_files
+from .ea_doc_analyzer import analyze_project, read_reachable_mql_files
 from .mq5_symbols import build_symbol_graph
 from .structure_audit import audit_structure
 
@@ -60,7 +60,7 @@ def code_quality_issues(files: dict[str, str]) -> tuple[list[dict[str, Any]], di
 
 
 def _all_text(project: Path) -> tuple[str, dict[str, str]]:
-    files = read_mql_files(project)
+    files = read_reachable_mql_files(project)
     return "\n".join(f"\n// FILE: {k}\n{v}" for k, v in files.items()), files
 
 
@@ -216,8 +216,8 @@ def _evidence_ok(manifest: dict[str, Any], *keys: str) -> bool:
 
 def review_project(project: str | Path, profile: str = "auto") -> dict[str, Any]:
     project = Path(project)
-    analysis = analyze_project(project)
     text, files = _all_text(project)
+    analysis = analyze_project(project, files=files)
     lower = text.lower()
     ir_strategy = _ea_ir_strategy(project)
     if ir_strategy is not None and (ir_strategy[0] or ir_strategy[1]):
@@ -241,13 +241,14 @@ def review_project(project: str | Path, profile: str = "auto") -> dict[str, Any]
 
     # Execution review
     has_raw_ctrade = bool(re.search(r"\bCTrade\s+\w+\s*;", text))
-    has_async = "CAsyncTradeExecutor" in text and "OnTradeTransaction" in text
+    has_async = "CAsyncTradeExecutor" in text
+    has_transaction_handler = "OnTradeTransaction" in text
     raw_close_loop = bool(re.search(r"for\s*\([^)]*PositionsTotal\s*\([^)]*\)[\s\S]{0,1500}?\.PositionClose\s*\(", text, flags=re.IGNORECASE | re.MULTILINE))
-    if raw_close_loop and not has_async:
+    if raw_close_loop and not (has_async and has_transaction_handler):
         add_issue(issues, "critical", "execution", "Raw synchronous PositionClose loop", "PositionClose appears inside a PositionsTotal loop without async executor.", "Use async basket close engine with OnTradeTransaction tracking.")
-    if has_async and "OnTradeTransaction" not in text:
+    if has_async and not has_transaction_handler:
         add_issue(issues, "critical", "execution", "Async execution without transaction hook", "CAsyncTradeExecutor detected but no OnTradeTransaction hook.", "Forward OnTradeTransaction to async executor.")
-    if has_raw_ctrade and not has_async:
+    if has_raw_ctrade and not (has_async and has_transaction_handler):
         add_issue(issues, "warn", "execution", "Raw CTrade usage", "CTrade object detected without async/safe wrapper.", "Wrap order execution in a safe trade manager with retry/logging.")
 
     # P1.1: Huge Sleep in OnTick

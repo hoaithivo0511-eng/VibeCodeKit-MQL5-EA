@@ -1,154 +1,98 @@
-# VibeCodeKit MQL5 v3.3.0rc7 — integrated candidate status
+# VibeCodeKit MQL5 v3.3.0rc7 — candidate status
 
-Status date: **2026-08-12**
+Status date: **2026-08-13**
 
 ## Verdict
 
-`v3.3.0rc7` is the **current integrated source/tool line** in the repository. It has passed repository integrity, source regression, package reproducibility, installed-wheel verification and Windows-native MetaEditor compilation on the audited runtime baseline.
-
-It is **not a production/live release claim**.
-
-```text
-repository/source/package/native-compile  VERIFIED
-Strategy Tester                           NOT PROVEN
-restart/recovery                          NOT PROVEN
-broker parity                             NOT PROVEN
-walk-forward / forward                    NOT PROVEN
-live readiness                            NOT PROVEN
-release_eligible                          false
-```
-
-Latest published GitHub tester pre-release remains `v3.3.0rc6`. RC7 has not yet been promoted to a GitHub Release/tag.
-
-## Audited runtime baseline
-
-PR #12 merged the RC7 audit-remediation line into `main`.
+RC7 is the current source/tool candidate. The 2026-08-13 hardening pass closes
+the source/wheel version drift, optional-header false positives, cache-order
+instability, runtime annotation defect, MCP invalid-parameter inconsistency,
+methodology drift and mutable GitHub Action references found by the Full
+VibecodeV5 audit.
 
 ```text
-main commit : 44d449eefde51446a1006f583017d2741c57f7df
-source tree : 21079e4d6e6c43954e1b90b119ae34e24073e1d8
-version     : 3.3.0rc7
+repository/source/package/static E2E       VERIFIED LOCALLY
+source archive / installed wheel parity    VERIFIED LOCALLY
+Windows MetaEditor on final hardening tree UNTESTABLE
+MT5 Strategy Tester                        UNTESTABLE
+restart/recovery and broker parity         UNTESTABLE
+forward/live readiness                     UNTESTABLE
+release_eligible                           false
 ```
 
-A later docs-only audit branch may have a different Git tree SHA while leaving runtime compile code unchanged. Exact run provenance is always recorded with the run that produced the evidence.
+This is a tool-distribution candidate, not an EA profitability, production or
+live-trading claim.
 
-## Source regression evidence
+## Online baseline and hardening identity
 
-Post-merge `main` Development Gate:
+The hardening branch starts from the latest integrated online `main`:
 
 ```text
-workflow run : 31615494049
-Python       : 3.10 / 3.11 / 3.12
-result       : PASS
+baseline commit : c4924211d3dee507957c6ec2590c21d0563cfc59
+baseline tree   : c444cfc3389719ac5ef8a5aaf32d2f1eed6c287d
+merge           : PR #13 — RC7 Full E2E audit and docs truth sync
+version         : 3.3.0rc7
 ```
 
-Package/full candidate gate on the same runtime code line:
+Latest published GitHub pre-release remains `v3.3.0rc6`. RC7 has not been
+tagged or published.
+
+## Hardening verification
+
+Current clean local gate:
 
 ```text
-workflow run : 31615250775
-source tests : 283 PASS
-selftest     : 13/13 PASS
-catalog      : 139 tools consistent
-entrypoints  : 139 callable
-JUnit        : failures=0 errors=0 skipped=0
+source tests               : 300 PASS
+JUnit failures/errors/skip : 0 / 0 / 0
+selftest                   : 13/13 PASS
+Ruff E4/E7/E9/F            : PASS (--no-cache)
+catalog                    : 139 tools consistent
+entrypoints                : 139 callable
+distribution snapshot      : PASS
+public preset matrix       : trend / mean-reversion / breakout / hedging-multi PASS
+MCP protocol matrix        : 4/4 bridges PASS
+release fail-closed        : PASS
 ```
 
-The package gate built the RC7 wheel twice under the same deterministic epoch and obtained the same wheel SHA-256:
+The RC7 package workflow now verifies the source checkout, a deterministic
+source archive and the installed wheel with the full shipped suite. Its source
+selftest is forced through `PYTHONPATH=scripts`, so it can no longer
+accidentally import an already-installed wheel and hide source metadata drift.
 
-```text
-d55725c7c9f7be614e2757e2c7bacd100bb39f1ab609facdfbcc1695ea5399a3
-```
+## Closed findings
 
-It then installed the wheel in a clean venv outside the checkout and reran selftest successfully.
+1. Package-local `agent-contract.json` is synchronized from the canonical RC7
+   contract by the distribution maintenance workflow.
+2. Project lint, senior review and deep review follow transitive local includes
+   from `.mq5` entrypoints; copied but unused optional headers do not affect the
+   strategy or release verdict.
+3. Cross-file `OnTradeTransaction` satisfies AP-18, and UX-09/UX-10 require
+   actual panel context.
+4. Snapshot integrity ignores only named runtime cache directories while still
+   rejecting arbitrary undeclared files.
+5. `backtest._number` runtime type hints resolve successfully.
+6. All four MCP bridges return JSON-RPC `-32602` for missing required
+   arguments.
+7. Retro documentation and runtime both expose A1–A14.
+8. RC7 CI dependencies are constrained and official GitHub Actions are pinned
+   to immutable commit SHAs.
 
-## Repository integrity evidence
+## Native evidence boundary
 
-Post-merge Repository Manifest Check:
+PR #13's final head `4aca1bbf005ce8cb7d8ddd8a0f0097f8ffcc4c18`
+has the same tree as baseline `main` and has trusted Windows MetaEditor evidence
+with `0 errors, 0 warnings`. The hardening changes modify Python, docs and CI,
+so that earlier evidence is not relabeled as exact-tree evidence for the new
+candidate.
 
-```text
-workflow run : 31615493890
-result       : PASS
-```
+RC7 remains `release_eligible=false` until a final-tree Windows run supplies:
 
-Repository hygiene verifies frozen historical artefacts, derived distribution mirrors and duplicate-content policy without treating intended mirrors as junk.
+- trusted MetaEditor compile log and EX5 provenance;
+- real MT5 Strategy Tester report;
+- required stress/restart-recovery evidence;
+- evidence manifest and approval bound to the final hashes.
 
-## Exact candidate Windows-native compile
+## Historical audit record
 
-Exact candidate before merge:
-
-```text
-candidate commit : b85b97c263d31668f5ca4e21dcf9cac372841a08
-candidate tree   : 21079e4d6e6c43954e1b90b119ae34e24073e1d8
-workflow run     : 31614944493
-job              : 94175295785
-runner           : Windows 2022
-MetaEditor       : 5.0.0.6111
-Result           : 0 errors, 0 warnings
-EX5 size         : 5674 bytes
-EX5 SHA-256      : 7b54945f56d5aea156e30a15ed6dcd4fa3662e48ae1944ee6356911d49efa1f5
-validator        : PASS
-```
-
-## Exact merged-main Windows-native compile
-
-After PR #12 merged, a second isolated harness checked out the exact `main` merge commit and ran that commit's own composite native action:
-
-```text
-source commit : 44d449eefde51446a1006f583017d2741c57f7df
-source tree   : 21079e4d6e6c43954e1b90b119ae34e24073e1d8
-workflow run  : 31615667887
-job           : 94177720870
-runner        : Windows 2022
-MetaEditor    : 5.0.0.6111
-Result        : 0 errors, 0 warnings
-EX5 size      : 5302 bytes
-EX5 SHA-256   : 39fbcc2b15ff304c01e9ef87907e855b0dbef29e3f25d0bcff0776dc1115a7f8
-validator     : PASS
-installer SHA : a879492dd9d7b168d0538edd1c0dc5604ca43dc0951825b3501818e8b18f4c93
-```
-
-The raw MetaEditor target process can return a non-zero process code even when its compile log says `Result: 0 errors, 0 warnings` and the EX5 is present. RC7 therefore treats parsed compile result + artefact evidence as compile authority, not process code alone.
-
-## Native workflow secret semantics
-
-The canonical PR workflow uses repository secrets:
-
-- `MT5_INSTALLER_URL`;
-- `MT5_INSTALLER_SHA256` (recommended as a release trust pin).
-
-When `MT5_INSTALLER_URL` is absent, the canonical Windows stage is intentionally `SKIPPED`/`UNTESTABLE`; its fast/static gate may still PASS but must not be reported as a native compile PASS.
-
-The exact Windows runs above used isolated audit harnesses to obtain real native evidence without adding smoke workflows to the production tree.
-
-## RC7 remediation already integrated
-
-- removed accidental `demo/rc7` / `demo/final` smoke projects and their workflows;
-- classified intended duplicate content and fails closed on unclassified byte-identical files;
-- made `Prepare-VKMql5Toolchain.ps1` the sole toolchain install/stdlib owner;
-- reduced `Invoke-VKMql5Compile.ps1` to prepared-toolchain compile/evidence execution;
-- made `compile_runner` a compatibility/evidence wrapper around canonical compile truth;
-- restored canonical `scripts/native/ProbeEA.mq5` and regression coverage;
-- synchronized derived distribution snapshot + repository manifest;
-- updated RC7 native/backend documentation.
-
-## Full E2E audit follow-up
-
-The 2026-08-12 Full VibecodeV5 audit found two additional items:
-
-1. **Docs truth drift** — active root/English docs still contained RC6 and legacy 8-step wording even though runtime was RC7. This is being corrected by the docs-sync audit branch.
-2. **GitHub-native release-provenance parity** — `EvidenceManifestV2` correctly validates a `github_actions_metaeditor` record before trusting it, but the canonical `validate_release_provenance()` path did not propagate that verification into `assess_compile_source`. A valid GitHub native compile could therefore be rejected by the final ship provenance path. Regression coverage is added with the fix.
-
-The same audit also records a release-hardening recommendation: a GitHub-native compile used as release authority should use a pre-known `MT5_INSTALLER_SHA256` trust pin; merely recording the downloaded installer hash is not equivalent to pinning it before execution.
-
-## What remains blocked
-
-RC7 compile evidence does **not** satisfy these independent runtime stages:
-
-- MT5 Strategy Tester for the target EA;
-- quality/stress evidence derived from real tester runs;
-- abrupt terminal kill + restart/reconcile + no-duplicate-order recovery evidence;
-- broker/profile and cross-broker parity appropriate to the target;
-- walk-forward / forward deployment evidence;
-- owner/release approval bound to the final evidence set.
-
-Until the selected release target requires and passes those gates, `release_eligible=false` is the correct state.
+`FULL-E2E-AUDIT-2026-08-12.md` is retained as a point-in-time report for the
+older `44d449` baseline. It is not the current candidate status.

@@ -39,10 +39,10 @@ from pathlib import Path
 from typing import Any
 
 from . import _agent_io
-from .ea_doc_analyzer import read_mql_files
+from .ea_doc_analyzer import read_reachable_mql_files
 from .ea_senior_review import review_project
 from .line_review import run_line_review
-from .lint import lint_source
+from .lint import lint_sources
 from .modernize import analyze_modernization
 from .scan_ea import analyze_source
 
@@ -77,7 +77,7 @@ def _resolve_files(target: Path) -> tuple[Path, dict[str, str]]:
     if target.is_file():
         root = target.parent
         return root, {target.name: _read(target)}
-    return target, read_mql_files(target)
+    return target, read_reachable_mql_files(target)
 
 
 def _read(path: Path) -> str:
@@ -87,17 +87,16 @@ def _read(path: Path) -> str:
 
 def _lint_issues(files: dict[str, str]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    for rel, text in files.items():
-        for f in lint_source(rel, text):
-            out.append({
-                "severity": _SEV_FROM_LINT.get(f.severity, "warn"),
-                "category": "anti_pattern",
-                "title": f"{f.code}: {f.message}",
-                "evidence": f"[{rel}] line {f.line}:{f.col} {f.message}",
-                "recommendation": "See kit anti-pattern table for remediation.",
-                "line": f.line,
-                "file": rel,
-            })
+    for f in lint_sources(files):
+        out.append({
+            "severity": _SEV_FROM_LINT.get(f.severity, "warn"),
+            "category": "anti_pattern",
+            "title": f"{f.code}: {f.message}",
+            "evidence": f"[{f.path}] line {f.line}:{f.col} {f.message}",
+            "recommendation": "See kit anti-pattern table for remediation.",
+            "line": f.line,
+            "file": f.path,
+        })
     return out
 
 

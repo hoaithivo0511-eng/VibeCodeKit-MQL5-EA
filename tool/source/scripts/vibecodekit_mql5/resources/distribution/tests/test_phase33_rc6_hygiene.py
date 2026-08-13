@@ -92,7 +92,10 @@ def test_active_workflows_preserve_rc6_history_and_never_auto_promote_release() 
         assert "release_eligible=true" not in text
     package = (workflow_dir / "rc6-package-integration.yml").read_text(encoding="utf-8")
     assert "build_rc6_candidate.py repro-check" in package
-    assert "actions/upload-artifact@v6" in package
+    assert (
+        "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6"
+        in package
+    )
     assert "git push" not in package
 
 

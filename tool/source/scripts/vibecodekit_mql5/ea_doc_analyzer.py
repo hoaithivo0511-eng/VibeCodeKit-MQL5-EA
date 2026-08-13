@@ -12,6 +12,11 @@ from typing import Any
 import re
 
 
+_INCLUDE_DIRECTIVE = re.compile(
+    r'^\s*#include\s*[<"]([^>"]+)[>"]', re.MULTILINE
+)
+
+
 @dataclass
 class InputParam:
     type: str
@@ -27,6 +32,74 @@ def read_mql_files(project: str | Path) -> dict[str, str]:
         if p.is_file() and p.suffix.lower() in {".mq5", ".mqh"}:
             out[p.relative_to(root).as_posix()] = read_mq5_text(p, errors="ignore")
     return out
+
+
+def _local_include_path(
+    root: Path,
+    current: Path,
+    include: str,
+    available: dict[str, Path],
+) -> Path | None:
+    """Resolve one include to a project-local file, or return ``None``."""
+    normalized = include.replace("\\", "/").strip().lstrip("/")
+    parts = Path(normalized).parts
+    if not normalized or ".." in parts:
+        return None
+    candidates = (
+        current.parent / normalized,
+        root / normalized,
+        root / "Include" / normalized,
+    )
+    for candidate in candidates:
+        try:
+            relative = candidate.resolve().relative_to(root.resolve()).as_posix()
+        except (OSError, ValueError):
+            continue
+        exact = available.get(relative)
+        if exact is not None:
+            return exact
+        lowered = relative.casefold()
+        for key, path in available.items():
+            if key.casefold() == lowered:
+                return path
+    return None
+
+
+def read_reachable_mql_files(project: str | Path) -> dict[str, str]:
+    """Read every MQL entrypoint and its transitive project-local includes.
+
+    Generated projects intentionally carry optional reusable headers. Those
+    headers are inventory, not active code, until an entrypoint includes them.
+    Header-only projects fall back to all files so library audits still work.
+    """
+    root = Path(project)
+    paths = sorted(
+        path
+        for path in root.rglob("*")
+        if path.is_file() and path.suffix.lower() in {".mq5", ".mqh"}
+    )
+    available = {path.relative_to(root).as_posix(): path for path in paths}
+    entrypoints = [path for path in paths if path.suffix.lower() == ".mq5"]
+    if not entrypoints:
+        entrypoints = paths
+
+    pending = list(entrypoints)
+    queued = {path.relative_to(root).as_posix() for path in pending}
+    selected: dict[str, str] = {}
+    while pending:
+        path = pending.pop(0)
+        relative = path.relative_to(root).as_posix()
+        text = read_mq5_text(path, errors="ignore")
+        selected[relative] = text
+        for match in _INCLUDE_DIRECTIVE.finditer(text):
+            target = _local_include_path(root, path, match.group(1), available)
+            if target is None:
+                continue
+            target_relative = target.relative_to(root).as_posix()
+            if target_relative not in queued:
+                queued.add(target_relative)
+                pending.append(target)
+    return dict(sorted(selected.items()))
 
 
 def extract_inputs(text: str) -> list[InputParam]:
@@ -142,9 +215,14 @@ def infer_input_operator_note(name: str) -> str:
         return "Lookback lớn làm breaker ít xuất hiện hơn; lookback nhỏ nhạy hơn."
     return "Giữ mặc định nếu chưa hiểu rõ tác động."
 
-def analyze_project(project: str | Path, ea: str | Path | None = None) -> dict[str, Any]:
+def analyze_project(
+    project: str | Path,
+    ea: str | Path | None = None,
+    *,
+    files: dict[str, str] | None = None,
+) -> dict[str, Any]:
     root = Path(project)
-    files = read_mql_files(root)
+    files = read_mql_files(root) if files is None else files
     if ea:
         ea_path = Path(ea)
         try:

@@ -4,6 +4,7 @@ The generator is domain-generic.  It composes feature policies from the build
 plan and uses explicit operational values from the configured IR.  Vendor
 manuals are acceptance fixtures, never templates baked into the architecture.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -85,7 +86,11 @@ _DCA_ENUM = {
 
 def _default_signal(ir: EAIR) -> str:
     signals = list(ir.strategy.get("signals") or [])
-    return _SIGNAL_ENUM.get(signals[0], "VCK_SIGNAL_RSI_REVERSAL") if signals else "VCK_SIGNAL_RSI_REVERSAL"
+    return (
+        _SIGNAL_ENUM.get(signals[0], "VCK_SIGNAL_RSI_REVERSAL")
+        if signals
+        else "VCK_SIGNAL_RSI_REVERSAL"
+    )
 
 
 def _default_dca(ir: EAIR, paths: set[str]) -> str:
@@ -120,21 +125,25 @@ def _command_definitions(ir: EAIR) -> list[dict[str, Any]]:
     if not isinstance(commands, dict):
         return []
     order_types = {
-        "buy_stop": "ORDER_TYPE_BUY_STOP", "sell_limit": "ORDER_TYPE_SELL_LIMIT",
-        "buy_limit": "ORDER_TYPE_BUY_LIMIT", "sell_stop": "ORDER_TYPE_SELL_STOP",
+        "buy_stop": "ORDER_TYPE_BUY_STOP",
+        "sell_limit": "ORDER_TYPE_SELL_LIMIT",
+        "buy_limit": "ORDER_TYPE_BUY_LIMIT",
+        "sell_stop": "ORDER_TYPE_SELL_STOP",
     }
     result: list[dict[str, Any]] = []
     for command_id, raw in sorted(commands.items()):
         if not isinstance(raw, dict):
             continue
-        result.append({
-            "id": command_id,
-            "identifier": _command_identifier(command_id),
-            "order_type": order_types[str(raw["order_type"]).lower()],
-            "price": float(raw["price"]),
-            "action": dict(raw["action"]),
-            "comment_token": raw.get("comment_token"),
-        })
+        result.append(
+            {
+                "id": command_id,
+                "identifier": _command_identifier(command_id),
+                "order_type": order_types[str(raw["order_type"]).lower()],
+                "price": float(raw["price"]),
+                "action": dict(raw["action"]),
+                "comment_token": raw.get("comment_token"),
+            }
+        )
     return result
 
 
@@ -153,7 +162,7 @@ def _command_ownership_mode(ownership: dict[str, Any]) -> str:
 def _authenticated_command_token(prefix: str, command_id: str) -> str:
     digest = hashlib.sha256(command_id.encode("utf-8")).hexdigest()[:6].upper()
     room = 31 - len(prefix) - 1 - 1 - len(digest)
-    body = _command_identifier(command_id)[:max(1, room)]
+    body = _command_identifier(command_id)[: max(1, room)]
     return f"{prefix}:{body}-{digest}"
 
 
@@ -248,21 +257,26 @@ def _remote_command_handler(ir: EAIR) -> str:
         "int MatchRemoteCommand(){string comment=OrderGetString(ORDER_COMMENT);ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);double p=OrderGetDouble(ORDER_PRICE_OPEN);"
         "double point=SymbolInfoDouble(g_symbol,SYMBOL_POINT);" + match_body + "return -1;}"
         "bool RemoteCommandTicketMatches(const ulong ticket,const int expected){if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=g_symbol)return false;return MatchRemoteCommand()==expected;}"
-        "bool ApplyRemoteCommandOnce(const int command_index){bool applied=false;" + apply_body + "return applied;}"
-        "bool RemoteCommandEffectSatisfied(const int command_index){" + effect_body + "return false;}"
+        "bool ApplyRemoteCommandOnce(const int command_index){bool applied=false;"
+        + apply_body
+        + "return applied;}"
+        "bool RemoteCommandEffectSatisfied(const int command_index){"
+        + effect_body
+        + "return false;}"
         "bool ContinueRemoteCommand(){int state=CommandLedger.State();if(state==VCK_CMD_IDLE)return false;"
         "ulong ticket=CommandLedger.Ticket();int command_index=CommandLedger.CommandIndex();"
         "if(state==VCK_CMD_APPLIED){CommandLedger.FinalizeApplied();return true;}"
-        "if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_BLOCKED\",\"manual reconciliation required\",(double)ticket);return true;}"
+        'if(state==VCK_CMD_BLOCKED){g_ea_enabled=false;PersistStateCritical();Log.Event("REMOTE_COMMAND_BLOCKED","manual reconciliation required",(double)ticket);return true;}'
         "if(state==VCK_CMD_CLAIMED){if(!RemoteCommandTicketMatches(ticket,command_index)){CommandLedger.Block();return true;}"
         "if(!Trade.DeleteOrder(ticket))return true;if(!CommandLedger.MarkDeleted(ticket,command_index))return true;state=VCK_CMD_DELETED;}"
         "if(state==VCK_CMD_DELETED){if(!CommandLedger.BeginApply(ticket,command_index))return true;ApplyRemoteCommandOnce(command_index);state=VCK_CMD_APPLYING;}"
         "if(state==VCK_CMD_APPLYING){if(RemoteCommandEffectSatisfied(command_index)){PersistStateCritical();CommandLedger.MarkApplied(ticket,command_index);}"
-        "else{g_ea_enabled=false;PersistStateCritical();Log.Event(\"REMOTE_COMMAND_INCOMPLETE\",\"effect not satisfied; no replay\",(double)ticket);}return true;}return true;}"
+        'else{g_ea_enabled=false;PersistStateCritical();Log.Event("REMOTE_COMMAND_INCOMPLETE","effect not satisfied; no replay",(double)ticket);}return true;}return true;}'
         "bool ProcessRemoteCommands(){if(!VCK_USE_REMOTE)return false;if(CommandLedger.State()!=VCK_CMD_IDLE)return ContinueRemoteCommand();"
         "for(int i=OrdersTotal()-1;i>=0;i--){ulong ticket=OrderGetTicket(i);if(ticket==0||!OrderSelect(ticket)||OrderGetString(ORDER_SYMBOL)!=g_symbol)continue;int command_index=MatchRemoteCommand();"
         "if(command_index<0)continue;if(!CommandLedger.Claim(ticket,command_index))return true;return ContinueRemoteCommand();}return false;}"
     )
+
 
 def _sessions(ir: EAIR) -> list[dict[str, Any]]:
     raw = _p(ir, "sessions", [])
@@ -271,7 +285,13 @@ def _sessions(ir: EAIR) -> list[dict[str, Any]]:
     result = []
     for item in raw[:4]:
         if isinstance(item, dict):
-            result.append({"enabled": bool(item.get("enabled", True)), "start": str(item.get("start", "00:00")), "end": str(item.get("end", "23:59"))})
+            result.append(
+                {
+                    "enabled": bool(item.get("enabled", True)),
+                    "start": str(item.get("start", "00:00")),
+                    "end": str(item.get("end", "23:59")),
+                }
+            )
     return result
 
 
@@ -282,8 +302,10 @@ def _time_policy(ir: EAIR) -> dict[str, Any]:
 
 def _time_basis(value: Any) -> str:
     return {
-        "server": "VCK_TIME_SERVER", "local": "VCK_TIME_LOCAL",
-        "utc": "VCK_TIME_UTC", "fixed_offset": "VCK_TIME_FIXED_OFFSET",
+        "server": "VCK_TIME_SERVER",
+        "local": "VCK_TIME_LOCAL",
+        "utc": "VCK_TIME_UTC",
+        "fixed_offset": "VCK_TIME_FIXED_OFFSET",
     }.get(str(value or "server").lower(), "VCK_TIME_SERVER")
 
 
@@ -306,11 +328,15 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
     ownership_mode = _command_ownership_mode(command_ownership)
 
     lines: list[str] = [
-        "// digits-tested: 5,4,3,2", f"// Generated from EA-IR {ir.sha256()}", "#pragma once", "",
+        "// digits-tested: 5,4,3,2",
+        f"// Generated from EA-IR {ir.sha256()}",
+        "#pragma once",
+        "",
         "enum VCKSignalMode { VCK_SIGNAL_NONE=0,VCK_SIGNAL_RSI,VCK_SIGNAL_RSI_REVERSAL,VCK_SIGNAL_CCI_REVERSAL,VCK_SIGNAL_STOCH_REVERSAL,VCK_SIGNAL_EMA_CROSS,VCK_SIGNAL_BB_REVERSION,VCK_SIGNAL_PINBAR,VCK_SIGNAL_ENGULFING,VCK_SIGNAL_PINBAR_ENGULFING,VCK_SIGNAL_MACD_CROSS,VCK_SIGNAL_MOMENTUM,VCK_SIGNAL_ATR_BREAKOUT,VCK_SIGNAL_SUPERTREND,VCK_SIGNAL_UTBOT,VCK_SIGNAL_ICHIMOKU_BREAK,VCK_SIGNAL_SMC_ALL_WITH,VCK_SIGNAL_SMC_ALL_AGAINST,VCK_SIGNAL_SMC_INTERNAL_WITH,VCK_SIGNAL_SMC_INTERNAL_AGAINST,VCK_SIGNAL_SMC_SWING_WITH,VCK_SIGNAL_SMC_SWING_AGAINST,VCK_SIGNAL_CANDLE_COLOR,VCK_SIGNAL_NO_CONDITION,VCK_SIGNAL_RANDOM,VCK_SIGNAL_EXTERNAL };",
         "enum VCKDCAMode { VCK_DCA_STEP=0,VCK_DCA_STEP_TIMEFRAME,VCK_DCA_STEP_MULTIPLIER,VCK_DCA_SIGNAL,VCK_DCA_POSITIVE,VCK_DCA_BIDIRECTIONAL,VCK_DCA_SIGNAL_BIDIRECTIONAL,VCK_DCA_CLOSED_BAR };",
         "enum VCKLotMode { VCK_LOT_MULTIPLY=0,VCK_LOT_ADD };",
-        "enum VCKTimeBasis { VCK_TIME_SERVER=0,VCK_TIME_LOCAL,VCK_TIME_UTC,VCK_TIME_FIXED_OFFSET };", "",
+        "enum VCKTimeBasis { VCK_TIME_SERVER=0,VCK_TIME_LOCAL,VCK_TIME_UTC,VCK_TIME_FIXED_OFFSET };",
+        "",
         'input group "Identity and runtime"',
         f"input long InpMagic={_magic(name)};",
         f'input string InpTradeSymbol="{symbol}";',
@@ -326,7 +352,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input bool InpAsyncExecution={str(bool(_p(ir, 'async_execution', False))).lower()};",
         f"input int InpIntentUnknownTimeoutSeconds={int(_p(ir, 'intent_unknown_timeout_seconds', 30))};",
         f"input int InpIntentHistoryLookbackSeconds={int(_p(ir, 'intent_history_lookback_seconds', 86400))};",
-        '', '// Time and accounting policy sealed from EA-IR.',
+        "",
+        "// Time and accounting policy sealed from EA-IR.",
         f"const VCKTimeBasis VCK_DAILY_TIME_BASIS={_time_basis(time_policy.get('daily_basis'))};",
         f"const VCKTimeBasis VCK_SESSION_TIME_BASIS={_time_basis(time_policy.get('session_basis', time_policy.get('daily_basis')))};",
         f"const int VCK_UTC_OFFSET_MINUTES={int(time_policy.get('utc_offset_minutes', 0))};",
@@ -334,7 +361,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"const bool VCK_HISTORY_SYNC_REQUIRED={str(time_policy.get('history_sync_required', False) is True).lower()};",
         f"const bool VCK_EXCLUDE_CASHFLOWS={str(time_policy.get('cashflow_policy', 'exclude') == 'exclude').lower()};",
         f"const bool VCK_RECOVERY_OUTSIDE_SESSION={str(_p(ir, 'recovery_session_policy', 'respect_sessions') == 'allow_recovery_outside_sessions').lower()};",
-        '', 'input group "Execution and risk"',
+        "",
+        'input group "Execution and risk"',
         f"input double InpBaseLot={float(_r(ir, 'base_lot', 0.01)):.4f};",
         f"input double InpMaxLot={float(_r(ir, 'max_lot', 1.0)):.4f};",
         f"input double InpMaxSpreadPips={float(_r(ir, 'max_spread_pips', 3.0)):.2f};",
@@ -351,7 +379,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input double InpDailyTargetMoney={float(_p(ir, 'daily_target_money', 0.0)):.2f};",
         f"input double InpDailyLossMoney={float(_p(ir, 'daily_loss_money', 0.0)):.2f};",
         f"input int InpNewDayDelayMinutes={int(_p(ir, 'new_day_delay_minutes', 0))};",
-        '', 'input group "DCA and lot progression"',
+        "",
+        'input group "DCA and lot progression"',
         f"input double InpDCAStepPips={float(_p(ir, 'dca_step_pips', 25.0)):.2f};",
         f"input double InpDCAStepMultiplier={float(_p(ir, 'dca_step_multiplier', 1.2)):.4f};",
         f"input VCKLotMode InpLotMode={'VCK_LOT_ADD' if str(_p(ir, 'lot_mode', 'multiply')).lower() in {'add', 'additive', 'plus'} else 'VCK_LOT_MULTIPLY'};",
@@ -361,11 +390,18 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input bool InpDCAOutsideSession={str(bool(_p(ir, 'dca_outside_session', True))).lower()};",
     ]
     for i in range(1, 6):
-        lines += [f"input int InpLotStage{i}Count={int(_p(ir, f'lot_stage_{i}_count', 0))};", f"input double InpLotStage{i}Multiplier={float(_p(ir, f'lot_stage_{i}_multiplier', 1.0)):.4f};"]
+        lines += [
+            f"input int InpLotStage{i}Count={int(_p(ir, f'lot_stage_{i}_count', 0))};",
+            f"input double InpLotStage{i}Multiplier={float(_p(ir, f'lot_stage_{i}_multiplier', 1.0)):.4f};",
+        ]
     for i in range(1, 5):
-        lines += [f"input int InpDistanceStage{i}Count={int(_p(ir, f'distance_stage_{i}_count', 0))};", f"input double InpDistanceStage{i}Pips={float(_p(ir, f'distance_stage_{i}_pips', 0.0)):.2f};"]
+        lines += [
+            f"input int InpDistanceStage{i}Count={int(_p(ir, f'distance_stage_{i}_count', 0))};",
+            f"input double InpDistanceStage{i}Pips={float(_p(ir, f'distance_stage_{i}_pips', 0.0)):.2f};",
+        ]
     lines += [
-        '', 'input group "Basket, money exits and trailing"',
+        "",
+        'input group "Basket, money exits and trailing"',
         f"input double InpBasketTargetMoney={float(_p(ir, 'basket_target_money', 0.0)):.2f};",
         f"input double InpBasketStopMoney={float(_p(ir, 'basket_stop_money', 0.0)):.2f};",
         f"input double InpBasketTPPips={float(_p(ir, 'basket_tp_pips', 0.0)):.2f};",
@@ -384,7 +420,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input double InpBalanceDifferencePct={float(_p(ir, 'balance_difference_pct', 0.0)):.2f};",
         f"input double InpTrailingStartPips={float(_p(ir, 'trailing_start_pips', 0.0)):.2f};",
         f"input double InpTrailingDistancePips={float(_p(ir, 'trailing_distance_pips', 0.0)):.2f};",
-        '', 'input group "Sniper and partial recovery"',
+        "",
+        'input group "Sniper and partial recovery"',
         f"input int InpSniperTriggerPositions={int(_p(ir, 'sniper_trigger_positions', 0))};",
         f"input int InpSniperHeadCount={int(_p(ir, 'sniper_head_count', 1))};",
         f"input int InpSniperTailMaxCount={int(_p(ir, 'sniper_tail_max_count', 1))};",
@@ -393,7 +430,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input int InpCrossSniperTriggerPositions={int(_p(ir, 'cross_sniper_trigger_positions', 0))};",
         f"input double InpCrossSniperTargetMoney={float(_p(ir, 'cross_sniper_target_money', 0.0)):.2f};",
         f"input bool InpCrossSniperMagicPairOnly={str(bool(_p(ir, 'cross_sniper_magic_pair_only', True))).lower()};",
-        '', 'input group "Hedge, hedge zone and balancing"',
+        "",
+        'input group "Hedge, hedge zone and balancing"',
         f"input int InpHedgeTriggerPositions={int(_p(ir, 'hedge_trigger_positions', 0))};",
         f"input double InpHedgeTriggerLossPct={float(_p(ir, 'hedge_trigger_loss_pct', 0.0)):.2f};",
         f"input bool InpHedgeUseDCALot={str(bool(_p(ir, 'hedge_use_dca_lot', False))).lower()};",
@@ -416,14 +454,16 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input double InpBalanceStopLots={float(_p(ir, 'balance_stop_lots', 0.0)):.4f};",
         f"input double InpBalanceAddLot={float(_p(ir, 'balance_add_lot', 0.0)):.4f};",
         f"input int InpBalanceDelaySeconds={int(_p(ir, 'balance_delay_seconds', 30))};",
-        '', 'input group "Lottery after SL and manual reset"',
+        "",
+        'input group "Lottery after SL and manual reset"',
         f"input double InpLotterySLMultiplier={float(_p(ir, 'lottery_sl_multiplier', 1.0)):.4f};",
         f"input int InpLotteryDelayMinutes={int(_p(ir, 'lottery_delay_minutes', 0))};",
         f"input double InpLotteryResetLossMoney={float(_p(ir, 'lottery_reset_loss_money', 0.0)):.2f};",
         f"input double InpResetLot={float(_p(ir, 'reset_lot', _r(ir, 'base_lot', 0.01))):.4f};",
         f"input double InpResetMultiplier={float(_p(ir, 'reset_multiplier', 1.0)):.4f};",
         f"input double InpResetBasketTPPips={float(_p(ir, 'reset_basket_tp_pips', 0.0)):.2f};",
-        '', 'input group "Signal parameters"',
+        "",
+        'input group "Signal parameters"',
         f"input int InpRSIPeriod={int(_p(ir, 'rsi_period', 14))};",
         f"input double InpRSIOversold={float(_p(ir, 'rsi_oversold', 25.0)):.2f};",
         f"input double InpRSIOverbought={float(_p(ir, 'rsi_overbought', 75.0)):.2f};",
@@ -459,7 +499,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f'input string InpExternalIndicator="{_p(ir, "external_indicator_name", "")!s}";',
         f"input int InpExternalBuyBuffer={int(_p(ir, 'external_buy_buffer', 0))};",
         f"input int InpExternalSellBuffer={int(_p(ir, 'external_sell_buffer', 1))};",
-        '', 'input group "Filters and zone cycle"',
+        "",
+        'input group "Filters and zone cycle"',
         f"input bool InpUseEMAFilter={_enabled(paths, 'strategy.filter.ema')};",
         f"input bool InpUseMACDFilter={_enabled(paths, 'strategy.filter.macd')};",
         f"input bool InpUseRSIFilter={_enabled(paths, 'strategy.filter.rsi')};",
@@ -467,15 +508,32 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"input double InpEMAMinSeparationPips={float(_p(ir, 'ema_min_separation_pips', 0.0)):.2f};",
         f"input double InpZoneCycleUpper={float(_p(ir, 'zone_cycle_upper', 0.0)):.5f};",
         f"input double InpZoneCycleLower={float(_p(ir, 'zone_cycle_lower', 0.0)):.5f};",
-        '', 'input group "Trading sessions"',
+        "",
+        'input group "Trading sessions"',
     ]
     for i, session in enumerate(sessions, 1):
-        lines += [f"input bool InpSession{i}Enabled={str(session['enabled']).lower()};", f'input string InpSession{i}Start="{session["start"]}";', f'input string InpSession{i}End="{session["end"]}";']
+        lines += [
+            f"input bool InpSession{i}Enabled={str(session['enabled']).lower()};",
+            f'input string InpSession{i}Start="{session["start"]}";',
+            f'input string InpSession{i}End="{session["end"]}";',
+        ]
     if commands:
-        lines += ['', 'input group "Remote controls"']
-        mode_code = {"authenticated_ea_order": 1, "manual_comment_token": 2, "legacy_price_only": 3}[ownership_mode]
-        owner_magic = int(command_ownership.get("magic", 0)) if ownership_mode == "authenticated_ea_order" else 0
-        owner_prefix = str(command_ownership.get("comment_prefix", "")) if ownership_mode == "authenticated_ea_order" else ""
+        lines += ["", 'input group "Remote controls"']
+        mode_code = {
+            "authenticated_ea_order": 1,
+            "manual_comment_token": 2,
+            "legacy_price_only": 3,
+        }[ownership_mode]
+        owner_magic = (
+            int(command_ownership.get("magic", 0))
+            if ownership_mode == "authenticated_ea_order"
+            else 0
+        )
+        owner_prefix = (
+            str(command_ownership.get("comment_prefix", ""))
+            if ownership_mode == "authenticated_ea_order"
+            else ""
+        )
         lines += [
             f"const int VCK_COMMAND_OWNERSHIP_MODE={mode_code};",
             f"const long VCK_COMMAND_OWNER_MAGIC={owner_magic};",
@@ -490,7 +548,8 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
                 f'const string VCK_CMD_{ident}_TOKEN="{token}";',
             ]
     lines += [
-        '', '// Cross-feature semantic contracts (sealed from EA-IR).',
+        "",
+        "// Cross-feature semantic contracts (sealed from EA-IR).",
         f"const bool VCK_HEDGE_ZONE_EXCLUSIVE={str(_p(ir, 'hedge_zone_concurrency_policy', 'exclusive') == 'exclusive').lower()};",
         f"const bool VCK_HZ_ALLOW_HEDGE={str('strategy.hedge.standard' in set(_p(ir, 'hedge_zone_allowed_engines', []))).lower()};",
         f"const bool VCK_HZ_ALLOW_REVERSE={str('strategy.reverse_entry' in set(_p(ir, 'hedge_zone_allowed_engines', []))).lower()};",
@@ -499,33 +558,56 @@ def _config(ir: EAIR, plan: BuildPlan) -> str:
         f"const bool VCK_ACCOUNT_WIDE_APPROVED={str(ir.controls.get('account_wide_close_approved') is True).lower()};",
         f"const bool VCK_RECONCILE_BEFORE_RETRY={str(_p(ir, 'execution_idempotency_policy', 'reconcile_before_retry') == 'reconcile_before_retry').lower()};",
         f"const bool VCK_BLOCK_UNKNOWN_OUTCOME={str(_p(ir, 'unknown_outcome_policy', 'block_until_reconciled') == 'block_until_reconciled').lower()};",
-        '', '// Feature contract emitted by the capability plan.'
+        "",
+        "// Feature contract emitted by the capability plan.",
     ]
     toggles = {
-        "DCA": "strategy.dca.enabled", "STEP_MULTIPLIER": "strategy.dca.step_multiplier",
-        "LOT_MULTIPLIER": "strategy.sizing.martingale", "LOT_ADDITIVE": "strategy.sizing.additive",
-        "LOTTERY": "strategy.lottery.after_sl", "HEDGE": "strategy.hedge.standard",
-        "HEDGE_ZONE": "strategy.hedge.zone", "REVERSE_ENTRY": "strategy.reverse_entry",
-        "LOT_BALANCE": "strategy.lot_balance", "BASKET_TP": "strategy.exit.basket_tp",
-        "ADAPTIVE_TP": "strategy.exit.adaptive_basket_tp", "MONEY_EXIT": "strategy.exit.money",
-        "ACCOUNT_MONEY_EXIT": "strategy.exit.account_money", "SIDE_MONEY_EXIT": "strategy.exit.side_money",
-        "DAILY_GUARD": "strategy.exit.daily_target", "STEPPED_TARGET": "strategy.exit.stepped_target",
-        "TRAILING": "strategy.exit.trailing", "TREND_REVERSAL_EXIT": "strategy.exit.trend_reversal",
-        "BALANCE_DIFFERENCE_EXIT": "strategy.exit.balance_difference", "SNIPER": "strategy.sniper.same_chain",
-        "PARTIAL_SNIPER": "strategy.sniper.partial", "CROSS_SNIPER": "strategy.sniper.cross_chain",
-        "SESSIONS": "strategy.time.sessions", "ZONE_CYCLE": "strategy.filter.zone_cycle",
-        "REMOTE": "controls.pending_order_remote", "PANEL": "controls.chart_panel", "RESET_LOTS": "controls.reset_lots",
+        "DCA": "strategy.dca.enabled",
+        "STEP_MULTIPLIER": "strategy.dca.step_multiplier",
+        "LOT_MULTIPLIER": "strategy.sizing.martingale",
+        "LOT_ADDITIVE": "strategy.sizing.additive",
+        "LOTTERY": "strategy.lottery.after_sl",
+        "HEDGE": "strategy.hedge.standard",
+        "HEDGE_ZONE": "strategy.hedge.zone",
+        "REVERSE_ENTRY": "strategy.reverse_entry",
+        "LOT_BALANCE": "strategy.lot_balance",
+        "BASKET_TP": "strategy.exit.basket_tp",
+        "ADAPTIVE_TP": "strategy.exit.adaptive_basket_tp",
+        "MONEY_EXIT": "strategy.exit.money",
+        "ACCOUNT_MONEY_EXIT": "strategy.exit.account_money",
+        "SIDE_MONEY_EXIT": "strategy.exit.side_money",
+        "DAILY_GUARD": "strategy.exit.daily_target",
+        "STEPPED_TARGET": "strategy.exit.stepped_target",
+        "TRAILING": "strategy.exit.trailing",
+        "TREND_REVERSAL_EXIT": "strategy.exit.trend_reversal",
+        "BALANCE_DIFFERENCE_EXIT": "strategy.exit.balance_difference",
+        "SNIPER": "strategy.sniper.same_chain",
+        "PARTIAL_SNIPER": "strategy.sniper.partial",
+        "CROSS_SNIPER": "strategy.sniper.cross_chain",
+        "SESSIONS": "strategy.time.sessions",
+        "ZONE_CYCLE": "strategy.filter.zone_cycle",
+        "REMOTE": "controls.pending_order_remote",
+        "PANEL": "controls.chart_panel",
+        "RESET_LOTS": "controls.reset_lots",
     }
     for const, feature in toggles.items():
-        lines += [f"// VCK-FEATURE:{feature}", f"const bool VCK_USE_{const}={_enabled(paths, feature)};"]
+        lines += [
+            f"// VCK-FEATURE:{feature}",
+            f"const bool VCK_USE_{const}={_enabled(paths, feature)};",
+        ]
     lines += ["", "// Complete planned feature trace markers."]
     for feature in sorted(paths):
         lines.append(f"// VCK-IMPLEMENTED:{feature}")
-    lines = [("sinput " + line[6:]) if line.startswith("input ") and not line.startswith("input group") else line for line in lines]
+    lines = [
+        ("sinput " + line[6:])
+        if line.startswith("input ") and not line.startswith("input group")
+        else line
+        for line in lines
+    ]
     return "\n".join(lines) + "\n"
 
 
-TRADE_INTENT_LEDGER = r'''// digits-tested: 5,4,3,2
+TRADE_INTENT_LEDGER = r"""// digits-tested: 5,4,3,2
 #pragma once
 enum VCKTradeIntentState { VCK_INTENT_NONE=0,VCK_INTENT_PREPARED,VCK_INTENT_SUBMITTED,VCK_INTENT_ACKNOWLEDGED,VCK_INTENT_PARTIAL,VCK_INTENT_COMPLETED,VCK_INTENT_UNKNOWN,VCK_INTENT_REJECTED,VCK_INTENT_OPERATOR_REQUIRED };
 const VCKTradeIntentState VCK_INTENT_CREATED=VCK_INTENT_PREPARED;
@@ -703,9 +785,9 @@ public:
      }
    void Reconcile(){MigrateLegacy();for(int source=0;source<6;source++)for(int direction=-1;direction<=1;direction+=2)if(GlobalVariableCheck(Key(source,direction,"id")))ReconcileSlot(source,direction);}
   };
-'''
+"""
 
-TRADE_EVENT_REDUCER = r'''// digits-tested: 5,4,3,2
+TRADE_EVENT_REDUCER = r"""// digits-tested: 5,4,3,2
 #pragma once
 class CTradeEventReducer
   {
@@ -743,10 +825,10 @@ public:
    bool Overflowed(){return GlobalVariableCheck(m_prefix+"overflow")&&GlobalVariableGet(m_prefix+"overflow")>0.5;}
    bool AcceptClosedPosition(const ulong position_id){return Accept("position",position_id);}
   };
-'''
+"""
 
 
-REMOTE_COMMAND_LEDGER = r'''// digits-tested: 5,4,3,2
+REMOTE_COMMAND_LEDGER = r"""// digits-tested: 5,4,3,2
 #pragma once
 enum VCKRemoteCommandState { VCK_CMD_IDLE=0,VCK_CMD_CLAIMED,VCK_CMD_DELETED,VCK_CMD_APPLYING,VCK_CMD_APPLIED,VCK_CMD_BLOCKED };
 class CRemoteCommandLedger
@@ -768,10 +850,10 @@ public:
    void FinalizeApplied(){if(State()==VCK_CMD_APPLIED)Clear();}
    void Block(){GlobalVariableSet(Key("state"),(double)VCK_CMD_BLOCKED);GlobalVariablesFlush();}
   };
-'''
+"""
 
 
-TRADE_EXECUTOR = r'''// digits-tested: 5,4,3,2
+TRADE_EXECUTOR = r"""// digits-tested: 5,4,3,2
 #pragma once
 #include <Trade/Trade.mqh>
 #include "TradeIntentLedger.mqh"
@@ -800,9 +882,9 @@ public:
    bool ClosePartial(const ulong ticket,const double volume){if(!m_trade.PositionClosePartial(ticket,volume))return false;return CloseRetcodeAccepted(m_trade.ResultRetcode());}
    bool DeleteOrder(const ulong ticket){if(!m_trade.OrderDelete(ticket))return false;return DeleteRetcodeAccepted(m_trade.ResultRetcode());}
   };
-'''
+"""
 
-POSITION_BOOK = r'''// digits-tested: 5,4,3,2
+POSITION_BOOK = r"""// digits-tested: 5,4,3,2
 #pragma once
 struct VCKSideStats { int count; double lots,weighted_price,average_price,profit,newest_price,oldest_profit,oldest_volume,best_profit,best_volume; datetime newest_time,oldest_time; ulong oldest_ticket,oldest_identifier,best_ticket; };
 class CVCKPositionBook
@@ -813,10 +895,10 @@ public:
    double Floating(const string symbol,const long magic)
      { double total=0; for(int i=0;i<PositionsTotal();i++){ulong t=PositionGetTicket(i);if(t==0||!PositionSelectByTicket(t))continue;if(PositionGetString(POSITION_SYMBOL)==symbol&&(long)PositionGetInteger(POSITION_MAGIC)==magic)total+=PositionGetDouble(POSITION_PROFIT)+PositionGetDouble(POSITION_SWAP);}return total;}
   };
-'''
+"""
 
 
-GRID_RISK_GUARD = r'''// digits-tested: 5,4,3,2
+GRID_RISK_GUARD = r"""// digits-tested: 5,4,3,2
 #pragma once
 #include "../Config.mqh"
 class CSpreadGuard
@@ -838,9 +920,9 @@ public:
  bool MustStop(){return InpMaxDDPct>0&&DD()>=InpMaxDDPct;}
  bool LevelAllowed(const int levels,const int MaxLevels){return levels<MaxLevels;}
   };
-'''
+"""
 
-STRUCTURED_LOGGER = r'''// digits-tested: 5,4,3,2
+STRUCTURED_LOGGER = r"""// digits-tested: 5,4,3,2
 #pragma once
 class CStructuredLogger
   {
@@ -850,9 +932,9 @@ public:
  void Event(const string event,const string detail,const double value=0.0)
    {PrintFormat("VCK_EVENT|%s|%s|%.8f",event,detail,value);int h=FileOpen(m_file,FILE_COMMON|FILE_CSV|FILE_READ|FILE_WRITE|FILE_SHARE_READ,';');if(h!=INVALID_HANDLE){FileSeek(h,0,SEEK_END);FileWrite(h,TimeToString(TimeCurrent(),TIME_DATE|TIME_SECONDS),event,detail,DoubleToString(value,8));FileClose(h);}}
   };
-'''
+"""
 
-PERSISTENT_STATE_STORE = r'''// digits-tested: 5,4,3,2
+PERSISTENT_STATE_STORE = r"""// digits-tested: 5,4,3,2
 #pragma once
 class CPersistentStateStore
   {
@@ -872,9 +954,9 @@ public:
  void LoadExtended(int &halt_day,int &balance_day,double &day_balance,double &peak,bool &hedge_zone,int &zone_phase,int &zone_cycle_id,ulong &zone_anchor_position_id,double &zone_low,double &zone_high,datetime &cooldown)
    {double schema=GlobalVariableCheck(Key("state_schema"))?GlobalVariableGet(Key("state_schema")):0;if(GlobalVariableCheck(Key("halt_day")))halt_day=(int)GlobalVariableGet(Key("halt_day"));if(GlobalVariableCheck(Key("balance_day")))balance_day=(int)GlobalVariableGet(Key("balance_day"));if(GlobalVariableCheck(Key("day_balance")))day_balance=GlobalVariableGet(Key("day_balance"));if(GlobalVariableCheck(Key("peak_equity")))peak=GlobalVariableGet(Key("peak_equity"));if(GlobalVariableCheck(Key("cooldown")))cooldown=(datetime)GlobalVariableGet(Key("cooldown"));if(schema>=3.0){if(GlobalVariableCheck(Key("hedge_zone")))hedge_zone=GlobalVariableGet(Key("hedge_zone"))>0.5;if(GlobalVariableCheck(Key("zone_phase")))zone_phase=(int)GlobalVariableGet(Key("zone_phase"));if(GlobalVariableCheck(Key("zone_cycle_id")))zone_cycle_id=(int)GlobalVariableGet(Key("zone_cycle_id"));zone_anchor_position_id=LoadUlong("zone_anchor_position");if(GlobalVariableCheck(Key("zone_low")))zone_low=GlobalVariableGet(Key("zone_low"));if(GlobalVariableCheck(Key("zone_high")))zone_high=GlobalVariableGet(Key("zone_high"));}else{hedge_zone=false;zone_phase=0;zone_cycle_id=0;zone_anchor_position_id=0;zone_low=0;zone_high=0;}}
   };
-'''
+"""
 
-MFE_MAE_LOGGER = r'''// digits-tested: 5,4,3,2
+MFE_MAE_LOGGER = r"""// digits-tested: 5,4,3,2
 #pragma once
 class CMfeMaeLogger
   {
@@ -888,9 +970,9 @@ public:
  void Finalize(const ulong id,const double realized)
    {double mfe=GlobalVariableCheck(Key(id,"mfe"))?GlobalVariableGet(Key(id,"mfe")):0,mae=GlobalVariableCheck(Key(id,"mae"))?GlobalVariableGet(Key(id,"mae")):0;int h=FileOpen(m_file,FILE_COMMON|FILE_CSV|FILE_READ|FILE_WRITE|FILE_SHARE_READ,';');if(h!=INVALID_HANDLE){FileSeek(h,0,SEEK_END);FileWrite(h,TimeToString(TimeCurrent(),TIME_DATE|TIME_SECONDS),(string)id,DoubleToString(mfe,2),DoubleToString(mae,2),DoubleToString(realized,2));FileClose(h);}GlobalVariableDel(Key(id,"mfe"));GlobalVariableDel(Key(id,"mae"));}
   };
-'''
+"""
 
-BASKET_CLOSE_ENGINE = r'''// digits-tested: 5,4,3,2
+BASKET_CLOSE_ENGINE = r"""// digits-tested: 5,4,3,2
 #pragma once
 class CBasketCloseEngine
   {
@@ -898,9 +980,9 @@ public:
  bool MoneyHit(const double profit,const double target,const double stop){return(target>0&&profit>=target)||(stop<0&&profit<=stop);}
  bool SidePipsHit(const int direction,const double current,const double average,const double target_pips,const double pip){if(target_pips<=0)return false;return direction>0?current>=average+target_pips*pip:current<=average-target_pips*pip;}
   };
-'''
+"""
 
-ENTRY_ENGINE = r'''// digits-tested: 5,4,3,2
+ENTRY_ENGINE = r"""// digits-tested: 5,4,3,2
 #pragma once
 #include "../Config.mqh"
 class CVCKEntryEngine
@@ -945,11 +1027,11 @@ public:
  int SpecialDirection(){switch(InpSignalMode){case VCK_SIGNAL_CANDLE_COLOR:return CandleColor();case VCK_SIGNAL_NO_CONDITION:return InpUnconditionalDirection>=0?1:-1;case VCK_SIGNAL_RANDOM:return MathRand()%2==0?1:-1;case VCK_SIGNAL_EXTERNAL:return SignalExternal();default:return 0;}}
  int Direction(){int mode=(int)InpSignalMode;if(mode>=VCK_SIGNAL_RSI&&mode<=VCK_SIGNAL_STOCH_REVERSAL)return OscillatorDirection();if(mode>=VCK_SIGNAL_EMA_CROSS&&mode<=VCK_SIGNAL_MACD_CROSS)return ClassicDirection();if(mode>=VCK_SIGNAL_MOMENTUM&&mode<=VCK_SIGNAL_ICHIMOKU_BREAK)return TrendDirection();if(mode>=VCK_SIGNAL_SMC_ALL_WITH&&mode<=VCK_SIGNAL_SMC_SWING_AGAINST)return SMCDirection();return SpecialDirection();}
   };
-'''
+"""
 
 # This main intentionally keeps policies explicit and auditable rather than
 # hiding them behind vendor-specific names.
-MAIN_TEMPLATE = r'''// digits-tested: 5,4,3,2
+MAIN_TEMPLATE = r"""// digits-tested: 5,4,3,2
 //+------------------------------------------------------------------+
 //| __NAME__.mq5 | EA-IR __HASH__
 //+------------------------------------------------------------------+
@@ -1182,15 +1264,16 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,const MqlTradeRequest &
    if(critical)PersistStateCritical();
    if(trans.type==TRADE_TRANSACTION_REQUEST&&result.retcode!=0&&!Trade.TransactionRetcodeAccepted(request.action,result.retcode))Log.Event("TRADE_RETCODE",IntegerToString((int)result.retcode),(double)request.action);
   }
-'''
+"""
 
 
 def _main(ir: EAIR) -> str:
-    return (MAIN_TEMPLATE
-            .replace("__NAME__", str(ir.identity["name"]))
-            .replace("__HASH__", ir.sha256())
-            .replace("__REMOTE_COMMAND_HANDLER__", _remote_command_handler(ir))
-            .replace("__INPUT_VALIDATOR__", render_mql_validator()))
+    return (
+        MAIN_TEMPLATE.replace("__NAME__", str(ir.identity["name"]))
+        .replace("__HASH__", ir.sha256())
+        .replace("__REMOTE_COMMAND_HANDLER__", _remote_command_handler(ir))
+        .replace("__INPUT_VALIDATOR__", render_mql_validator())
+    )
 
 
 def _governance_spec(ir: EAIR) -> dict[str, Any]:
@@ -1201,9 +1284,15 @@ def _governance_spec(ir: EAIR) -> dict[str, Any]:
     return {
         "schema_version": "3.0",
         "ir_sha256": ir.sha256(),
-        "project": {"name": str(ir.identity["name"]), "version": str(ir.identity.get("version") or "0.1.0"), "status": "DRAFT-NOT-VALIDATED"},
+        "project": {
+            "name": str(ir.identity["name"]),
+            "version": str(ir.identity.get("version") or "0.1.0"),
+            "status": "DRAFT-NOT-VALIDATED",
+        },
         "strategy": {
-            "class": "hybrid", "symbols": symbols, "timeframes": timeframes,
+            "class": "hybrid",
+            "symbols": symbols,
+            "timeframes": timeframes,
             "entry_logic": "Selectable signal engine with explicit trend filters and cycle admission gates.",
             "exit_logic": "Single/basket/money exits, trailing, recovery, hedge and drawdown controls composed from EA-IR.",
             "forbidden_logic": ["unbounded_martingale"],
@@ -1222,19 +1311,34 @@ def _governance_spec(ir: EAIR) -> dict[str, Any]:
             "spread_points_max": float(_r(ir, "max_spread_pips", 3.0)) * 10.0,
             "magic_number_policy": "required",
         },
-        "validation": {"compile_required": True, "backtest_required": True, "stress_required": True, "evidence_manifest_required": True},
-        "governance": {
-            "mode": "full", "release_target": "draft", "semantic_approved": True,
-            "behavior_changed": True, "trading_logic_changed": True, "risk_changed": True,
-            "architecture_changed": True, "porting_changed": False, "derived_fields": ["project.version", "execution.spread_points_max"],
+        "validation": {
+            "compile_required": True,
+            "backtest_required": True,
+            "stress_required": True,
+            "evidence_manifest_required": True,
         },
-        "release": {"environment_authority": "windows-native", "owner_approval_required_for_live": True},
+        "governance": {
+            "mode": "full",
+            "release_target": "draft",
+            "semantic_approved": True,
+            "behavior_changed": True,
+            "trading_logic_changed": True,
+            "risk_changed": True,
+            "architecture_changed": True,
+            "porting_changed": False,
+            "derived_fields": ["project.version", "execution.spread_points_max"],
+        },
+        "release": {
+            "environment_authority": "windows-native",
+            "owner_approval_required_for_live": True,
+        },
     }
 
 
 def _risk_contract(ir: EAIR) -> dict[str, Any]:
     return {
-        "schema_version": "1.0", "ir_sha256": ir.sha256(),
+        "schema_version": "1.0",
+        "ir_sha256": ir.sha256(),
         "max_lot": float(_r(ir, "max_lot", 1.0)),
         "max_levels_buy": int(_r(ir, "max_levels_buy", _p(ir, "max_buy_positions", 10))),
         "max_levels_sell": int(_r(ir, "max_levels_sell", _p(ir, "max_sell_positions", 10))),
@@ -1246,42 +1350,69 @@ def _risk_contract(ir: EAIR) -> dict[str, Any]:
 
 
 def _evidence_manifest(ir: EAIR, artifact_manifest: dict[str, Any]) -> dict[str, Any]:
-    artifact_hash = hashlib.sha256(json.dumps(artifact_manifest, sort_keys=True).encode("utf-8")).hexdigest()
+    artifact_hash = hashlib.sha256(
+        json.dumps(artifact_manifest, sort_keys=True).encode("utf-8")
+    ).hexdigest()
     legacy_remote = _command_ownership_mode(_command_ownership(ir)) == "legacy_price_only"
     unsafe_flags = ["legacy_price_only_command_ownership"] if legacy_remote else []
     pending_compile = {
-        "ok": False, "source": "unavailable", "command": "pending Windows MetaEditor runner",
-        "tool_version": "pending", "host": "pending", "recorded_at_utc": "pending", "returncode": None,
+        "ok": False,
+        "source": "unavailable",
+        "command": "pending Windows MetaEditor runner",
+        "tool_version": "pending",
+        "host": "pending",
+        "recorded_at_utc": "pending",
+        "returncode": None,
     }
     pending_backtest = {
-        "ok": False, "source": "unavailable", "command": "pending MT5 Strategy Tester runner",
-        "tool_version": "pending", "host": "pending", "recorded_at_utc": "pending", "returncode": None,
+        "ok": False,
+        "source": "unavailable",
+        "command": "pending MT5 Strategy Tester runner",
+        "tool_version": "pending",
+        "host": "pending",
+        "recorded_at_utc": "pending",
+        "returncode": None,
     }
     summary = {
-        "compile_ok": False, "backtest_ok": False, "gate_ok": False,
-        "evidence_ok": False, "matrix_ok": False, "release_eligible": False,
+        "compile_ok": False,
+        "backtest_ok": False,
+        "gate_ok": False,
+        "evidence_ok": False,
+        "matrix_ok": False,
+        "release_eligible": False,
     }
     return {
-        "schema_version": "2.0", "ir_sha256": ir.sha256(),
+        "schema_version": "2.0",
+        "ir_sha256": ir.sha256(),
         "created_at_utc": "SOURCE_GENERATION_TIME",
         "tool_policy": "No release claim is valid without native compile, tester, hashes and trusted runner attestation.",
         "source_artifact_manifest_sha256": artifact_hash,
-        "compile": pending_compile, "backtest": pending_backtest,
+        "compile": pending_compile,
+        "backtest": pending_backtest,
         "gates": {"ok": False, "reason": "native gates pending"},
         "matrix": {"ok": False, "reason": "native stress matrix pending"},
-        "artifacts": [], "unsafe_flags_used": unsafe_flags,
+        "artifacts": [],
+        "unsafe_flags_used": unsafe_flags,
         "skipped_stages": ["native_compile", "mt5_strategy_tester"],
-        "compile_ok": False, "backtest_ok": False,
-        "native_compile_verified": False, "mt5_tester_verified": False,
-        "release_eligible": False, "summary": summary,
-        "status": "SOURCE-COMPLETE-NATIVE-EVIDENCE-PENDING", "authority": "windows-native",
+        "compile_ok": False,
+        "backtest_ok": False,
+        "native_compile_verified": False,
+        "mt5_tester_verified": False,
+        "release_eligible": False,
+        "summary": summary,
+        "status": "SOURCE-COMPLETE-NATIVE-EVIDENCE-PENDING",
+        "authority": "windows-native",
     }
 
 
 def _release_trust(ir: EAIR) -> dict[str, Any]:
     legacy_remote = _command_ownership_mode(_command_ownership(ir)) == "legacy_price_only"
     blockers = ["legacy_price_only_command_ownership"] if legacy_remote else []
-    reason = "legacy price-only command ownership is compatibility/draft-only" if legacy_remote else "native compile and MT5 tester evidence pending"
+    reason = (
+        "legacy price-only command ownership is compatibility/draft-only"
+        if legacy_remote
+        else "native compile and MT5 tester evidence pending"
+    )
     return {
         "schema_version": "1.0",
         "ir_sha256": ir.sha256(),
@@ -1290,11 +1421,13 @@ def _release_trust(ir: EAIR) -> dict[str, Any]:
         "reason": reason,
     }
 
+
 def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -> Path:
     if not plan.ok:
         raise ValueError("build plan has blockers")
     name = validate_ea_name(str(ir.identity.get("name") or ""))
-    parent = out_dir.parent.resolve(); parent.mkdir(parents=True, exist_ok=True)
+    parent = out_dir.parent.resolve()
+    parent.mkdir(parents=True, exist_ok=True)
     if out_dir.exists() and not force:
         raise FileExistsError(f"refusing to overwrite {out_dir} (use force)")
     temp = Path(tempfile.mkdtemp(prefix=f".{name}-", dir=parent))
@@ -1315,19 +1448,57 @@ def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -
             f"Include/{name}/State/PersistentStateStore.mqh": PERSISTENT_STATE_STORE,
             f"Include/{name}/Telemetry/StructuredLogger.mqh": STRUCTURED_LOGGER,
             f"Include/{name}/Telemetry/MfeMaeLogger.mqh": MFE_MAE_LOGGER,
-            "EA-IR.json": json.dumps(ir.to_dict(), ensure_ascii=False, indent=2)+"\n",
-            "BUILD-PLAN.json": json.dumps(plan.to_dict(), ensure_ascii=False, indent=2)+"\n",
+            "EA-IR.json": json.dumps(ir.to_dict(), ensure_ascii=False, indent=2) + "\n",
+            "BUILD-PLAN.json": json.dumps(plan.to_dict(), ensure_ascii=False, indent=2) + "\n",
             "EA-SPEC.yaml": yaml.safe_dump(gov_spec, sort_keys=False, allow_unicode=True),
-            "AI-BUILD-CONTRACT.json": json.dumps(contract, ensure_ascii=False, indent=2)+"\n",
+            "AI-BUILD-CONTRACT.json": json.dumps(contract, ensure_ascii=False, indent=2) + "\n",
             "AI-BUILD-CONTRACT.md": render_contract_md(contract),
-            "RISK-CONTRACT.yaml": yaml.safe_dump(_risk_contract(ir), sort_keys=False, allow_unicode=True),
-            "RUNTIME-INPUT-CONTRACTS.json": json.dumps(contract_manifest(ir), ensure_ascii=False, indent=2)+"\n",
-            "BROKER-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"account_model":ir.runtime.get("account_model","hedging"),"symbols":list(ir.runtime.get("symbols") or ["_Symbol"]),"digits_tested":[5,4,3,2],"native_validation_required":True}, sort_keys=False),
-            "EVIDENCE-CONTRACT.yaml": yaml.safe_dump({"schema_version":"1.0","ir_sha256":ir.sha256(),"required":["MetaEditor compile log","EX5 SHA-256","MT5 Strategy Tester report","stress matrix","deep review"],"authority":"windows-native"}, sort_keys=False),
+            "RISK-CONTRACT.yaml": yaml.safe_dump(
+                _risk_contract(ir), sort_keys=False, allow_unicode=True
+            ),
+            "RUNTIME-INPUT-CONTRACTS.json": json.dumps(
+                contract_manifest(ir), ensure_ascii=False, indent=2
+            )
+            + "\n",
+            "BROKER-CONTRACT.yaml": yaml.safe_dump(
+                {
+                    "schema_version": "1.0",
+                    "ir_sha256": ir.sha256(),
+                    "account_model": ir.runtime.get("account_model", "hedging"),
+                    "symbols": list(ir.runtime.get("symbols") or ["_Symbol"]),
+                    "digits_tested": [5, 4, 3, 2],
+                    "native_validation_required": True,
+                },
+                sort_keys=False,
+            ),
+            "EVIDENCE-CONTRACT.yaml": yaml.safe_dump(
+                {
+                    "schema_version": "1.0",
+                    "ir_sha256": ir.sha256(),
+                    "required": [
+                        "MetaEditor compile log",
+                        "EX5 SHA-256",
+                        "MT5 Strategy Tester report",
+                        "stress matrix",
+                        "deep review",
+                    ],
+                    "authority": "windows-native",
+                },
+                sort_keys=False,
+            ),
             "RELEASE-TRUST.yaml": yaml.safe_dump(_release_trust(ir), sort_keys=False),
             "AGENTS.md": "# Agent rules\n\nDo not edit EA-IR, governance contracts, evidence, review, or release artifacts. Do not claim ready without Windows-native evidence.\n",
             "requirements-matrix.csv": to_csv(ir, plan, implemented_status="GENERATED"),
-            "docs/docs-context.json": json.dumps({"ir_sha256":ir.sha256(),"source_documents":ir.metadata.get("source_documents",[]),"assumptions":ir.metadata.get("assumptions",[])}, ensure_ascii=False, indent=2)+"\n",
+            "docs/docs-context.json": json.dumps(
+                {
+                    "ir_sha256": ir.sha256(),
+                    "source_documents": ir.metadata.get("source_documents", []),
+                    "assumptions": ir.metadata.get("assumptions", []),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
             "docs/docs-prompt.md": "# Verification prompt\n\nCompile the generated EA in Windows MetaEditor, run MT5 Strategy Tester and attach immutable evidence bound to the EA-IR hash.\n",
             "docs/guide.md": "# Operator guide\n\nThis project is a clean-room reference implementation generated from a functional manual plus an explicit operator profile. Review every input, compile in MetaEditor, and validate in MT5 Strategy Tester before any deployment.\n",
             "ACCEPTANCE-SCOPE.md": "# Acceptance scope\n\nThe manual defines features and parameter meanings, but does not provide original proprietary formulas for every signal. SMC, UTBOT and Supertrend are deterministic reference implementations recorded in the operator-profile assumptions. This is not a source-code clone.\n",
@@ -1335,12 +1506,24 @@ def generate(ir: EAIR, plan: BuildPlan, out_dir: Path, *, force: bool = False) -
         }
         written: list[Path] = []
         for rel, content in files.items():
-            dst=safe_join(temp,rel);dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(content,encoding="utf-8");written.append(dst)
-        evidence=safe_join(temp,"evidence");evidence.mkdir(parents=True,exist_ok=True)
-        manifest=build_artifact_manifest(temp,ir,written)
-        (evidence/"ir-artifacts.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-        (evidence/"manifest.json").write_text(json.dumps(_evidence_manifest(ir,manifest),ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-        if out_dir.exists():shutil.rmtree(out_dir)
-        temp.rename(out_dir);return out_dir
+            dst = safe_join(temp, rel)
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_text(content, encoding="utf-8")
+            written.append(dst)
+        evidence = safe_join(temp, "evidence")
+        evidence.mkdir(parents=True, exist_ok=True)
+        manifest = build_artifact_manifest(temp, ir, written)
+        (evidence / "ir-artifacts.json").write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        (evidence / "manifest.json").write_text(
+            json.dumps(_evidence_manifest(ir, manifest), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        if out_dir.exists():
+            shutil.rmtree(out_dir)
+        temp.rename(out_dir)
+        return out_dir
     except Exception:
-        shutil.rmtree(temp,ignore_errors=True);raise
+        shutil.rmtree(temp, ignore_errors=True)
+        raise

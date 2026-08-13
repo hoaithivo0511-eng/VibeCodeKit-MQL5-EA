@@ -5,7 +5,6 @@ from pathlib import Path
 import yaml
 
 from vibecodekit_mql5.build_planner import plan
-from vibecodekit_mql5.document_ingest import compile_document
 from vibecodekit_mql5.ir_build import run
 from vibecodekit_mql5.ir_configure import apply_profile
 from vibecodekit_mql5.intake import parse_text

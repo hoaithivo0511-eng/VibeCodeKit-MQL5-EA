@@ -198,8 +198,19 @@ def _check_version_triple_match(root: Path) -> tuple[bool, str]:
     # older release (2.4.4) while pyproject/catalog/package-contract were bumped,
     # which an enterprise buyer auditing the bundle would flag as a trust issue.
     contract_versions: dict[str, Any] = {}
+    runtime_dirs = {
+        "node_modules",
+        "site-packages",
+        "build",
+        "dist",
+        "pytest-of-root",
+        ".pytest_cache",
+        ".ruff_cache",
+        "__pycache__",
+    }
     for cpath in sorted(root.rglob("agent-contract.json")):
-        if "node_modules" in cpath.parts:
+        relative_parts = cpath.relative_to(root).parts
+        if runtime_dirs.intersection(relative_parts):
             continue
         try:
             data = json.loads(cpath.read_text(encoding="utf-8"))

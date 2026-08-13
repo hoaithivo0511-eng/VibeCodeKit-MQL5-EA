@@ -64,6 +64,15 @@ class TestUxDetectors(unittest.TestCase):
         src = 'void RenderPanel(){ /* render time: 400 us worst case */ }\n'
         self.assertIn("UI-PERF-04", codes_for(src))
 
+    def test_ux09_requires_real_panel_context(self) -> None:
+        helper = 'bool CloseAllAsync(){ return true; }\n'
+        panel = (
+            'void OnChartEvent(const int id,const long &l,const double &d,const string &s){'
+            'if(s=="close_all") CloseAllAsync();}\n'
+        )
+        self.assertNotIn("UX-09", codes_for(helper))
+        self.assertIn("UX-09", codes_for(panel))
+
     def test_compliant_panel_has_no_ux_errors(self) -> None:
         """The reference panel the kit itself scaffolds must lint clean of
         ERROR-severity UX findings, or the kit contradicts its own guidance."""
@@ -83,7 +92,8 @@ class TestLintExitContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "Bad.mq5"
             path.write_text('void OnTick(){ Alert("x"); }\n', encoding="utf-8")
-            import contextlib, io
+            import contextlib
+            import io
             with contextlib.redirect_stdout(io.StringIO()):
                 rc = lint.main([str(path)])
         self.assertEqual(rc, 1)

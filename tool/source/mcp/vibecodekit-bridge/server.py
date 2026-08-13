@@ -60,6 +60,8 @@ def handle(request: dict[str, Any]) -> dict[str, Any] | None:
         fn = DISPATCH.get(name)
         if fn is None:
             return _err(rid, -32601, f"unknown tool: {name}")
+        if not isinstance(args, dict):
+            return _err(rid, -32602, f"tool {name}: arguments must be an object")
         # PR-13 (gap G2): enforce ``inputSchema.required`` here so every
         # tool gets a uniform JSON-RPC error envelope when the caller
         # forgets a required key, instead of relying on each handler to

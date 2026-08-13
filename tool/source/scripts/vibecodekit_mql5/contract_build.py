@@ -43,7 +43,7 @@ def contract_build(
 
     interview = read_json(interview_path)
     blueprint = read_json(blueprint_path)
-    tip = read_json(tip_path)
+    _tip = read_json(tip_path)
     approval = read_json(approval_path)
 
     interview_check = validate_interview(interview)

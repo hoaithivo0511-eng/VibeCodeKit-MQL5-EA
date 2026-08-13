@@ -1,0 +1,33 @@
+schema_version: "1.0"
+project: vibecodekit-mql5-ea
+mode: Full
+work_item: rc7-release-hardening
+phase: HANDOFF
+baseline:
+  commit: c4924211d3dee507957c6ec2590c21d0563cfc59
+  tree: c444cfc3389719ac5ef8a5aaf32d2f1eed6c287d
+  version: 3.3.0rc7
+release_state:
+  level: DRAFT
+  release_eligible: false
+  reason: native MetaEditor and MT5 Strategy Tester evidence are not bound to the final tree
+verification_state:
+  tool_candidate: LOCAL_VERIFIED
+  source_tests: 300
+  source_archive_tests: 300
+  installed_wheel_tests: 300
+  compile_verified: false
+  tester_verified: false
+active_artifacts:
+  scan: SCAN_REPORT.md
+  rri: RRI_REPORT.md
+  specification: RELEASE-HARDENING-SPEC.yaml
+  decisions: DECISIONS.yaml
+  blueprint: BLUEPRINT.md
+  contract: AI-BUILD-CONTRACT.json
+  task_graph: TASK_GRAPH.md
+  tip: TIP-001.md
+  completion: COMPLETION_REPORT.md
+  verification: VERIFY_REPORT.md
+  evidence: EVIDENCE_MANIFEST.json
+  retro: RETRO_REPORT.md

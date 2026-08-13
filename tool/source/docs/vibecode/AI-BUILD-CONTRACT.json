@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "id": "VCK-RC7-HARDENING",
+  "baseline_commit": "c4924211d3dee507957c6ec2590c21d0563cfc59",
+  "allowed_paths": [
+    ".github/workflows/rc7-package-integration.yml",
+    "scripts/maintenance/",
+    "docs/release/v3.3.0rc7/",
+    "README.md",
+    "REPO-MANIFEST.sha256",
+    "tool/source/"
+  ],
+  "forbidden_paths": [
+    "native/evidence/",
+    "RELEASE-TRUST.yaml"
+  ],
+  "forbidden_claims": [
+    "release_eligible=true without exact-tree native evidence",
+    "Strategy Tester PASS from synthetic or imported evidence",
+    "production-ready or live-ready from Python regression alone"
+  ],
+  "triggered_guards": [
+    {
+      "id": "RETRO-A2",
+      "severity": "P1",
+      "triggered_by": ["MCP invalid parameter handling"],
+      "checker": "test_all_mcp_bridges_reject_missing_required_arguments",
+      "waiver_allowed": false
+    },
+    {
+      "id": "RETRO-A4",
+      "severity": "P1",
+      "triggered_by": ["release regression expected values"],
+      "checker": "independent negative and parity tests",
+      "waiver_allowed": false
+    },
+    {
+      "id": "RETRO-A7",
+      "severity": "P1",
+      "triggered_by": ["Ruff and pytest cache contamination"],
+      "checker": "test_snapshot_ignores_known_tool_caches_but_rejects_rogue_files",
+      "waiver_allowed": false
+    },
+    {
+      "id": "RETRO-A12",
+      "severity": "P1",
+      "triggered_by": ["source, package and distribution mirror synchronization"],
+      "checker": "source ZIP and wheel parity gates",
+      "waiver_allowed": false
+    }
+  ],
+  "required_evidence": [
+    "source JUnit",
+    "source ZIP JUnit and selftest",
+    "installed wheel JUnit and selftest",
+    "public preset generate-to-check matrix",
+    "MCP stdio matrix",
+    "repository and distribution manifests",
+    "exact-tree native MetaEditor and MT5 Strategy Tester evidence for release eligibility"
+  ]
+}

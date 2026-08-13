@@ -1,4 +1,5 @@
 """Verify EA documentation claims against source evidence."""
+
 from __future__ import annotations
 
 import argparse
@@ -36,7 +37,9 @@ FORBIDDEN_OVERCLAIM = [
 ]
 
 
-def verify_docs(project: str | Path, profile: str = "generic", out: str | Path | None = None) -> dict:
+def verify_docs(
+    project: str | Path, profile: str = "generic", out: str | Path | None = None
+) -> dict:
     ledger = make_claim_ledger(project)
     # Unknown/auto profiles fall back to the relaxed generic set, NOT grid-safe,
     # so a plain EA is never told it is missing grid claims it never made.
@@ -55,20 +58,22 @@ def verify_docs(project: str | Path, profile: str = "generic", out: str | Path |
         "ledger": ledger,
     }
     if out:
-        p=Path(out); p.parent.mkdir(parents=True, exist_ok=True)
+        p = Path(out)
+        p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     return report
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap=argparse.ArgumentParser(description="Verify EA manual claims against source evidence.")
+    ap = argparse.ArgumentParser(description="Verify EA manual claims against source evidence.")
     ap.add_argument("--project", required=True)
     ap.add_argument("--profile", default="generic", help="generic | grid-safe | grid-hedge")
     ap.add_argument("--out")
-    args=ap.parse_args(argv)
-    r=verify_docs(args.project,args.profile,args.out)
+    args = ap.parse_args(argv)
+    r = verify_docs(args.project, args.profile, args.out)
     print(json.dumps(r, indent=2, ensure_ascii=False))
     return 0 if r["ok"] else 2
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -122,17 +122,20 @@ RC7 hiện chứng minh repository/source/package/native-compile readiness của
 
 ## Trạng thái E2E mới nhất
 
-Audit Full theo VibecodeV5 ngày 2026-08-12 xác nhận:
+Hardening Full theo VibecodeV5 ngày 2026-08-13 xác nhận:
 
 - Python regression matrix 3.10 / 3.11 / 3.12: PASS;
-- 283 tests trên baseline RC7 trước docs-sync: PASS;
+- 300 tests trên RC7 hardening candidate: PASS, 0 failure/error/skip;
 - selftest 13/13: PASS;
+- Ruff correctness gate `E4/E7/E9/F --no-cache`: PASS;
 - 139 entrypoints import/callable: PASS;
 - repository hygiene + duplicate-content policy: PASS;
 - repository manifest: PASS;
 - deterministic wheel ×2: PASS;
-- installed-wheel selftest ngoài checkout: PASS;
-- exact Windows MetaEditor compile trên runtime baseline: PASS, `0 errors, 0 warnings`;
+- source archive + installed wheel chạy full shipped suite: PASS;
+- public generate→lint matrix cho trend/mean-reversion/breakout/hedging-multi: PASS;
+- exact Windows MetaEditor compile trên baseline trước hardening: PASS, `0 errors, 0 warnings`;
+- exact Windows MetaEditor/Strategy Tester trên final hardening tree: chưa có evidence;
 - Strategy Tester / restart-recovery / broker parity / forward-live: chưa có evidence đủ để claim PASS.
 
 Chi tiết và SHA/run IDs nằm tại:

@@ -27,6 +27,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import _agent_io
+from .rule_registry import lint_error_codes as _lint_error_codes
+from .rule_registry import lint_meta as _lint_meta
 
 
 @dataclass(frozen=True)
@@ -225,6 +227,23 @@ def lint_source(path: str, raw: str) -> list[Finding]:
     return findings
 
 
+def lint_sources(files: dict[str, str]) -> list[Finding]:
+    """Lint a coherent project source set with cross-file event context."""
+    has_transaction_handler = any(
+        _HANDLER.search(_strip_comments(raw)) for raw in files.values()
+    )
+    findings: list[Finding] = []
+    for path, raw in files.items():
+        for finding in lint_source(path, raw):
+            if finding.code == "AP-18" and has_transaction_handler:
+                continue
+            findings.append(finding)
+    findings.sort(
+        key=lambda finding: (finding.path, finding.line, finding.col, finding.code)
+    )
+    return findings
+
+
 def lint_file(path: Path) -> list[Finding]:
     from .mq5_io import read_mq5_text
 
@@ -257,7 +276,6 @@ def lint_file_ast(path: Path) -> list[Finding]:
 # `rule_registry`. lint.py is a *consumer*: ERROR-severity (critical) detectors
 # live in this module, WARN-only detectors in lint_best_practice, but both draw
 # their identity/metadata from the registry so the three modules cannot drift.
-from .rule_registry import lint_meta as _lint_meta, lint_error_codes as _lint_error_codes
 
 _RULE_META: dict[str, tuple[str, str]] = _lint_meta()
 

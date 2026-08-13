@@ -64,14 +64,6 @@ def check_architecture(project: str | Path, profile: str, profile_dir: str | Pat
         if re.search(re.escape(term), text, flags=re.I) is None:
             missing_terms.append(term)
 
-    # Raw CTrade is allowed inside the dedicated AsyncTradeExecutor module.
-    main_text_chunks = []
-    for rel in files:
-        if rel.endswith(".mq5") or ("AsyncTradeExecutor" not in rel and "BasketCloseEngine" not in rel):
-            # text already includes FILE markers; keep overall scan for loop-close pattern,
-            # but handle sync_trade_without_async_executor semantically below.
-            pass
-
     forbidden_hits = []
     has_async_executor = "CAsyncTradeExecutor" in text and "OnTradeTransaction" in text
     for item in manifest.get("forbidden_patterns", []):

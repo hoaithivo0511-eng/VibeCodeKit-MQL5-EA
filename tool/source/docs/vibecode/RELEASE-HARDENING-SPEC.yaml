@@ -1,0 +1,28 @@
+schema_version: "1.0"
+id: VCK-RC7-HARDENING
+version: 3.3.0rc7
+semantic_scope:
+  trading_logic_changed: false
+  risk_logic_changed: false
+  execution_logic_changed: false
+requirements:
+  - id: RH-001
+    statement: Every shipped agent contract uses the canonical kit version.
+  - id: RH-002
+    statement: Project lint and deep review analyze only entrypoint-reachable MQL files.
+  - id: RH-003
+    statement: Verification remains deterministic when Ruff or pytest caches exist.
+  - id: RH-004
+    statement: Runtime type annotation introspection succeeds for backtest helpers.
+  - id: RH-005
+    statement: Every MCP bridge returns JSON-RPC -32602 for missing required arguments.
+  - id: RH-006
+    statement: Active RC7 and Retro documentation matches runtime truth.
+  - id: RH-007
+    statement: Source, source ZIP and installed wheel pass the complete shipped suite.
+  - id: RH-008
+    statement: Release eligibility remains false without trusted native compile and tester evidence.
+forbidden:
+  - Hard-coded CCBSN production defaults or behavior
+  - Fabricated MetaEditor, MT5, broker, forward or live PASS
+  - Changing strategy, risk, execution or order-lifecycle semantics

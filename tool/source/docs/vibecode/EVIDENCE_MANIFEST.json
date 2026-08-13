@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "work_item": "VCK-RC7-HARDENING",
+  "release_eligible": false,
+  "status": "LOCAL_VERIFIED",
+  "compile_verified": false,
+  "tester_verified": false,
+  "baseline": {
+    "commit": "c4924211d3dee507957c6ec2590c21d0563cfc59",
+    "tree": "c444cfc3389719ac5ef8a5aaf32d2f1eed6c287d",
+    "version": "3.3.0rc7"
+  },
+  "artifacts": [
+    {
+      "kind": "source_regression",
+      "result": "PASS",
+      "tests": 300,
+      "external_evidence": "rc7-hardening-source.xml"
+    },
+    {
+      "kind": "source_archive_regression",
+      "result": "PASS",
+      "tests": 300,
+      "external_evidence": "rc7-hardening-source-zip.xml"
+    },
+    {
+      "kind": "installed_wheel_regression",
+      "result": "PASS",
+      "tests": 300,
+      "external_evidence": "rc7-hardening-wheel.xml"
+    },
+    {
+      "kind": "native_metaeditor_compile",
+      "result": "UNTESTABLE",
+      "reason": "trusted MetaEditor runtime unavailable for the final tree"
+    },
+    {
+      "kind": "mt5_strategy_tester",
+      "result": "UNTESTABLE",
+      "reason": "trusted MT5 terminal and tester runtime unavailable for the final tree"
+    }
+  ],
+  "artifact_hashes": "External RC7-HARDENING-ARTIFACTS.sha256 binds the final ZIP, wheel, and JUnit evidence without self-referential source metadata."
+}

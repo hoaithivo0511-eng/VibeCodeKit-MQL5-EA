@@ -22,6 +22,11 @@ SERVER_NAME = "mt5-bridge"
 SERVER_VERSION = "1.0.0"
 PROTOCOL_VERSION = "2024-11-05"
 
+_REQUIRED_BY_TOOL: dict[str, list[str]] = {
+    schema["name"]: list(schema.get("inputSchema", {}).get("required", []))
+    for schema in TOOL_SCHEMAS
+}
+
 
 def handle(request: dict[str, Any]) -> dict[str, Any] | None:
     rid = request.get("id")
@@ -41,6 +46,14 @@ def handle(request: dict[str, Any]) -> dict[str, Any] | None:
         fn = DISPATCH.get(name)
         if fn is None:
             return _err(rid, -32601, f"unknown tool: {name}")
+        if not isinstance(args, dict):
+            return _err(rid, -32602, f"tool {name}: arguments must be an object")
+        missing = _missing_required(name, args)
+        if missing:
+            return _err(
+                rid, -32602,
+                f"tool {name}: missing required arguments: {missing}",
+            )
         try:
             result = fn(args)
         except Exception as exc:  # noqa: BLE001
@@ -60,6 +73,10 @@ def _ok(rid: Any, result: Any) -> dict[str, Any]:
 
 def _err(rid: Any, code: int, message: str) -> dict[str, Any]:
     return {"jsonrpc": "2.0", "id": rid, "error": {"code": code, "message": message}}
+
+
+def _missing_required(tool_name: str, args: dict[str, Any]) -> list[str]:
+    return [key for key in _REQUIRED_BY_TOOL.get(tool_name, []) if args.get(key) is None]
 
 
 def serve(stdin: Any = sys.stdin, stdout: Any = sys.stdout) -> None:

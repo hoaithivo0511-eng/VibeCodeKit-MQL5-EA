@@ -1,4 +1,4 @@
-"""Machine-readable Retro A1-A12 catalog and task-specific selector."""
+"""Machine-readable Retro A1-A14 catalog and task-specific selector."""
 from __future__ import annotations
 
 import json
