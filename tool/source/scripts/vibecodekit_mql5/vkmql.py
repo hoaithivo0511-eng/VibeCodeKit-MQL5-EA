@@ -31,7 +31,6 @@ default ``build`` subcommand; ``--preset P`` becomes the positional preset.
 """
 from __future__ import annotations
 
-import argparse
 import importlib
 import json
 import sys

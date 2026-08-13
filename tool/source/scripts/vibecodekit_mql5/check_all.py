@@ -299,17 +299,13 @@ def _stage_env(name: str, project_dir: Path) -> StageResult:
 def _stage_lint(project_dir: Path) -> StageResult:
     """Run the real anti-pattern pipeline over every MQL source."""
     try:
-        from .ea_doc_analyzer import read_mql_files
-        from .lint import lint_source
+        from .ea_doc_analyzer import read_reachable_mql_files
+        from .lint import lint_sources
 
-        files = read_mql_files(project_dir)
+        files = read_reachable_mql_files(project_dir)
         if not files:
             return StageResult("lint", "FAIL", "no .mq5/.mqh source to lint")
-        findings = [
-            finding
-            for rel, source in files.items()
-            for finding in lint_source(rel, source)
-        ]
+        findings = lint_sources(files)
         errors = [finding for finding in findings if finding.severity == "ERROR"]
         warnings = [finding for finding in findings if finding.severity == "WARN"]
         if errors:

@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from .ea_senior_review import review_project
-from .ea_doc_analyzer import read_mql_files
 
 
 def file_summary(project: Path) -> list[dict[str, Any]]:

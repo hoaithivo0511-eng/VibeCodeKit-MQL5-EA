@@ -13,6 +13,16 @@ htmlcov/
 build/
 dist/
 
+# pip may materialize these roots beside the checkout when the host redirects
+# its temporary directory. They are runtime state, never release inputs.
+/pip-build-env-*/
+/pip-build-tracker-*/
+/pip-ephem-wheel-cache-*/
+/pip-install-*/
+/pip-metadata-*/
+/pip-modern-metadata-*/
+/pip-unpack-*/
+
 # Virtual environments
 .venv/
 venv/

@@ -3,7 +3,7 @@
   "generated_by": "mql5-agent-contract",
   "kit": {
     "name": "vibecodekit-mql5-ea",
-    "version": "3.3.0rc6",
+    "version": "3.3.0rc7",
     "flavor": "slim",
     "canonical_layout": "mt5"
   },
@@ -26,8 +26,13 @@
     "release_eligible_field": "release_eligible",
     "accepted_compile_evidence": [
       "actual_metaeditor",
-      "remote_worker_metaeditor"
+      "remote_worker_metaeditor",
+      "github_actions_metaeditor"
     ],
+    "compile_evidence_conditions": {
+      "github_actions_metaeditor": "trusted only after exact Windows runner, repository, commit/tree, correlated workflow run/job, ProbeEA, 0-error/0-warning, EX5 and artifact hash/size provenance validation",
+      "wine_metaeditor": "development/diagnostic only; not release authority"
+    },
     "accepted_backtest_evidence": [
       "actual_mt5_strategy_tester",
       "remote_worker_strategy_tester"

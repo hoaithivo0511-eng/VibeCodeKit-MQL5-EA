@@ -22,10 +22,10 @@ import argparse
 import dataclasses
 import json
 import re
-import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Period parser  (FORMAT: "2023.01.01-2024.12.31"  or  "20230101-20241231")

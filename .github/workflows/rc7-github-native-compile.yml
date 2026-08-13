@@ -44,10 +44,10 @@ jobs:
   fast-gate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
           cache: pip
@@ -95,8 +95,8 @@ jobs:
           if [ -n "$MT5_INSTALLER_URL" ]; then
             echo 'enabled=true' >> "$GITHUB_OUTPUT"
           else
-            echo 'enabled=false' >> "$GITHUB_OUTPUT"
-            echo 'MT5_INSTALLER_URL is not configured; native Windows compile remains UNTESTABLE for this run.'
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            echo 'MT5_INSTALLER_URL is not configured; using the SHA-pinned canonical MetaQuotes installer.'
           fi
 
   native-compile:
@@ -106,10 +106,10 @@ jobs:
       (github.event_name != 'workflow_dispatch' || inputs.enable_native_run)
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
       - name: Compile ProbeEA or requested target with native MetaEditor
@@ -118,8 +118,8 @@ jobs:
           target: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'scripts/native/ProbeEA.mq5' }}
           project-root: .
           evidence-dir: evidence/compile
-          installer-url: ${{ secrets.MT5_INSTALLER_URL }}
-          installer-sha256: ${{ secrets.MT5_INSTALLER_SHA256 }}
+          installer-url: ${{ secrets.MT5_INSTALLER_URL || 'https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe' }}
+          installer-sha256: ${{ secrets.MT5_INSTALLER_SHA256 || 'a879492dd9d7b168d0538edd1c0dc5604ca43dc0951825b3501818e8b18f4c93' }}
           github-token: ${{ github.token }}
           expected-commit: ${{ github.sha }}
           warm-stdlib: auto
@@ -144,7 +144,7 @@ jobs:
           '@ | python -
       - name: Upload native compile evidence
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: vkmql-rc7-native-compile-${{ github.sha }}
           if-no-files-found: error

@@ -17,11 +17,13 @@ permissions:
 jobs:
   build-test-repro:
     runs-on: ubuntu-latest
+    env:
+      PIP_CONSTRAINT: ${{ github.workspace }}/tool/source/requirements-ci.lock
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.12'
           cache: pip
@@ -44,8 +46,25 @@ jobs:
       - name: Run full source regression and selftest
         run: |
           cd tool/source
+          python -m ruff check --no-cache scripts tests
           python -m pytest -q --junitxml="${RUNNER_TEMP}/rc7-source.xml"
-          python -m vibecodekit_mql5.selftest
+          PYTHONPATH=scripts python -m vibecodekit_mql5.selftest
+      - name: Test deterministic source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="${RUNNER_TEMP}/vibecodekit-mql5-3.3.0rc7-source.zip"
+          extract="${RUNNER_TEMP}/source-archive"
+          git archive \
+            --format=zip \
+            --prefix=vibecodekit-mql5-3.3.0rc7/ \
+            --output="$archive" \
+            HEAD:tool/source
+          mkdir -p "$extract"
+          python -m zipfile -e "$archive" "$extract"
+          cd "$extract/vibecodekit-mql5-3.3.0rc7"
+          PYTHONPATH=scripts python -m vibecodekit_mql5.selftest
+          python -m pytest -q --junitxml="${RUNNER_TEMP}/rc7-source-zip.xml"
       - name: Build wheel twice with deterministic epoch
         shell: bash
         run: |
@@ -68,7 +87,9 @@ jobs:
           venv="${RUNNER_TEMP}/wheel-venv"
           python -m venv "$venv"
           "$venv/bin/python" -m pip install --upgrade pip
-          "$venv/bin/python" -m pip install "${RUNNER_TEMP}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl"
+          "$venv/bin/python" -m pip install \
+            "${RUNNER_TEMP}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl" \
+            pytest reportlab
           cd "${RUNNER_TEMP}"
           PYTHONPATH='' "$venv/bin/python" - <<'PY'
           from vibecodekit_mql5._version import get_version
@@ -76,11 +97,24 @@ jobs:
               raise SystemExit(get_version())
           PY
           PYTHONPATH='' "$venv/bin/mql5-selftest"
+          snapshot="$(PYTHONPATH='' "$venv/bin/python" - <<'PY'
+          from vibecodekit_mql5.distribution_snapshot import locate_snapshot_root
+          print(locate_snapshot_root())
+          PY
+          )"
+          cd "$snapshot"
+          PYTHONPATH='' "$venv/bin/python" -m pytest -q \
+            --junitxml="${RUNNER_TEMP}/rc7-wheel.xml"
       - name: Assert source regression report clean
-        run: python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc7-source.xml"
-      - name: Upload fail-closed RC7 pre-candidate wheel
-        uses: actions/upload-artifact@v6
+        run: |
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc7-source.xml"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc7-source-zip.xml"
+          python scripts/maintenance/assert_junit_clean.py "${RUNNER_TEMP}/rc7-wheel.xml"
+      - name: Upload fail-closed RC7 pre-candidate artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: vibecodekit-mql5-rc7-pre-candidate-${{ github.sha }}
           if-no-files-found: error
-          path: ${{ runner.temp }}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl
+          path: |
+            ${{ runner.temp }}/vibecodekit_mql5_ea-3.3.0rc7-py3-none-any.whl
+            ${{ runner.temp }}/vibecodekit-mql5-3.3.0rc7-source.zip

@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 from ._agent_io import Envelope, add_gate_report_flag, add_json_flag, maybe_emit
 

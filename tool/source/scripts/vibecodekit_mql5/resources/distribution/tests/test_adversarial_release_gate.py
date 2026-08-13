@@ -19,8 +19,7 @@ import unittest
 from pathlib import Path
 
 from _util import (  # type: ignore
-    build_forged_project, generate_keypair, pin_key, read_manifest,
-    sign_manifest, write_manifest,
+    build_forged_project, generate_keypair, pin_key, sign_manifest,
 )
 
 

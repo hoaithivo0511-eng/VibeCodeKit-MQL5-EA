@@ -1,5 +1,5 @@
 {
-  "file_count": 54,
+  "file_count": 55,
   "files": [
     {
       "path": "agent-contract.json",
@@ -8,8 +8,8 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "131b4e2b131ee79ce367f367214df16a9ab058adae8acb94b0b19b2c552a5ff1",
-      "size": 11422
+      "sha256": "208a6febb07ecc89cad63ba4099d69a68e2a1e1ad6247aa460e145051b7b06b6",
+      "size": 11792
     },
     {
       "path": "tests/__init__.py",
@@ -33,8 +33,8 @@
     },
     {
       "path": "tests/test_adversarial_release_gate.py",
-      "sha256": "8cbabb60140a24dadfc88b04639ab1e4ee7200a153c8d9b3ca3d841060aa307e",
-      "size": 7265
+      "sha256": "3cf0694e4801f55af77303e39d032dbf8f00d4ff5288596a5502200399d2d6c4",
+      "size": 7230
     },
     {
       "path": "tests/test_phase0_security.py",
@@ -53,8 +53,8 @@
     },
     {
       "path": "tests/test_phase12_advanced_builder.py",
-      "sha256": "13e268eb8854168a57be8c23d11e7b2e36172886bcb57946cc3eaf3acf245a80",
-      "size": 3378
+      "sha256": "f65cef910146554a4a571af7928d945368999699e64234ba46802320048ff1bc",
+      "size": 3316
     },
     {
       "path": "tests/test_phase13_ship_candidate.py",
@@ -63,13 +63,13 @@
     },
     {
       "path": "tests/test_phase14_ship_hardening.py",
-      "sha256": "4b600bb525e535cc9acbdd302fbdb06bb9ac68f688a67fdb004aea10232f5a48",
-      "size": 2569
+      "sha256": "4284c46e4c8cda3f426caf7af33aa73c80b522176aa6b887445aba60fb84b1ae",
+      "size": 2507
     },
     {
       "path": "tests/test_phase15_audit_precision.py",
-      "sha256": "07d5bba86048b8cecac3a3148b07b08e843ca5efc41584a526d52e49078f9089",
-      "size": 4881
+      "sha256": "6370c050d082ad160c1fda4b36c4a579771632f6ac775cd4569c7ce4159b7dd2",
+      "size": 6298
     },
     {
       "path": "tests/test_phase16_semantic_isolation.py",
@@ -83,8 +83,8 @@
     },
     {
       "path": "tests/test_phase18_cross_feature_invariants.py",
-      "sha256": "fb6d43e5806fe7a593cd5d6e01ecea0dfbdfe2ebc143d1490c0205e983610227",
-      "size": 4974
+      "sha256": "b551e1b0ca65e3c15303e7f3835262df5e1970ebe29abe151dddc97d16edbd6e",
+      "size": 4948
     },
     {
       "path": "tests/test_phase19_cross_project_acceptance.py",
@@ -123,8 +123,8 @@
     },
     {
       "path": "tests/test_phase25_audit_gate_execution.py",
-      "sha256": "2bc2dd3a90654c5d5c3cc5930b7e2c6f079d76be77875030361e106375739c9c",
-      "size": 16001
+      "sha256": "79fc902093bbf2eee46d128e3866f57b68abd11c81861a207b5fc03340ed2bf3",
+      "size": 16011
     },
     {
       "path": "tests/test_phase25_native_release_contract.py",
@@ -163,8 +163,8 @@
     },
     {
       "path": "tests/test_phase30_distribution_snapshot.py",
-      "sha256": "45fc778b8a8879957f56244755c79e4cf1f57c8ad1c7734b50350657466b8105",
-      "size": 1371
+      "sha256": "9750c5b636e8bbb5dfdca72ddfd83125af8d3e8a5739e4dcc7b748c47fd425da",
+      "size": 2426
     },
     {
       "path": "tests/test_phase31_compile_core_rc7.py",
@@ -188,8 +188,8 @@
     },
     {
       "path": "tests/test_phase33_rc6_hygiene.py",
-      "sha256": "da8b1ca47dec3d0c0b003ada38827d2ce181a4835f552d0ad5ab5f0970f680ed",
-      "size": 6645
+      "sha256": "9db2c98aa4f1d36b6d672d7fb2e20f053730e850f2217049563b22b184f3aeec",
+      "size": 6713
     },
     {
       "path": "tests/test_phase34_documentation_runtime.py",
@@ -215,6 +215,11 @@
       "path": "tests/test_phase38_rc7_full_e2e_truth.py",
       "sha256": "7b41d70f09086c20fa8db98a480ae9825c2e1860361cf41306332554cd4db086",
       "size": 7177
+    },
+    {
+      "path": "tests/test_phase39_rc7_release_hardening.py",
+      "sha256": "050151e47cd0b3b7138195838000dcf5c20f5cddd1d4632b84e911bfbef1abee",
+      "size": 7723
     },
     {
       "path": "tests/test_phase3_codegen.py",
@@ -258,8 +263,8 @@
     },
     {
       "path": "tests/test_ui_lint_detectors.py",
-      "sha256": "f0199d12159520ac788c7d41928e42267ca36e2d96b2af0b6ae01e15ead86b56",
-      "size": 3995
+      "sha256": "7d43589089155f92945d28d1b753f05303541b59bbd60ebf697c79b8fd65d415",
+      "size": 4409
     },
     {
       "path": "tests/test_worker_artifact_security.py",

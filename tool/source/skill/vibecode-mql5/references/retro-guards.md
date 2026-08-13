@@ -1,8 +1,8 @@
 # Retro Behavioral Guards (runtime-aligned)
 
 The runtime exposes this catalog through `AI-BUILD-CONTRACT.json`,
-`mql5-retro-init`, and `vkmql-check retro`. Runtime IDs are `A1`–`A12` with
-canonical aliases `RETRO-A1`–`RETRO-A12`; both forms are accepted.
+`mql5-retro-init`, and `vkmql-check retro`. Runtime IDs are `A1`–`A14` with
+canonical aliases `RETRO-A1`–`RETRO-A14`; both forms are accepted.
 
 ## Guard catalog
 
@@ -20,6 +20,8 @@ canonical aliases `RETRO-A1`–`RETRO-A12`; both forms are accepted.
 | A10 | platform or broker port | parity table and differential tests | P1 |
 | A11 | performance claim | anti-optimization benchmark proof | P1 |
 | A12 | multi-file edit-by-match | exact target and post-edit validation | P1/P2 |
+| A13 | visible UI claim, freshness, or scope | source resolution and freshness evidence | P1 |
+| A14 | panel rendering or hot-path work | render profile and hot-path isolation evidence | P0 |
 
 ## Required machine-readable shape
 

@@ -7,6 +7,15 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 SNAPSHOT_MANIFEST = "SNAPSHOT-MANIFEST.json"
+IGNORED_RUNTIME_DIRS = frozenset(
+    {
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        "pytest-of-root",
+    }
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -72,7 +81,7 @@ def verify_distribution_snapshot(root: Path) -> list[str]:
         for path in root.rglob("*")
         if path.is_file()
         and path.name != SNAPSHOT_MANIFEST
-        and "__pycache__" not in path.parts
+        and not IGNORED_RUNTIME_DIRS.intersection(path.relative_to(root).parts)
         and path.suffix != ".pyc"
     }
     declared = set(records)
@@ -96,6 +105,7 @@ def verify_distribution_snapshot(root: Path) -> list[str]:
 
 
 __all__ = [
+    "IGNORED_RUNTIME_DIRS",
     "SNAPSHOT_MANIFEST",
     "locate_snapshot_root",
     "manifest_record",

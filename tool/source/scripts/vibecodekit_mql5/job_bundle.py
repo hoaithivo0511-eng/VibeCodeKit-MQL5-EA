@@ -7,7 +7,7 @@ receive the source tree / EX5 / tester config needed for real execution.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable, Any
+from typing import Any
 import base64
 import hashlib
 import io

@@ -1,0 +1,27 @@
+schema_version: "1.0"
+decisions:
+  - id: DEC-RH-001
+    status: approved
+    owner_basis: User request to implement the complete audited remediation plan
+    decision: Preserve version 3.3.0rc7 while hardening the unpublished RC7 candidate.
+    locking_tests:
+      - test_all_shipped_agent_contract_versions_match_canonical_rc7
+  - id: DEC-RH-002
+    status: approved
+    owner_basis: Public generate-to-check flow must work for generic projects
+    decision: Project analyzers follow local include reachability from every .mq5 entrypoint.
+    locking_tests:
+      - test_project_analyzers_ignore_unreachable_optional_headers
+      - test_project_analyzers_keep_reachable_header_findings
+  - id: DEC-RH-003
+    status: approved
+    owner_basis: Release gates must be deterministic and evidence-first
+    decision: Ignore known cache directories in snapshot inventory while rejecting other undeclared files.
+    locking_tests:
+      - test_snapshot_ignores_known_tool_caches_but_rejects_rogue_files
+  - id: DEC-RH-004
+    status: approved
+    owner_basis: Missing native evidence must never be converted to PASS
+    decision: Keep release_eligible false until exact-tree MetaEditor and MT5 Strategy Tester provenance passes.
+    locking_tests:
+      - existing adversarial release-gate suite

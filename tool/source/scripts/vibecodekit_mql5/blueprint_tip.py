@@ -5,10 +5,9 @@ Static review before build. Produces risk flags; critical flags block contract b
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 from typing import Any
 
-from .contract_utils import read_json, write_json, validation_report, now_iso
+from .contract_utils import read_json, write_json, now_iso
 
 
 def review_blueprint(data: dict[str, Any]) -> dict[str, Any]:

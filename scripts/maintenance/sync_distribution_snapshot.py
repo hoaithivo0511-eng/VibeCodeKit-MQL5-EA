@@ -23,6 +23,7 @@ from vibecodekit_mql5.distribution_snapshot import (
 )
 
 ROOT_FILES = ("pyproject.toml", "tool-catalog.json", "agent-contract.json")
+PACKAGE_CONTRACT = PACKAGE_SCRIPTS / "vibecodekit_mql5" / "agent-contract.json"
 
 
 def tracked_test_files() -> list[Path]:
@@ -57,6 +58,11 @@ def expected_manifest(mapping: dict[str, Path]) -> dict:
 
 
 def synchronize() -> None:
+    # The package-local contract is a shipped runtime asset, while the root
+    # contract is the canonical generated record. Keep them byte-identical so
+    # source checkouts, source archives and installed wheels cannot report
+    # different kit versions.
+    shutil.copyfile(SOURCE / "agent-contract.json", PACKAGE_CONTRACT)
     mapping = source_mapping()
     allowed = set(mapping) | {SNAPSHOT_MANIFEST}
     SNAPSHOT.mkdir(parents=True, exist_ok=True)

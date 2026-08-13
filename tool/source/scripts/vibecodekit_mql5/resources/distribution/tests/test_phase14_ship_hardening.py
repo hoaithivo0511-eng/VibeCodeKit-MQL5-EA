@@ -4,7 +4,6 @@ import yaml
 
 from vibecodekit_mql5.build_planner import plan
 from vibecodekit_mql5.composable_codegen import generate
-from vibecodekit_mql5.document_ingest import compile_document
 from vibecodekit_mql5.intake import parse_text
 from vibecodekit_mql5.ir_configure import apply_profile
 
